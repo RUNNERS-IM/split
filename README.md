@@ -22,7 +22,7 @@ brew trust runners-im/tap   # recent Homebrew asks you to trust third-party taps
 brew install --cask split
 ```
 
-Split speaks Arabic, Chinese (Simplified), Chinese (Traditional), Dutch, English, Finnish, French, German, Hindi, Indonesian, Italian, Japanese, Korean, Polish, Portuguese, Russian, Spanish, Thai, Turkish and Vietnamese. It follows the language set for your Mac. The Mac App Store version has 18 of them, without Chinese (Traditional) and Turkish.
+Split speaks Arabic, Chinese (Simplified), Chinese (Traditional), Dutch, English, Finnish, French, German, Hindi, Indonesian, Italian, Japanese, Korean, Polish, Portuguese, Russian, Spanish, Thai, Turkish and Vietnamese. It follows the language set for your Mac.
 
 ## Default keyboard shortcuts
 
@@ -101,7 +101,7 @@ When another app needs the same keys, choose **Pause Shortcuts** in the Split me
 
 ## Launch options
 
-These work in the version downloaded from Releases or Homebrew, not in the Mac App Store version. Split must already be running; the options are passed to it.
+These are checked in the version downloaded from Releases or Homebrew; the Mac App Store version has not been tried. Split must already be running; the options are passed to it.
 
 ```sh
 open -g -a Split --args --perform MoveToLeftHalf   # run one window action, for scripts and launchers
