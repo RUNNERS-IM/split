@@ -5,10 +5,15 @@
   "AccessibilityGuide.ButtonOpenSettings": "Открыть Системные настройки",
   "AccessibilityGuide.ButtonReset": "Включено, но не работает?",
   "AccessibilityGuide.Description": "Просто включите этот переключатель в Системных настройках.",
+  "AccessibilityGuide.DescriptionAfter": "Когда он включится, это окно изменится само.",
   "AccessibilityGuide.StatusGranted": "Разрешение получено. Все готово.",
   "AccessibilityGuide.StatusWaiting": "Ожидание разрешения…",
   "AccessibilityGuide.Title": "Включите доступ для Split",
   "AccessibilityGuide.WindowTitle": "Разрешите Split перемещать окна",
+  "AccessibilityGuide.ListTitle": "Универсальный доступ",
+  "AccessibilityGuide.GrantedTitle": "Всё готово",
+  "AccessibilityGuide.GrantedDescription": "Теперь окна можно перемещать сочетаниями клавиш.",
+  "AccessibilityGuide.GrantedTry": "Выведите любое окно на передний план и нажмите:",
   "AlertInformativeTextRestoreDefaults": "Измененные сочетания вернутся к исходным настройкам Split.",
   "AlertInformativeTextRunningInBackground": "Сочетания клавиш продолжат работать. Чтобы снова открыть настройки, откройте Split из папки «Программы».",
   "AlertInformativeTextShortcutAlreadyInUse": "Сочетание %@ уже назначено другому действию Split. Выберите другое сочетание.",
@@ -188,5 +193,9 @@
   "SectionPermission": "Разрешения",
   "SectionStatus": "Состояние",
   "SectionAbout": "О программе",
-  "SectionMoveFeedback": "Подсветка перемещения"
+  "SectionMoveFeedback": "Подсветка перемещения",
+  "Side.Left": "Слева",
+  "Side.Right": "Справа",
+  "Side.Top": "Сверху",
+  "Side.Bottom": "Снизу"
 }

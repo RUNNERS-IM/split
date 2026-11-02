@@ -42,6 +42,8 @@ export interface ViewState {
   sections: [string, string[]][];
   /** Whether Split may move other apps' windows (Accessibility on macOS). */
   trusted: boolean;
+  /** The Left Half shortcut as shown on screen, empty when turned off; the permission guide suggests trying it. */
+  leftHalfShortcut: string;
   /** Actions whose shortcut another app already holds. */
   failures: string[];
   /** The app whose window Split last failed to move, until one of its windows moves again. */

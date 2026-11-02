@@ -395,10 +395,10 @@ export function restoreLayout(layout: SavedLayout): number {
 // Menu pictures
 
 /**
- * A small screen with `fractions` filled in, as a template image (macOS tints it), 22 × 16
- * points like the other menu pictures. Port of SplitMiniScreenImage.
+ * A small screen with `fractions` filled in (or only outlined), as a template image (macOS tints
+ * it), 22 × 16 points like the other menu pictures. Port of SplitMiniScreenImage.
  */
-function miniScreen(fractions: Fraction[]): Electron.NativeImage {
+function miniScreen(fractions: Fraction[], outlined = false): Electron.NativeImage {
   const scale = 2;
   const width = 22 * scale;
   const height = 16 * scale;
@@ -429,7 +429,8 @@ function miniScreen(fractions: Fraction[]): Electron.NativeImage {
         const w = f.width * inner.width - 2 * inset;
         const h = f.height * inner.height - 2 * inset;
         if (w <= 0 || h <= 0) continue;
-        alpha = Math.max(alpha, clamp(0.5 - distance(px, py, x, y, w, h, Math.min(1.2, w / 2, h / 2)) * scale));
+        const cellEdge = distance(px, py, x, y, w, h, Math.min(1.2, w / 2, h / 2));
+        alpha = Math.max(alpha, outlined ? clamp((1 / 2 - Math.abs(cellEdge)) * scale + 0.5) : clamp(0.5 - cellEdge * scale));
       }
       const i = (row * width + column) * 4;
       buffer[i + 3] = Math.round(alpha * 255);
@@ -482,7 +483,8 @@ function afterMenuCloses(run: () => void): void {
 function shapeItems(displayId: string, windowCount: number): MenuItemConstructorOptions[] {
   return SHAPES.map((shape) => ({
     label: t(`LayoutShape${shape}`),
-    icon: miniScreen(shapeFractions(shape, windowCount)),
+    // Why: "Auto" is drawn as outlines so it never looks the same as the fixed shape it matches.
+    icon: shape === "Auto" ? miniScreen(shapeFractions(shape, autoPreviewCount(windowCount)), true) : miniScreen(shapeFractions(shape, windowCount)),
     click: () => afterMenuCloses(() => applyShape(shape, displayId)),
   }));
 }
@@ -590,7 +592,7 @@ export function layoutPanel(): LayoutPanel {
         id: displayIdOf(nativeScreen),
         name: displayNameOf(nativeScreen),
         detail: screenDetail(nativeScreen, count),
-        auto: cells(shapeFractions("Auto", count)),
+        auto: cells(shapeFractions("Auto", autoPreviewCount(count))),
       };
     }),
     shapes: SHAPES.map((shape) => ({
@@ -617,6 +619,14 @@ export function layoutPanel(): LayoutPanel {
     }
   };
   return { card, choose };
+}
+
+/**
+ * How many windows the "Auto" picture shows: the windows on the monitor, or six on an empty one,
+ * whose picture would otherwise be a blank screen that looks broken.
+ */
+function autoPreviewCount(count: number): number {
+  return count > 0 ? count : 6;
 }
 
 function windowCount(windows: NativeWindow[], nativeScreen: NativeScreen): number {

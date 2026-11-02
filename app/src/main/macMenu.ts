@@ -13,7 +13,11 @@ export interface MacMenuNative {
  * Shows `template` with its top-left corner at (`x`, `y`) (top-left based screen points) and runs
  * what was chosen once the menu closed.
  */
+let showing = false;
+
 export function popUpMacMenu(native: MacMenuNative, template: MenuItemConstructorOptions[], panel: LayoutPanel, x: number, y: number): void {
+  // Why: `--menu` can arrive while the menu is already open; a second one on top would leave two.
+  if (showing) return;
   const clicks = new Map<string, () => void>();
   const convert = (items: MenuItemConstructorOptions[]): unknown[] =>
     items.map((item) => {
@@ -41,7 +45,13 @@ export function popUpMacMenu(native: MacMenuNative, template: MenuItemConstructo
       }
       return spec;
     });
-  const chosen = native.popUpMenu(JSON.stringify(convert(template)), x, y);
+  showing = true;
+  let chosen: string | null;
+  try {
+    chosen = native.popUpMenu(JSON.stringify(convert(template)), x, y);
+  } finally {
+    showing = false;
+  }
   if (chosen === null) return;
   const click = clicks.get(chosen);
   if (click) {

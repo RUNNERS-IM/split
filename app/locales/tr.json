@@ -5,10 +5,15 @@
   "AccessibilityGuide.ButtonOpenSettings": "Sistem Ayarları'nı Aç",
   "AccessibilityGuide.ButtonReset": "Açık ama çalışmıyor mu?",
   "AccessibilityGuide.Description": "Sistem Ayarları'nda yalnızca bu anahtarı açın.",
+  "AccessibilityGuide.DescriptionAfter": "Açıldığında bu pencere kendiliğinden değişir.",
   "AccessibilityGuide.StatusGranted": "İzin verildi. Her şey hazır.",
   "AccessibilityGuide.StatusWaiting": "İzin bekleniyor…",
   "AccessibilityGuide.Title": "Split için erişimi açın",
   "AccessibilityGuide.WindowTitle": "Split'in pencereleri taşımasına izin verin",
+  "AccessibilityGuide.ListTitle": "Erişilebilirlik",
+  "AccessibilityGuide.GrantedTitle": "Her şey hazır",
+  "AccessibilityGuide.GrantedDescription": "Artık pencereleri kısayollarla taşıyabilirsiniz.",
+  "AccessibilityGuide.GrantedTry": "Herhangi bir pencereyi öne getirip basın:",
   "AlertInformativeTextRestoreDefaults": "Değiştirdiğiniz kısayollar Split'in ilk hâline döner.",
   "AlertInformativeTextRunningInBackground": "Kısayollar çalışmaya devam eder. Ayarları yeniden açmak için Split'i Uygulamalar klasöründen açın.",
   "AlertInformativeTextShortcutAlreadyInUse": "%@ başka bir Split eylemi tarafından kullanılıyor. Farklı bir kısayol seçin.",
@@ -188,5 +193,9 @@
   "SectionPermission": "İzinler",
   "SectionStatus": "Durum",
   "SectionAbout": "Hakkında",
-  "SectionMoveFeedback": "Taşıma vurgusu"
+  "SectionMoveFeedback": "Taşıma vurgusu",
+  "Side.Left": "Sol",
+  "Side.Right": "Sağ",
+  "Side.Top": "Üst",
+  "Side.Bottom": "Alt"
 }

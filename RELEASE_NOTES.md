@@ -1,5 +1,18 @@
 ## 한국어
 
+- 아랍어로 쓰다가 다른 언어로 바꾸면 메뉴가 오른쪽→왼쪽으로 뒤집힌 채 남던 문제를 고쳤습니다.
+- 아랍어에서 설정 · 단축키 목록 · 저장 창 · 권한 안내 창이 오른쪽→왼쪽으로 놓입니다. 단축키 글자는 ⌥⌘← 순서 그대로입니다.
+- 단축키 목록에서 긴 이름이 "…"로 잘리지 않고 끝까지 보입니다.
+- 창 개수에 맞는 낱말을 씁니다(영어 "1 window", 아랍어 · 폴란드어 복수형 등). 한국어 "⌥⌘Z을(를)" 같은 어색한 조사도 고쳤습니다.
+- 권한이 이미 켜져 있으면 권한 안내 창이 시스템 설정을 열지 않습니다.
+- 메뉴 배치 칸의 "자동" 모양을 테두리로 그려, 창 개수가 같은 다른 모양과 구별됩니다.
+- 창이 없는 모니터에서도 메뉴 배치 칸의 "자동" 모양이 빈 상자 대신 예시 모양으로 보입니다.
+- 한국어 안내 문구의 말투를 "~하십시오"로 맞췄습니다.
+- 반복해서 누를 때 창 이동 알림에 "왼쪽 반 → 왼쪽 3/4 → 왼쪽 1/4"처럼 지금 크기가 나옵니다.
+- 손쉬운 사용 권한 안내 창을 새로 그렸습니다. 권한이 켜지면 처음 써 볼 단축키를 보여 줍니다.
+- 메뉴가 열린 채로 Split 을 다시 실행하면 Split 이 꺼지던 문제를 고쳤습니다.
+- `Split --perform 동작이름` 이 앞에 `--` 를 붙이지 않아도 동작합니다.
+- 예전 맥 판(2.6.1030)에서 자동 업데이트로 새 판을 받을 때 "잘못 서명된 업데이트" 오류가 나던 문제를 고쳤습니다.
 - 배치 저장 · 되살리기는 무료 기능이라 메뉴와 저장 창에서 Pro 표시를 뺐습니다.
 - 반 · 모서리 단축키를 반복해서 누르면 1/2 → 3/4 → 1/4 로 바뀝니다. 3분의 1은 ⌃⌥← · ⌃⌥→ 로 그대로 쓸 수 있습니다.
 - Spectacle 이 Split 보다 늦게 켜져도 알아채고, 끌지 묻습니다. 끄면 로그인 항목에서도 빼서 다음 로그인 때 다시 켜지지 않습니다. Rectangle · Magnet 이 켜져 있으면 설정 창에 단축키가 겹칠 수 있다고 알려 줍니다.
@@ -14,6 +27,18 @@
 
 ## English
 
+- Menus no longer stay mirrored right to left after switching from Arabic to another language.
+- In Arabic, settings, the shortcut list, the save window and the permission guide lay out right to left; shortcut keys keep their ⌥⌘← order.
+- Long names in the shortcut list show in full instead of ending in "…".
+- Window counts use the right word for the number ("1 window", Arabic and Polish plurals).
+- The permission guide no longer opens System Settings when permission is already on.
+- The Auto shape in the menu's layout panel is drawn as outlines, so it no longer looks like the fixed shape with the same window count.
+- The Auto shape in the menu's layout panel now shows an example instead of an empty box on a monitor with no windows.
+- Pressing a shortcut again now says which size you landed on: "Left Half → Left 3/4 → Left 1/4".
+- The Accessibility guide is redrawn, and once permission is on it shows the first shortcut to try.
+- Opening Split again while its menu was open no longer makes Split quit.
+- `Split --perform ActionName` works without a leading `--`.
+- Updating from the previous Mac app (2.6.1030) no longer fails with an "improperly signed" error.
 - Saving and restoring layouts is free, so the Pro mark is gone from the menu and the save window.
 - Pressing a half or corner shortcut again now goes 1/2 → 3/4 → 1/4. Thirds are still on ⌃⌥← and ⌃⌥→.
 - Split now notices Spectacle even when it starts later, and offers to quit it and remove it from your login items. Settings also warns when Rectangle or Magnet is running, since their shortcuts can be the same.

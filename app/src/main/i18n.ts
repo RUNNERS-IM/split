@@ -71,6 +71,11 @@ export function currentLanguage(): string {
   return language;
 }
 
+/** Whether the chosen language reads right to left; Arabic is the only one Split ships. */
+export function rightToLeft(): boolean {
+  return language === "ar";
+}
+
 /** Every string for the chosen language, English where a translation is missing. */
 export function strings(): Record<string, string> {
   return table;
@@ -85,7 +90,24 @@ export function format(text: string, ...args: (string | number)[]): string {
   });
 }
 
+/**
+ * A key with a number may have a form per plural category as `<key>|one`, `<key>|few` and so on
+ * (Intl.PluralRules names); the plain key is the form for the rest. Only the chosen language's own
+ * file counts, so "1 window" from English never shows up in a language without a `|one` form.
+ */
+function pluralKey(key: string, args: (string | number)[]): string {
+  const count = args.find((arg) => typeof arg === "number");
+  if (count === undefined) return key;
+  const own: Record<string, string> | undefined = language === "en" ? en : TABLES[language];
+  const tag = language.startsWith("zh") ? "zh" : language;
+  const form = `${key}|${new Intl.PluralRules(tag).select(count)}`;
+  return own?.[form] ? form : key;
+}
+
 export function t(key: string, ...args: (string | number)[]): string {
-  const text = table[key] ?? key;
-  return args.length > 0 ? format(text, ...args) : text;
+  const text = table[pluralKey(key, args)] ?? table[key] ?? key;
+  if (args.length === 0) return text;
+  // Why: in Arabic a filled-in shortcut such as "⌥⌘Z" or an app name keeps its own order when it
+  // is set apart (Unicode isolates); otherwise the right-to-left sentence around it reverses it.
+  return format(text, ...(rightToLeft() ? args.map((arg) => (typeof arg === "string" ? `\u2066${arg}\u2069` : arg)) : args));
 }

@@ -120,3 +120,31 @@ export function usesGap(action: Action): boolean {
 export function movesToDisplay(action: Action): boolean {
   return action === Action.MoveToNextDisplay || action === Action.MoveToPreviousDisplay;
 }
+
+/**
+ * Where a half or corner move landed in its 1/2 → 3/4 → 1/4 cycle, so the label can say which turn
+ * it was: "3/4", "1/4", or null at 1/2 and for every other action. Top and bottom halves cycle the
+ * height, the rest the width; the nearest step wins because the gap trims a few points off each.
+ */
+export function cycleStep(action: Action, rect: { width: number; height: number }, workArea: { width: number; height: number }): "3/4" | "1/4" | null {
+  let share: number;
+  switch (action) {
+    case Action.MoveToTopHalf:
+    case Action.MoveToBottomHalf:
+      share = rect.height / workArea.height;
+      break;
+    case Action.MoveToLeftHalf:
+    case Action.MoveToRightHalf:
+    case Action.MoveToUpperLeft:
+    case Action.MoveToUpperRight:
+    case Action.MoveToLowerLeft:
+    case Action.MoveToLowerRight:
+      share = rect.width / workArea.width;
+      break;
+    default:
+      return null;
+  }
+  const steps = [0.25, 0.5, 0.75] as const;
+  const nearest = steps.reduce((best, step) => (Math.abs(share - step) < Math.abs(share - best) ? step : best));
+  return nearest === 0.75 ? "3/4" : nearest === 0.25 ? "1/4" : null;
+}

@@ -81,8 +81,9 @@ static NSImage *ImageFromBase64(NSString *base64, BOOL template)
   return image;
 }
 
-/// A small screen with filled cells; `cells` are [x, y, width, height] fractions, top-left based.
-static NSImage *MiniScreenImage(NSArray<NSArray<NSNumber *> *> *cells, NSSize size)
+/// A small screen with filled (or, for "Auto", outlined) cells; `cells` are [x, y, width, height]
+/// fractions, top-left based.
+static NSImage *MiniScreenImage(NSArray<NSArray<NSNumber *> *> *cells, NSSize size, BOOL outlined)
 {
   NSImage *image = [NSImage imageWithSize:size flipped:YES drawingHandler:^BOOL(NSRect dstRect) {
     NSRect screen = NSInsetRect(dstRect, 0.75, 0.75);
@@ -100,8 +101,17 @@ static NSImage *MiniScreenImage(NSArray<NSArray<NSNumber *> *> *cells, NSSize si
                                NSMinY(inner) + cell[1].doubleValue * NSHeight(inner),
                                cell[2].doubleValue * NSWidth(inner),
                                cell[3].doubleValue * NSHeight(inner));
-      [[NSColor blackColor] setFill];
-      [[NSBezierPath bezierPathWithRoundedRect:NSInsetRect(fill, inset, inset) xRadius:1.2 yRadius:1.2] fill];
+      NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:NSInsetRect(fill, inset, inset) xRadius:1.2 yRadius:1.2];
+      if (outlined) {
+        // Inside the cell, so the outline keeps the same footprint as a filled cell.
+        path = [NSBezierPath bezierPathWithRoundedRect:NSInsetRect(fill, inset + 0.5, inset + 0.5) xRadius:1.0 yRadius:1.0];
+        path.lineWidth = 1.0;
+        [[NSColor blackColor] setStroke];
+        [path stroke];
+      } else {
+        [[NSColor blackColor] setFill];
+        [path fill];
+      }
     }
     return YES;
   }];
@@ -307,9 +317,10 @@ static BOOL ParseAccelerator(NSString *accelerator, NSString **key, NSEventModif
   NSMutableArray<NSView *> *shapeChips = [NSMutableArray new];
   __weak typeof(self) weakSelf = self;
   for (NSDictionary *shape in _card[@"shapes"]) {
-    NSArray *cells = [shape[@"auto"] boolValue] ? selected[@"auto"] : shape[@"cells"];
+    BOOL automatic = [shape[@"auto"] boolValue];
+    NSArray *cells = automatic ? selected[@"auto"] : shape[@"cells"];
     NSString *chosenID = [NSString stringWithFormat:@"%@\t%@", shape[@"id"], _selectedID];
-    [shapeChips addObject:[self chipWithImage:MiniScreenImage(cells ?: @[], NSMakeSize(34.0, 22.0))
+    [shapeChips addObject:[self chipWithImage:MiniScreenImage(cells ?: @[], NSMakeSize(34.0, 22.0), automatic)
                                         title:shape[@"label"]
                                       toolTip:shape[@"toolTip"]
                                       clicked:^{ [weakSelf choose:chosenID]; }]];
@@ -330,7 +341,7 @@ static BOOL ParseAccelerator(NSString *accelerator, NSString **key, NSEventModif
     NSMutableArray<NSView *> *savedChips = [NSMutableArray new];
     for (NSDictionary *layout in saved) {
       NSString *chosenID = layout[@"id"];
-      [savedChips addObject:[self chipWithImage:MiniScreenImage(layout[@"cells"] ?: @[], NSMakeSize(34.0, 22.0))
+      [savedChips addObject:[self chipWithImage:MiniScreenImage(layout[@"cells"] ?: @[], NSMakeSize(34.0, 22.0), NO)
                                           title:layout[@"label"]
                                         toolTip:layout[@"toolTip"]
                                         clicked:^{ [weakSelf choose:chosenID]; }]];

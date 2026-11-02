@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { Action } from "../../src/core/actions.ts";
+import { Action, cycleStep } from "../../src/core/actions.ts";
 import { Engine, type Screen, type Snapshot, screensInConsistentOrder } from "../../src/core/engine.ts";
 import { Rect } from "../../src/core/geometry.ts";
 import { SCRIPTS } from "./scripts.ts";
@@ -31,6 +31,21 @@ test("halves keep cycling with a gap", () => {
   assert.deepEqual(second.moves[0]!.rect, new Rect(0.0, 0.0, 1432.0, 1040.0));
   const third = engine.plan(Action.MoveToLeftHalf, snapshot(second.moves[0]!.rect), 16.0);
   assert.deepEqual(third.moves[0]!.rect, new Rect(0.0, 0.0, 472.0, 1040.0));
+});
+
+test("the label names each turn of the half and corner cycle", () => {
+  const engine = new Engine(SCRIPTS);
+  const area = screen(0.0, true).workArea;
+  for (const action of [Action.MoveToLeftHalf, Action.MoveToTopHalf, Action.MoveToUpperRight]) {
+    let rect = new Rect(100.0, 100.0, 800.0, 600.0);
+    const steps = [];
+    for (let turn = 0; turn < 3; turn += 1) {
+      rect = engine.plan(action, snapshot(rect), 16.0).moves[0]!.rect;
+      steps.push(cycleStep(action, rect, area));
+    }
+    assert.deepEqual(steps, [null, "3/4", "1/4"], action);
+  }
+  assert.equal(cycleStep(Action.MoveToCenter, new Rect(0.0, 0.0, 480.0, 260.0), area), null);
 });
 
 test("fullscreen twice restores", () => {

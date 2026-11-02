@@ -5,10 +5,15 @@
   "AccessibilityGuide.ButtonOpenSettings": "Mở Cài đặt hệ thống",
   "AccessibilityGuide.ButtonReset": "Đã bật nhưng không hoạt động?",
   "AccessibilityGuide.Description": "Chỉ cần bật công tắc này trong Cài đặt hệ thống.",
+  "AccessibilityGuide.DescriptionAfter": "Khi đã bật, cửa sổ này sẽ tự thay đổi.",
   "AccessibilityGuide.StatusGranted": "Đã cấp quyền. Mọi thứ đã sẵn sàng.",
   "AccessibilityGuide.StatusWaiting": "Đang chờ cấp quyền…",
   "AccessibilityGuide.Title": "Bật quyền truy cập cho Split",
   "AccessibilityGuide.WindowTitle": "Cho phép Split di chuyển cửa sổ",
+  "AccessibilityGuide.ListTitle": "Trợ năng",
+  "AccessibilityGuide.GrantedTitle": "Đã sẵn sàng",
+  "AccessibilityGuide.GrantedDescription": "Giờ bạn có thể di chuyển cửa sổ bằng phím tắt.",
+  "AccessibilityGuide.GrantedTry": "Đưa một cửa sổ bất kỳ lên trước rồi nhấn:",
   "AlertInformativeTextRestoreDefaults": "Các phím tắt bạn đã thay đổi sẽ trở về như ban đầu của Split.",
   "AlertInformativeTextRunningInBackground": "Phím tắt vẫn hoạt động. Để mở lại cài đặt, hãy mở Split từ thư mục Ứng dụng.",
   "AlertInformativeTextShortcutAlreadyInUse": "Một tác vụ khác của Split đang dùng %@. Hãy chọn phím tắt khác.",
@@ -188,5 +193,9 @@
   "SectionPermission": "Quyền",
   "SectionStatus": "Trạng thái",
   "SectionAbout": "Giới thiệu",
-  "SectionMoveFeedback": "Đánh dấu khi di chuyển"
+  "SectionMoveFeedback": "Đánh dấu khi di chuyển",
+  "Side.Left": "Trái",
+  "Side.Right": "Phải",
+  "Side.Top": "Trên",
+  "Side.Bottom": "Dưới"
 }

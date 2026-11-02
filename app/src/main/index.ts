@@ -23,7 +23,7 @@ import {
   systemPreferences,
   Tray,
 } from "electron";
-import { ALL, type Action } from "../core/actions.ts";
+import { ALL, type Action, cycleStep } from "../core/actions.ts";
 import { loadScripts } from "../core/calc.ts";
 import { Engine, type Outcome, type Snapshot, screenContaining, screensInConsistentOrder } from "../core/engine.ts";
 import { Rect } from "../core/geometry.ts";
@@ -34,7 +34,7 @@ import { displayChangeLabel, recordSoon, startDisplayWatcher } from "./displays.
 import { layoutMenuItems, layoutPanel, layoutRestoringForDisplays, restoreLayout, setupLayouts } from "./layouts.ts";
 import { popUpMacMenu } from "./macMenu.ts";
 import { guideGranted, openAccessibilitySettings, registerGuideIpc, showGuide } from "./guide.ts";
-import { currentLanguage, loadLanguage, strings, t } from "./i18n.ts";
+import { currentLanguage, loadLanguage, rightToLeft, strings, t } from "./i18n.ts";
 import { accelerator, displayShortcut, displayText } from "./keys.ts";
 import { createOverlay, fromDip, hideFeedback, hideSheet, showAbout, showFeedback, showNotices, showSheet } from "./overlay.ts";
 import { bindings, loadSettings, sanitize, saveSettings, shortcutText } from "./settings.ts";
@@ -179,6 +179,7 @@ function viewState(): ViewState {
     defaults,
     sections: SECTIONS,
     trusted,
+    leftHalfShortcut: shortcutLabel("MoveToLeftHalf"),
     failures,
     refusingApp,
     conflictingApps,
@@ -284,7 +285,7 @@ function showOutcome(action: Action, outcome: Outcome, snapshot: Snapshot): void
   if (feedback.kind === "Moved" || feedback.kind === "Arranged") {
     const rects = outcome.moves.map((m) => m.rect);
     if (rects.length === 0) return;
-    const title = feedback.kind === "Arranged" ? t("ArrangedCount", feedback.count) : t(action);
+    const title = feedback.kind === "Arranged" ? t("ArrangedCount", feedback.count) : movedTitle(action, rects[0]!, areaOf(rects[0]!));
     showFeedback({ ...base, kind: "frame", rects, title, shortcut: keys, tip: nextTip(action) });
     return;
   }
@@ -297,6 +298,21 @@ function showOutcome(action: Action, outcome: Outcome, snapshot: Snapshot): void
   const title = feedback.kind === "NothingToArrange" ? t("NothingToArrange") : t("ArrangeUndone");
   if (feedback.kind === "NothingToArrange") shell.beep();
   showFeedback({ ...base, kind: "label", rects: [area], title, shortcut: keys, tip: "" });
+}
+
+const SIDES: Partial<Record<Action, string>> = {
+  MoveToLeftHalf: "Side.Left",
+  MoveToRightHalf: "Side.Right",
+  MoveToTopHalf: "Side.Top",
+  MoveToBottomHalf: "Side.Bottom",
+};
+
+/** "Left Half", then "Left 3/4" and "Left 1/4" as the same shortcut is pressed again; corners add the step to their name. */
+function movedTitle(action: Action, rect: Rect, area: Rect | null): string {
+  const step = area ? cycleStep(action, rect, area) : null;
+  if (!step) return t(action);
+  const side = SIDES[action];
+  return `${side ? t(side) : t(action)} ${step}`;
 }
 
 /**
@@ -737,7 +753,7 @@ function askForTrust(): void {
     register();
     return;
   }
-  showGuide({ preload: preloadPath(), url: rendererUrl("guide"), register });
+  showGuide({ preload: preloadPath(), url: rendererUrl("guide"), register, trusted: () => native.isTrusted(false) });
 }
 
 const SPECTACLE = "com.divisiblebyzero.Spectacle";
@@ -810,6 +826,12 @@ async function offerToQuitSpectacle(pids: number[]): Promise<void> {
 
 function start(): void {
   loadLanguage();
+  // Why: Chromium writes AppleTextDirection = 1 to Split's defaults when it starts in Arabic and
+  // never clears it, so after a switch to another language the menus stayed mirrored.
+  if (MAC && !rightToLeft()) {
+    systemPreferences.removeUserDefault("AppleTextDirection");
+    systemPreferences.removeUserDefault("NSForceRightToLeftWritingDirection");
+  }
   const loaded = loadSettings();
   settings = loaded.settings;
   const scripts = app.isPackaged
@@ -856,12 +878,7 @@ function start(): void {
       const layout = layoutRestoringForDisplays(ids);
       return layout ? restoreLayout(layout) : null;
     },
-    onArranged: (count, restored) => {
-      const label = displayChangeLabel(settings, count, restored, shortcutLabel("UndoLastMove"));
-      if (!label) return;
-      const area = screen.getDisplayNearestPoint(screen.getCursorScreenPoint()).workArea;
-      showFeedback({ ...overlayBase(), kind: "label", rects: [Rect.from(fromDip(area))], title: label.title, shortcut: "", tip: label.tip });
-    },
+    onArranged: showDisplayNotice,
   });
   syncShortcuts();
   updateTray();
@@ -880,29 +897,59 @@ function start(): void {
   screen.on("display-metrics-changed", () => hideFeedback());
 }
 
+/** "Monitors changed, so 3 windows were rearranged" (or "went back"), on the monitor under the pointer. */
+function showDisplayNotice(count: number, restored: boolean): void {
+  const label = displayChangeLabel(settings, count, restored, shortcutLabel("UndoLastMove"));
+  if (!label) return;
+  const area = screen.getDisplayNearestPoint(screen.getCursorScreenPoint()).workArea;
+  showFeedback({ ...overlayBase(), kind: "label", rects: [Rect.from(fromDip(area))], title: label.title, shortcut: "", tip: label.tip });
+}
+
+/**
+ * `open -g -a Split --args --menu` shows the tray menu at the pointer, for when the icon is hidden
+ * behind the notch; `--perform MoveToLeftHalf` (or `--perform=MoveToLeftHalf`) runs one action, for
+ * scripts and launchers. Opening Split with nothing else shows settings.
+ */
+function openedAgain(argv: string[]): void {
+  // Why: Chromium moves the switches it knows ahead of everything else, so the action name is not
+  // always right after `--perform`; it is whichever argument names an action.
+  const named = argv.find((arg) => arg.startsWith("--perform="))?.slice("--perform=".length);
+  const action = ALL.find((a) => a === named || (argv.includes("--perform") && argv.includes(a)));
+  if (action) perform(action);
+  else if (argv.includes("--menu")) showMenuAtPointer();
+  // `--display-notice` (or `--display-notice=restored`) shows the notice a monitor change brings,
+  // with 3 windows, so it can be seen and photographed without unplugging a monitor.
+  else if (argv.some((arg) => arg.startsWith("--display-notice"))) showDisplayNotice(3, argv.includes("--display-notice=restored"));
+  // `--guide` shows the Accessibility guide even when permission is on, for support and screenshots.
+  else if (argv.includes("--guide") && MAC) showGuide({ preload: preloadPath(), url: rendererUrl("guide"), register: () => undefined, trusted: () => native.isTrusted(false) });
+  else showSettings();
+}
+
 if (!app.requestSingleInstanceLock()) {
   app.quit();
 } else {
   // Opening Split again is how people get back to settings when the tray icon is hidden.
   app.on("second-instance", (_event, argv) => {
-    // `open -g -a Split --args --menu` shows the tray menu at the pointer, for when the icon is hidden
-    // behind the notch; `--perform MoveToLeftHalf` runs one action, for scripts and launchers.
-    const action = argv[argv.indexOf("--perform") + 1] as Action | undefined;
-    if (argv.includes("--perform") && action && ALL.includes(action)) perform(action);
-    else if (argv.includes("--menu")) showMenuAtPointer();
-    // `--guide` shows the Accessibility guide even when permission is on, for support and screenshots.
-    else if (argv.includes("--guide") && MAC) showGuide({ preload: preloadPath(), url: rendererUrl("guide"), register: () => undefined });
-    else showSettings();
+    // Why: the new instance waits for this handler to return and, when it takes too long, decides
+    // this one hung and replaces it. The menu below stays open until closed, so answer first.
+    setTimeout(() => openedAgain(argv), 0);
   });
   app.on("activate", () => showSettings());
   // Split lives in the menu bar / tray; closing its last window must not quit it.
   app.on("window-all-closed", () => {});
-  app.on("will-quit", () => globalShortcut.unregisterAll());
+  // Why: quitting before start-up finished (another Split took over) would throw here.
+  app.on("will-quit", () => {
+    if (app.isReady()) globalShortcut.unregisterAll();
+  });
   app.on("web-contents-created", (_event, contents) => {
     // Links in pages open in the browser, never in a Split window.
     contents.setWindowOpenHandler(({ url }) => {
       if (/^https?:/.test(url)) void shell.openExternal(url);
       return { action: "deny" };
+    });
+    // Why: Arabic reads right to left, so every Split page lays out mirrored, not only the title bar.
+    contents.on("dom-ready", () => {
+      if (rightToLeft()) void contents.executeJavaScript(`document.documentElement.dir = "rtl"`).catch(() => undefined);
     });
   });
   if (MAC) app.dock?.hide();

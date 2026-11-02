@@ -1,5 +1,6 @@
 // The Accessibility guide (SplitAccessibilityGuideController.m): a small window that shows which
-// switch to turn on, opens System Settings beside it, and closes itself once permission arrives.
+// switch to turn on, opens System Settings beside it, and once permission arrives shows the first
+// shortcut to try until closed.
 import { execFile } from "node:child_process";
 import { app, BrowserWindow, ipcMain, screen, shell } from "electron";
 import { runningPids } from "./apps.ts";
@@ -7,7 +8,6 @@ import { runningPids } from "./apps.ts";
 const ACCESSIBILITY_URL = "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility";
 const PRIVACY_URL = "x-apple.systempreferences:com.apple.preference.security";
 const OPEN_SETTINGS_DELAY_MS = 600;
-const CLOSE_AFTER_GRANT_MS = 1200;
 const WIDTH = 396;
 
 let guideWindow: BrowserWindow | null = null;
@@ -27,9 +27,10 @@ export async function openAccessibilitySettings(): Promise<void> {
 
 /**
  * Shows the guide on the left third of the screen, above System Settings, and opens System
- * Settings a moment later. `register` puts Split in the Accessibility list (it asks macOS once).
+ * Settings a moment later unless `trusted` says permission is already on. `register` puts Split in
+ * the Accessibility list (it asks macOS once).
  */
-export function showGuide(options: { preload: string; url: string; register: () => void }): void {
+export function showGuide(options: { preload: string; url: string; register: () => void; trusted: () => boolean }): void {
   if (guideWindow && !guideWindow.isDestroyed()) {
     guideWindow.show();
     guideWindow.focus();
@@ -60,7 +61,7 @@ export function showGuide(options: { preload: string; url: string; register: () 
       .executeJavaScript(`new Promise((done) => {
         const measure = () => {
           const page = document.querySelector(".guide");
-          if (!page || !page.querySelector("img.guide-picture")?.complete) return void requestAnimationFrame(measure);
+          if (!page || [...page.querySelectorAll("img")].some((img) => !img.complete)) return void requestAnimationFrame(measure);
           done(Math.ceil(page.getBoundingClientRect().height));
         };
         measure();
@@ -85,18 +86,28 @@ export function showGuide(options: { preload: string; url: string; register: () 
   void window.loadURL(options.url);
   options.register();
   setTimeout(() => {
-    if (!window.isDestroyed()) void openAccessibilitySettings();
+    if (!window.isDestroyed() && !options.trusted()) void openAccessibilitySettings();
   }, OPEN_SETTINGS_DELAY_MS);
 }
 
-/** Called when permission arrives: the page turns green, and the window closes a moment later. */
+/**
+ * Called when permission arrives: the page turns into the "try a shortcut" view, and the window
+ * takes that view's height, keeping its top edge, and stays until closed.
+ */
 export function guideGranted(): void {
   const window = guideWindow;
   if (!window || window.isDestroyed()) return;
-  window.show();
-  setTimeout(() => {
-    if (!window.isDestroyed()) window.close();
-  }, CLOSE_AFTER_GRANT_MS);
+  void window.webContents
+    // Why: two frames, so React has drawn the new view before it is measured.
+    .executeJavaScript(`new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(() =>
+      done(Math.ceil(document.querySelector(".guide")?.getBoundingClientRect().height ?? 0)))))`)
+    .then((height: unknown) => {
+      if (!window.isDestroyed() && typeof height === "number" && height > 0) window.setContentSize(WIDTH, height);
+    })
+    .catch(() => undefined)
+    .finally(() => {
+      if (!window.isDestroyed()) window.show();
+    });
 }
 
 /** "Already on but not working?": clears Split's Accessibility entry so it can be turned on again. */

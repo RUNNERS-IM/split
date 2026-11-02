@@ -5,10 +5,15 @@
   "AccessibilityGuide.ButtonOpenSettings": "システム設定を開く",
   "AccessibilityGuide.ButtonReset": "オンなのに動かない場合",
   "AccessibilityGuide.Description": "システム設定でこのスイッチを1つオンにするだけです。",
+  "AccessibilityGuide.DescriptionAfter": "オンにすると、このウインドウが自動で切り替わります。",
   "AccessibilityGuide.StatusGranted": "許可されました。準備完了です。",
   "AccessibilityGuide.StatusWaiting": "許可を待っています…",
   "AccessibilityGuide.Title": "Splitのアクセスをオンにしてください",
   "AccessibilityGuide.WindowTitle": "Splitにウインドウの移動を許可",
+  "AccessibilityGuide.ListTitle": "アクセシビリティ",
+  "AccessibilityGuide.GrantedTitle": "準備ができました",
+  "AccessibilityGuide.GrantedDescription": "ショートカットでウインドウを移動できます。",
+  "AccessibilityGuide.GrantedTry": "どれかのウインドウを前面にして押してみてください。",
   "AlertInformativeTextRestoreDefaults": "変更したショートカットはSplitの初期設定に戻ります。",
   "AlertInformativeTextRunningInBackground": "ショートカットは引き続き使えます。設定をもう一度開くには、アプリケーションフォルダからSplitを開いてください。",
   "AlertInformativeTextShortcutAlreadyInUse": "Splitの別の操作で%@が使われています。別のショートカットを選んでください。",
@@ -188,5 +193,9 @@
   "SectionPermission": "アクセス権",
   "SectionStatus": "状態",
   "SectionAbout": "情報",
-  "SectionMoveFeedback": "移動の表示"
+  "SectionMoveFeedback": "移動の表示",
+  "Side.Left": "左",
+  "Side.Right": "右",
+  "Side.Top": "上",
+  "Side.Bottom": "下"
 }

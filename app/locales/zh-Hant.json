@@ -5,10 +5,15 @@
   "AccessibilityGuide.ButtonOpenSettings": "打開系統設定",
   "AccessibilityGuide.ButtonReset": "已開啟但仍無效？",
   "AccessibilityGuide.Description": "只要在系統設定中打開這一個開關。",
+  "AccessibilityGuide.DescriptionAfter": "開啟後，此視窗會自動更新。",
   "AccessibilityGuide.StatusGranted": "已取得權限，一切就緒。",
   "AccessibilityGuide.StatusWaiting": "正在等待權限⋯",
   "AccessibilityGuide.Title": "為 Split 開啟取用權限",
   "AccessibilityGuide.WindowTitle": "允許 Split 移動視窗",
+  "AccessibilityGuide.ListTitle": "輔助使用",
+  "AccessibilityGuide.GrantedTitle": "已準備就緒",
+  "AccessibilityGuide.GrantedDescription": "現在可以用快速鍵移動視窗。",
+  "AccessibilityGuide.GrantedTry": "把任一視窗放到最前面，然後按下：",
   "AlertInformativeTextRestoreDefaults": "你更改過的快速鍵會回復成 Split 的初始設定。",
   "AlertInformativeTextRunningInBackground": "快速鍵仍可使用。若要再次打開設定，請從「應用程式」檔案夾打開 Split。",
   "AlertInformativeTextShortcutAlreadyInUse": "Split 的另一個動作正在使用 %@。請選擇其他快速鍵。",
@@ -188,5 +193,9 @@
   "SectionPermission": "權限",
   "SectionStatus": "狀態",
   "SectionAbout": "關於",
-  "SectionMoveFeedback": "移動提示"
+  "SectionMoveFeedback": "移動提示",
+  "Side.Left": "左側",
+  "Side.Right": "右側",
+  "Side.Top": "上方",
+  "Side.Bottom": "下方"
 }

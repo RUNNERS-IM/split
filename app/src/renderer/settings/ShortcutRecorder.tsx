@@ -88,14 +88,18 @@ export function ShortcutRecorder({
   }, [recording, platform, onStop, onRecord]);
 
   let text: string;
+  // Keys stay left to right in Arabic too; "⌥⌘←" alone has no letter to set its direction.
+  let keys = false;
   if (recording && held) {
     text = held;
+    keys = true;
   } else if (recording && !overBadge) {
     text = t("ShortcutRecorderLabelEnterShortcut");
   } else if (recording) {
     text = t(value ? "ShortcutRecorderLabelUseExisting" : "ShortcutRecorderLabelStopRecording");
   } else if (value) {
     text = displayShortcut(value, platform);
+    keys = true;
   } else {
     text = t("ShortcutRecorderLabelClickToRecord");
   }
@@ -112,7 +116,9 @@ export function ShortcutRecorder({
         aria-pressed={recording}
         onClick={() => (recording ? onStop() : onStart())}
       >
-        <span className="recorder-label">{text}</span>
+        <span className="recorder-label" dir={keys ? "ltr" : undefined}>
+          {text}
+        </span>
       </button>
       {badge && (
         <button

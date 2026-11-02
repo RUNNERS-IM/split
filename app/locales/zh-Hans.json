@@ -5,10 +5,15 @@
   "AccessibilityGuide.ButtonOpenSettings": "打开系统设置",
   "AccessibilityGuide.ButtonReset": "已打开但仍无效？",
   "AccessibilityGuide.Description": "只需在系统设置中打开这一个开关。",
+  "AccessibilityGuide.DescriptionAfter": "打开后，此窗口会自动更新。",
   "AccessibilityGuide.StatusGranted": "已获得权限，一切就绪。",
   "AccessibilityGuide.StatusWaiting": "正在等待权限…",
   "AccessibilityGuide.Title": "请为 Split 开启权限",
   "AccessibilityGuide.WindowTitle": "允许 Split 移动窗口",
+  "AccessibilityGuide.ListTitle": "辅助功能",
+  "AccessibilityGuide.GrantedTitle": "已准备就绪",
+  "AccessibilityGuide.GrantedDescription": "现在可以用快捷键移动窗口。",
+  "AccessibilityGuide.GrantedTry": "把任意窗口放到最前面，然后按下：",
   "AlertInformativeTextRestoreDefaults": "你更改过的快捷键将恢复为 Split 的初始设置。",
   "AlertInformativeTextRunningInBackground": "快捷键仍然可用。要再次打开设置，请从“应用程序”文件夹打开 Split。",
   "AlertInformativeTextShortcutAlreadyInUse": "Split 的另一个操作正在使用 %@。请选择其他快捷键。",
@@ -188,5 +193,9 @@
   "SectionPermission": "权限",
   "SectionStatus": "状态",
   "SectionAbout": "关于",
-  "SectionMoveFeedback": "移动提示"
+  "SectionMoveFeedback": "移动提示",
+  "Side.Left": "左侧",
+  "Side.Right": "右侧",
+  "Side.Top": "上方",
+  "Side.Bottom": "下方"
 }

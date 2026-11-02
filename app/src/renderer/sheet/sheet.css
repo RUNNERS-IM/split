@@ -99,7 +99,8 @@ body {
 }
 
 .sheet-row {
-  width: 220px;
+  /* Why: a fixed width cut long names ("Uporządkuj wszystkie ok…"); the column grows to the longest. */
+  min-width: 220px;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -118,14 +119,14 @@ body {
 
 .sheet-name {
   flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .sheet-keys {
   flex: none;
+  /* Why: "⌥⌘←" is all symbols, which Arabic text would otherwise show in reverse. */
+  direction: ltr;
+  unicode-bidi: isolate;
   font-weight: 500;
   color: var(--sheet-secondary);
   white-space: nowrap;
