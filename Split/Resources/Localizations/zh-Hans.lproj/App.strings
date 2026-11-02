@@ -156,7 +156,7 @@
 "RunnersGet" = "获取";
 
 /* Split Pro: the pill next to paid features and the sheet it opens */
-"ProFeatures" = "保存和恢复布局，并按显示器组合自动载入布局";
+"ProFeatures" = "每个应用的窗口放到指定位置、一次打开整个工作区、按自己的网格划分屏幕、在所有 Mac 上同步设置";
 "ProPriceMonthly" = "$1 / 月";
 "ProPriceYearly" = "$6 / 年";
 "ProComingSoon" = "即将推出";

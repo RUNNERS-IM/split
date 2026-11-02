@@ -156,7 +156,7 @@
 "RunnersGet" = "รับ";
 
 /* Split Pro: the pill next to paid features and the sheet it opens */
-"ProFeatures" = "บันทึกและเรียกคืนการจัดวาง และโหลดการจัดวางอัตโนมัติตามชุดจอภาพ";
+"ProFeatures" = "วางหน้าต่างของแต่ละแอปในที่ที่คุณเลือก เปิดพื้นที่ทำงานทั้งชุดในครั้งเดียว แบ่งหน้าจอเป็นตารางของคุณเอง และใช้การตั้งค่าเดียวกันบน Mac ทุกเครื่อง";
 "ProPriceMonthly" = "$1 / เดือน";
 "ProPriceYearly" = "$6 / ปี";
 "ProComingSoon" = "เร็วๆ นี้";
