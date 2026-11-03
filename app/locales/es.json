@@ -200,5 +200,19 @@
   "Side.Left": "Izquierda",
   "Side.Right": "Derecha",
   "Side.Top": "Arriba",
-  "Side.Bottom": "Abajo"
+  "Side.Bottom": "Abajo",
+  "TabPhone": "Teléfono",
+  "PhoneSection": "Split en tu teléfono",
+  "PhoneHint": "Inicia sesión con tu cuenta de RUNNERS para organizar las ventanas de este ordenador desde la app de Split para teléfono.",
+  "PhoneEmail": "Correo electrónico",
+  "PhonePassword": "Contraseña",
+  "PhoneSignIn": "Iniciar sesión",
+  "PhoneSignInWrong": "El correo o la contraseña no son correctos.",
+  "PhoneSignInFailed": "No se pudo iniciar sesión. Comprueba la conexión a internet e inténtalo de nuevo.",
+  "PhoneConnecting": "Conectando…",
+  "PhoneConnected": "Conectado. La app del teléfono puede llegar a este ordenador.",
+  "PhoneOffline": "Sin conexión. Split sigue intentándolo.",
+  "PhoneDeviceName": "Nombre en el teléfono",
+  "PhoneSignOutTitle": "Cerrar sesión en este ordenador",
+  "PhoneSignOut": "Cerrar sesión"
 }

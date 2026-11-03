@@ -757,3 +757,52 @@ p {
 .scroll > * {
   flex-shrink: 0;
 }
+
+/* Phone tab: the sign-in form inside a card, and the dot that says whether the relay is reached. */
+.phone-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 13px 16px;
+}
+
+.phone-form input {
+  font: inherit;
+  font-size: 13px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 0.5px solid var(--button-border);
+  background: var(--button);
+  color: inherit;
+}
+
+.phone-form input:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--accent) 50%, transparent);
+}
+
+.phone-error {
+  margin: 0;
+  font-size: 11px;
+  color: var(--red);
+}
+
+.phone-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.phone-dot {
+  display: block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--secondary);
+}
+
+.phone-dot.connected {
+  background: var(--green);
+}
+
+.phone-dot.offline {
+  background: var(--red);
+}

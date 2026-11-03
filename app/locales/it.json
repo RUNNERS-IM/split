@@ -200,5 +200,19 @@
   "Side.Left": "Sinistra",
   "Side.Right": "Destra",
   "Side.Top": "Alto",
-  "Side.Bottom": "Basso"
+  "Side.Bottom": "Basso",
+  "TabPhone": "Telefono",
+  "PhoneSection": "Split sul telefono",
+  "PhoneHint": "Accedi con il tuo account RUNNERS per sistemare le finestre di questo computer dall’app Split per telefono.",
+  "PhoneEmail": "Email",
+  "PhonePassword": "Password",
+  "PhoneSignIn": "Accedi",
+  "PhoneSignInWrong": "L’email o la password non sono corrette.",
+  "PhoneSignInFailed": "Impossibile accedere. Controlla la connessione a Internet e riprova.",
+  "PhoneConnecting": "Connessione…",
+  "PhoneConnected": "Connesso. L’app del telefono può raggiungere questo computer.",
+  "PhoneOffline": "Non connesso. Split continua a riprovare.",
+  "PhoneDeviceName": "Nome sul telefono",
+  "PhoneSignOutTitle": "Esci da questo computer",
+  "PhoneSignOut": "Esci"
 }

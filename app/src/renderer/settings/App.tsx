@@ -3,20 +3,22 @@
 // Everything goes through `window.split`; the main process owns the settings and sends back
 // the state after each change.
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Keyboard, Settings as SettingsIcon, Sparkles, type LucideIcon } from "lucide-react";
+import { Keyboard, Settings as SettingsIcon, Smartphone, Sparkles, type LucideIcon } from "lucide-react";
 import type { Settings, ViewState } from "../../shared/types.ts";
 import { makeStrings, StringsContext } from "./strings.ts";
 import GeneralTab from "./tabs/GeneralTab.tsx";
 import EffectsTab from "./tabs/EffectsTab.tsx";
 import ShortcutsTab from "./tabs/ShortcutsTab.tsx";
+import PhoneTab from "./tabs/PhoneTab.tsx";
 
-type Tab = "general" | "effects" | "shortcuts";
+type Tab = "general" | "effects" | "shortcuts" | "phone";
 
-/** Same order and icons as the Mac toolbar. */
+/** Same order and icons as the Mac toolbar, then the phone app's sign-in. */
 const TABS: { id: Tab; label: string; Icon: LucideIcon }[] = [
   { id: "general", label: "TabGeneral", Icon: SettingsIcon },
   { id: "effects", label: "TabEffects", Icon: Sparkles },
   { id: "shortcuts", label: "TabShortcuts", Icon: Keyboard },
+  { id: "phone", label: "TabPhone", Icon: Smartphone },
 ];
 
 /** Applies a settings change to the page right away, then saves it in the main process. */
@@ -125,6 +127,7 @@ export default function App() {
         {tab === "general" && <GeneralTab state={state} update={update} />}
         {tab === "effects" && <EffectsTab state={state} update={update} />}
         {tab === "shortcuts" && <ShortcutsTab state={state} update={update} show={show} />}
+        {tab === "phone" && <PhoneTab state={state} show={show} />}
       </div>
     </StringsContext.Provider>
   );

@@ -198,5 +198,19 @@
   "Side.Left": "Links",
   "Side.Right": "Rechts",
   "Side.Top": "Oben",
-  "Side.Bottom": "Unten"
+  "Side.Bottom": "Unten",
+  "TabPhone": "Smartphone",
+  "PhoneSection": "Split auf dem Smartphone",
+  "PhoneHint": "Melde dich mit deinem RUNNERS-Konto an, um die Fenster dieses Computers mit der Split-App auf dem Smartphone anzuordnen.",
+  "PhoneEmail": "E-Mail",
+  "PhonePassword": "Passwort",
+  "PhoneSignIn": "Anmelden",
+  "PhoneSignInWrong": "E-Mail oder Passwort ist falsch.",
+  "PhoneSignInFailed": "Anmeldung fehlgeschlagen. Prüfe die Internetverbindung und versuche es erneut.",
+  "PhoneConnecting": "Verbinden …",
+  "PhoneConnected": "Verbunden. Die Smartphone-App erreicht diesen Computer.",
+  "PhoneOffline": "Nicht verbunden. Split versucht es weiter.",
+  "PhoneDeviceName": "Name auf dem Smartphone",
+  "PhoneSignOutTitle": "Auf diesem Computer abmelden",
+  "PhoneSignOut": "Abmelden"
 }

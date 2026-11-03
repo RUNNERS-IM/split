@@ -206,5 +206,19 @@
   "Side.Left": "اليسار",
   "Side.Right": "اليمين",
   "Side.Top": "الأعلى",
-  "Side.Bottom": "الأسفل"
+  "Side.Bottom": "الأسفل",
+  "TabPhone": "الهاتف",
+  "PhoneSection": "Split على هاتفك",
+  "PhoneHint": "سجّل الدخول بحساب RUNNERS لترتيب نوافذ هذا الكمبيوتر من تطبيق Split على الهاتف.",
+  "PhoneEmail": "البريد الإلكتروني",
+  "PhonePassword": "كلمة السر",
+  "PhoneSignIn": "تسجيل الدخول",
+  "PhoneSignInWrong": "البريد الإلكتروني أو كلمة السر غير صحيحة.",
+  "PhoneSignInFailed": "تعذّر تسجيل الدخول. تحقّق من الاتصال بالإنترنت وحاول مرة أخرى.",
+  "PhoneConnecting": "جارٍ الاتصال…",
+  "PhoneConnected": "متصل. يمكن لتطبيق الهاتف الوصول إلى هذا الكمبيوتر.",
+  "PhoneOffline": "غير متصل. يواصل Split المحاولة.",
+  "PhoneDeviceName": "الاسم على الهاتف",
+  "PhoneSignOutTitle": "تسجيل الخروج على هذا الكمبيوتر",
+  "PhoneSignOut": "تسجيل الخروج"
 }
