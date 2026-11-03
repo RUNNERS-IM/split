@@ -18,6 +18,8 @@ const API_URL = (process.env.SPLIT_API_URL || "https://server.system.runners.im"
 const RELAY_URL = `${API_URL.replace(/^http/, "ws")}/api/relay`;
 /** The relay closes with this code when the access token is wrong or ran out. */
 const TOKEN_REFUSED = 4401;
+/** Closes after which connecting again would not help: another connection took this device's place, or the app name was refused. */
+const NO_RETRY = new Set([4403, 4409]);
 const FIRST_RETRY_MS = 2000;
 const LAST_RETRY_MS = 60_000;
 
@@ -241,6 +243,11 @@ function connect(): void {
   ws.addEventListener("close", (event) => {
     if (socket !== ws) return;
     socket = null;
+    // Why: connecting again after "replaced" would push the other connection out in turn, forever.
+    if (NO_RETRY.has(event.code)) {
+      setStatus("offline");
+      return;
+    }
     // Why: a handshake refused before it opens is most often an access token that ran out, too.
     if (event.code === TOKEN_REFUSED || !opened) {
       void refreshTokens().then((fresh) => (fresh ? connect() : retryLater()));

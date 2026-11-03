@@ -102,7 +102,7 @@ http.on("upgrade", (req, socket, head) => {
       if (message.type === "hello") {
         const peer: Peer = { deviceId: String(message.deviceId), name: String(message.name), role: message.role === "host" ? "host" : "viewer" };
         // The same deviceId connecting again replaces the old connection.
-        toDevice(account, peer.deviceId)?.socket.close();
+        toDevice(account, peer.deviceId)?.socket.close(4409, "replaced");
         client.peer = peer;
         send(client, { type: "peers", peers: sameAccount(client).map((c) => c.peer) });
         for (const other of sameAccount(client)) send(other, { type: "peer-joined", peer });
