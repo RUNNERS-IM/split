@@ -201,5 +201,19 @@
   "Side.Left": "Left",
   "Side.Right": "Right",
   "Side.Top": "Top",
-  "Side.Bottom": "Bottom"
+  "Side.Bottom": "Bottom",
+  "TabPhone": "Phone",
+  "PhoneSection": "Split on your phone",
+  "PhoneHint": "Sign in with your RUNNERS account to arrange this computer's windows from the Split phone app.",
+  "PhoneEmail": "Email",
+  "PhonePassword": "Password",
+  "PhoneSignIn": "Sign In",
+  "PhoneSignInWrong": "The email or password is wrong.",
+  "PhoneSignInFailed": "Could not sign in. Check the internet connection and try again.",
+  "PhoneConnecting": "Connecting…",
+  "PhoneConnected": "Connected. The phone app can reach this computer.",
+  "PhoneOffline": "Not connected. Split keeps trying.",
+  "PhoneDeviceName": "Name on the phone",
+  "PhoneSignOutTitle": "Sign out of this computer",
+  "PhoneSignOut": "Sign Out"
 }

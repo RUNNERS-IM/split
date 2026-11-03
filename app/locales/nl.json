@@ -201,5 +201,19 @@
   "Side.Left": "Links",
   "Side.Right": "Rechts",
   "Side.Top": "Boven",
-  "Side.Bottom": "Onder"
+  "Side.Bottom": "Onder",
+  "TabPhone": "Telefoon",
+  "PhoneSection": "Split op je telefoon",
+  "PhoneHint": "Log in met je RUNNERS-account om de vensters van deze computer te ordenen vanuit de Split-app op je telefoon.",
+  "PhoneEmail": "E-mail",
+  "PhonePassword": "Wachtwoord",
+  "PhoneSignIn": "Log in",
+  "PhoneSignInWrong": "Het e-mailadres of wachtwoord klopt niet.",
+  "PhoneSignInFailed": "Inloggen is mislukt. Controleer de internetverbinding en probeer het opnieuw.",
+  "PhoneConnecting": "Verbinden…",
+  "PhoneConnected": "Verbonden. De telefoonapp kan deze computer bereiken.",
+  "PhoneOffline": "Niet verbonden. Split blijft het proberen.",
+  "PhoneDeviceName": "Naam op de telefoon",
+  "PhoneSignOutTitle": "Uitloggen op deze computer",
+  "PhoneSignOut": "Log uit"
 }

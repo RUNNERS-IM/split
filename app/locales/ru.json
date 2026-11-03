@@ -197,5 +197,19 @@
   "Side.Left": "Слева",
   "Side.Right": "Справа",
   "Side.Top": "Сверху",
-  "Side.Bottom": "Снизу"
+  "Side.Bottom": "Снизу",
+  "TabPhone": "Телефон",
+  "PhoneSection": "Split на телефоне",
+  "PhoneHint": "Войдите в аккаунт RUNNERS, чтобы упорядочивать окна этого компьютера из приложения Split на телефоне.",
+  "PhoneEmail": "Эл. почта",
+  "PhonePassword": "Пароль",
+  "PhoneSignIn": "Войти",
+  "PhoneSignInWrong": "Неверная эл. почта или пароль.",
+  "PhoneSignInFailed": "Не удалось войти. Проверьте подключение к интернету и попробуйте снова.",
+  "PhoneConnecting": "Подключение…",
+  "PhoneConnected": "Подключено. Приложение на телефоне видит этот компьютер.",
+  "PhoneOffline": "Нет подключения. Split продолжает попытки.",
+  "PhoneDeviceName": "Имя на телефоне",
+  "PhoneSignOutTitle": "Выйти на этом компьютере",
+  "PhoneSignOut": "Выйти"
 }

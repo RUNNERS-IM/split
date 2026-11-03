@@ -197,5 +197,19 @@
   "Side.Left": "Kiri",
   "Side.Right": "Kanan",
   "Side.Top": "Atas",
-  "Side.Bottom": "Bawah"
+  "Side.Bottom": "Bawah",
+  "TabPhone": "Ponsel",
+  "PhoneSection": "Split di ponsel",
+  "PhoneHint": "Masuk dengan akun RUNNERS untuk menata jendela komputer ini dari aplikasi Split di ponsel.",
+  "PhoneEmail": "Email",
+  "PhonePassword": "Kata sandi",
+  "PhoneSignIn": "Masuk",
+  "PhoneSignInWrong": "Email atau kata sandi salah.",
+  "PhoneSignInFailed": "Tidak dapat masuk. Periksa koneksi internet lalu coba lagi.",
+  "PhoneConnecting": "Menghubungkan…",
+  "PhoneConnected": "Terhubung. Aplikasi ponsel dapat menjangkau komputer ini.",
+  "PhoneOffline": "Tidak terhubung. Split terus mencoba.",
+  "PhoneDeviceName": "Nama di ponsel",
+  "PhoneSignOutTitle": "Keluar dari komputer ini",
+  "PhoneSignOut": "Keluar"
 }
