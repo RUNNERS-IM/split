@@ -4,7 +4,7 @@
 // on screen → `Engine` (src/core) works out where windows go with the macOS JavaScript math →
 // the native module moves them → the overlay shows where they went.
 import { execFileSync } from "node:child_process";
-import { readdirSync, readFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
 import { pathToFileURL } from "node:url";
@@ -27,6 +27,7 @@ import { ALL, type Action, cycleStep } from "../core/actions.ts";
 import { loadScripts } from "../core/calc.ts";
 import { Engine, type Outcome, type Snapshot, screenContaining, screensInConsistentOrder } from "../core/engine.ts";
 import { Rect } from "../core/geometry.ts";
+import { shouldTurnOnAtLogin } from "../core/loginDefault.ts";
 import { defaultShortcut, KeyCombo } from "../core/shortcuts.ts";
 import type { LinkKind, OverlayPayload, Settings, SheetPayload, ViewState } from "../shared/types";
 import { removeLoginItem, runningPids } from "./apps.ts";
@@ -627,6 +628,26 @@ function setLoginItem(enabled: boolean): void {
   app.setLoginItemSettings({ openAtLogin: enabled });
 }
 
+/** Marks that the one-time "open at login" default was applied on this Mac (see core/loginDefault.ts). */
+const LOGIN_DEFAULT_MARKER = "open-at-login-default";
+
+/** Every RUNNERS app adds itself to the login items once; settings can turn it off and that sticks. */
+function applyLoginDefault(): void {
+  if (!app.isPackaged) return;
+  const marker = join(app.getPath("userData"), LOGIN_DEFAULT_MARKER);
+  const applied = existsSync(marker);
+  if (shouldTurnOnAtLogin({ applied, store: STORE, wanted: settings.launchAtLogin, on: loginItemEnabled() })) {
+    setLoginItem(true);
+  }
+  if (applied || STORE) return;
+  try {
+    mkdirSync(app.getPath("userData"), { recursive: true });
+    writeFileSync(marker, "");
+  } catch {
+    // Left for the next launch.
+  }
+}
+
 // ---------------------------------------------------------------------------------------------
 // Pages talking to the main process
 
@@ -884,10 +905,7 @@ function start(): void {
   updateTray();
   watchTrust();
   if (MAC && app.isPackaged) watchBundle();
-  if (loaded.firstLaunch) {
-    // Every RUNNERS app adds itself to the login items on its first launch; settings can turn it off.
-    setLoginItem(true);
-  }
+  applyLoginDefault();
   if (!STORE) startUpdater(settings.autoUpdate);
   if (!trusted) askForTrust();
   else if (loaded.firstLaunch || !settings.showTrayIcon) showSettings();
