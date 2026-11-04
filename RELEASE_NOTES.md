@@ -1,5 +1,6 @@
 ## 한국어
 
+- 예전 맥 판에서 업데이트한 경우 "로그인할 때 열기"가 꺼진 채 남던 문제를 고쳤습니다. 이번 판을 처음 켤 때 한 번 켜 둡니다. 직접 끈 경우에는 그대로 둡니다.
 - 아랍어로 쓰다가 다른 언어로 바꾸면 메뉴가 오른쪽→왼쪽으로 뒤집힌 채 남던 문제를 고쳤습니다.
 - 아랍어에서 설정 · 단축키 목록 · 저장 창 · 권한 안내 창이 오른쪽→왼쪽으로 놓입니다. 단축키 글자는 ⌥⌘← 순서 그대로입니다.
 - 단축키 목록에서 긴 이름이 "…"로 잘리지 않고 끝까지 보입니다.
@@ -27,6 +28,7 @@
 
 ## English
 
+- "Open at login" no longer stays off after updating from the old macOS app. It is turned on once when this version first starts; if you turned it off yourself, it stays off.
 - Menus no longer stay mirrored right to left after switching from Arabic to another language.
 - In Arabic, settings, the shortcut list, the save window and the permission guide lay out right to left; shortcut keys keep their ⌥⌘← order.
 - Long names in the shortcut list show in full instead of ending in "…".
