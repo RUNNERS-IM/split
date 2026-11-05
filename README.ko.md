@@ -2,17 +2,17 @@
 
 [English](README.md) · **한국어**
 
-키보드 단축키로 macOS 창을 옮기고 크기를 맞추는 앱입니다. 마우스가 필요 없습니다.
+키보드 단축키로 창을 옮기고 크기를 맞추는 앱입니다. 마우스가 필요 없습니다.
 
-Split 은 RUNNERS 가 만드는 무료 창 정렬 앱입니다. Apple 실리콘 · 인텔 맥 유니버설 빌드, 공증된 배포판, 창 자동 배치 · 배치 저장, 20개 언어를 지원합니다.
+Split 은 RUNNERS 가 만드는 무료 창 정렬 앱입니다. macOS(Apple 실리콘 · 인텔 유니버설, 공증된 배포판) · Windows · Linux 에서 돌고, 창 자동 배치 · 배치 저장 · 휴대폰 앱으로 창 정리 · 20개 언어를 지원합니다. 아래 단축키는 맥 기준입니다.
 
 ## 설치
 
-1. [Releases](https://github.com/RUNNERS-IM/split/releases) 에서 `Split-<버전>.dmg` 를 받아 열고 Split 을 응용 프로그램 폴더로 끌어 놓습니다. 서명·공증된 앱이라 경고 없이 열립니다.
-2. 처음 켜면 **시스템 설정 → 개인정보 보호 및 보안 → 손쉬운 사용** 이 자동으로 열립니다. Split 옆 스위치를 켜면 됩니다. 이 권한이 없으면 다른 앱의 창을 움직일 수 없고, 켜는 순간 안내 창이 스스로 닫힙니다.
+1. [Releases](https://github.com/RUNNERS-IM/split/releases) 에서 `Split-<버전>.dmg` 를 받아 열고 Split 을 응용 프로그램 폴더로 끌어 놓습니다. 서명·공증된 앱이라 경고 없이 열립니다. Windows 는 `Split-<버전>-windows-x64-setup.exe`, Linux 는 `.AppImage` 나 `.deb` 를 받습니다.
+2. 맥에서 처음 켜면 **시스템 설정 → 개인정보 보호 및 보안 → 손쉬운 사용** 이 안내 창과 함께 열립니다. Split 옆 스위치를 켜면 됩니다. 이 권한이 없으면 다른 앱의 창을 움직일 수 없습니다. 스위치를 켜는 순간 안내 창이 「준비되었습니다」 화면으로 바뀌고 처음 눌러 볼 단축키를 보여 줍니다. 창은 직접 닫을 때까지 남아 있습니다.
 3. 예전 창 정렬 앱이 아직 켜져 있으면 Split 이 끌지 물어봅니다. 두 앱이 같은 단축키에 함께 반응하지 않게 하려는 것입니다.
 
-애플 실리콘·인텔 맥 모두에서 네이티브로 돌고, macOS 13 이상이 필요합니다. 업데이트는 앱 안에서 설치됩니다.
+맥은 애플 실리콘·인텔 모두에서 네이티브로 돌고, macOS 13 이상이 필요합니다. 업데이트는 앱이 하루 한 번 GitHub 에서 새 버전을 확인해 받은 뒤, 설치할지 물어봅니다.
 
 Homebrew 로 설치하려면:
 
@@ -115,8 +115,9 @@ open -g -a Split --args --guide                    # 손쉬운 사용 안내 다
 
 끝난 것:
 
-- 애플 실리콘 네이티브 빌드, Swift Package Manager, Sparkle 2
-- Developer ID 서명·공증, runners.im 을 거치는 자동 업데이트
+- Electron 으로 다시 만든 판(macOS · Windows · Linux), 맥 앱스토어 판
+- Developer ID 서명·공증, GitHub Releases 에서 받는 자동 업데이트
+- 설정의 휴대폰 탭: Split 휴대폰 앱에서 창을 모양대로 정리하고 저장한 배치를 되돌리기
 - 단계별 손쉬운 사용 권한 안내 창
 - Homebrew tap
 - 새 아이콘, 미리 보기가 나오는 그림 메뉴, 옮긴 뒤 반짝임
@@ -154,13 +155,17 @@ Split 은 macOS 의 손쉬운 사용(Accessibility) 프로토콜로 다른 앱�
 
 ## 소스에서 빌드하기
 
-Xcode 26 이상이 필요합니다. 외부 부품은 Swift Package Manager 로 Xcode 가 받아 옵니다.
+지금 앱은 `app/` 폴더의 Electron 앱입니다. Node.js 와 pnpm 이 필요합니다.
 
 ```sh
-open Split.xcodeproj
+cd app
+pnpm install
+pnpm dev        # 개발용으로 켜기
+pnpm test       # 시험
+pnpm typecheck  # 타입 검사
 ```
 
-⌘R 로 실행, ⌘U 로 테스트합니다. 배포는 `scripts/release.sh <버전>` 으로 합니다. 테스트·Developer ID 서명·공증·Sparkle 업데이트 목록까지 만들고, `--publish` 를 붙이면 GitHub Releases 에 올립니다.
+배포판은 `release` 가지에 올리면 GitHub Actions 가 macOS · Windows · Linux 판을 만들고 서명·공증한 뒤 GitHub Releases 에 올립니다. 손으로 만들 때는 `pnpm dist:mac` · `pnpm dist:win` · `pnpm dist:linux` 를 씁니다. 저장소에 남은 `Split.xcodeproj` 는 예전 Swift 맥 판입니다.
 
 ## 라이선스
 

@@ -2,17 +2,17 @@
 
 **English** · [한국어](README.ko.md)
 
-Move and resize macOS windows with keyboard shortcuts. No mouse required.
+Move and resize windows with keyboard shortcuts. No mouse required.
 
-Split is a free window manager by RUNNERS: a universal app for Apple silicon and Intel Macs with notarized releases, auto-arrange, saved layouts and 20 languages.
+Split is a free window manager by RUNNERS for macOS (universal for Apple silicon and Intel, notarized), Windows and Linux, with auto-arrange, saved layouts, arranging from the phone app and 20 languages. The shortcuts below are the Mac ones.
 
 ## Install
 
-1. Download `Split-<version>.dmg` from [Releases](https://github.com/RUNNERS-IM/split/releases), open it and drag Split to Applications. Split is signed and notarized, so it opens without a warning.
-2. When Split starts it opens **System Settings → Privacy & Security → Accessibility** for you. Turn on the switch next to Split. Split cannot move windows of other apps without this permission, and its guide window closes by itself once access is granted.
+1. Download `Split-<version>.dmg` from [Releases](https://github.com/RUNNERS-IM/split/releases), open it and drag Split to Applications. Split is signed and notarized, so it opens without a warning. On Windows download `Split-<version>-windows-x64-setup.exe`, on Linux the `.AppImage` or `.deb`.
+2. On a Mac, Split opens **System Settings → Privacy & Security → Accessibility** next to its guide window. Turn on the switch next to Split. Split cannot move windows of other apps without this permission. Once it is on, the guide turns into a "You’re all set" view with a first shortcut to try, and stays until you close it.
 3. If another copy of a Spectacle-style window manager is still running, Split offers to quit it so the two apps don't react to the same shortcuts.
 
-Split runs natively on Apple silicon and Intel Macs with macOS 13 or later. Updates are installed from within the app.
+On a Mac, Split runs natively on Apple silicon and Intel with macOS 13 or later. Split checks GitHub for a new version once a day, downloads it and asks before installing.
 
 With Homebrew:
 
@@ -115,8 +115,9 @@ The action names for `--perform` are MoveToCenter, MoveToFullscreen, MoveToLeftH
 
 Done:
 
-- Native Apple silicon build, Swift Package Manager, Sparkle 2
-- Developer ID signing, notarization and automatic updates (served through runners.im)
+- Rebuilt with Electron for macOS, Windows and Linux, plus a Mac App Store version
+- The Phone tab in settings: arrange windows into a shape or bring back a saved layout from the Split phone app
+- Developer ID signing, notarization and automatic updates from GitHub Releases
 - A step-by-step Accessibility permission guide
 - Homebrew tap
 - New icon, a picture menu with a live preview, and a glow after each move
@@ -152,13 +153,17 @@ Applications that build their interface in non-standard ways may not expose thei
 
 ## Building from source
 
-Requires Xcode 26 or later. Dependencies come from Swift Package Manager and are fetched by Xcode.
+The current app is the Electron app in `app/`. It needs Node.js and pnpm.
 
 ```sh
-open Split.xcodeproj
+cd app
+pnpm install
+pnpm dev        # run for development
+pnpm test       # tests
+pnpm typecheck  # type check
 ```
 
-Press ⌘R to run, ⌘U to run the tests. Releases are built with `scripts/release.sh <version>`, which tests, signs with Developer ID, notarizes and writes the Sparkle appcast; `--publish` uploads to GitHub Releases.
+Pushing to the `release` branch makes GitHub Actions build, sign and notarize the macOS, Windows and Linux versions and upload them to GitHub Releases. To build by hand use `pnpm dist:mac`, `pnpm dist:win` or `pnpm dist:linux`. `Split.xcodeproj` in the repository is the earlier Swift Mac version.
 
 ## License
 
