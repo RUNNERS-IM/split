@@ -4,8 +4,9 @@
 //   pnpm relay                         listens on http://0.0.0.0:8788 (8787 is Monitor's)
 //   SPLIT_API_URL=http://localhost:8788 pnpm dev
 //
-// Any email and password signs in; the account is the email, so a computer and a phone signed in
-// with the same email see each other. Tokens are made up and kept in memory.
+// Any email signs in with a password the system server would take (letters and numbers, 6 to 20);
+// the account is the email, so a computer and a phone signed in with the same email see each other.
+// Tokens are made up and kept in memory. Answers are wrapped as { code, data } like the system server's.
 import { randomUUID } from "node:crypto";
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { WebSocketServer, type WebSocket } from "ws";
@@ -50,14 +51,16 @@ async function body(req: IncomingMessage): Promise<Record<string, unknown>> {
 
 function reply(res: ServerResponse, status: number, value: unknown): void {
   res.writeHead(status, { "Content-Type": "application/json" });
-  res.end(JSON.stringify(value));
+  res.end(JSON.stringify(status < 300 ? { code: status, data: value } : value));
 }
+
+const PASSWORD_RULE = /^(?=.*[A-Za-z])(?=.*\d).{6,20}$/;
 
 const http = createServer(async (req, res) => {
   const data = await body(req);
   if (req.method === "POST" && (req.url === "/api/mobile/auth/login" || req.url === "/api/mobile/auth/signup")) {
     const email = String(data.email || "");
-    if (!email || String(data.password || "").length !== 64) return reply(res, 400, { message: "bad request" });
+    if (!email || !PASSWORD_RULE.test(String(data.password || ""))) return reply(res, 400, { message: "bad request" });
     return reply(res, 200, { user: { id: email, email }, tokens: issue(email) });
   }
   if (req.method === "POST" && req.url === "/api/mobile/auth/refresh") {
@@ -102,7 +105,7 @@ http.on("upgrade", (req, socket, head) => {
       if (message.type === "hello") {
         const peer: Peer = { deviceId: String(message.deviceId), name: String(message.name), role: message.role === "host" ? "host" : "viewer" };
         // The same deviceId connecting again replaces the old connection.
-        toDevice(account, peer.deviceId)?.socket.close();
+        toDevice(account, peer.deviceId)?.socket.close(4409, "replaced");
         client.peer = peer;
         send(client, { type: "peers", peers: sameAccount(client).map((c) => c.peer) });
         for (const other of sameAccount(client)) send(other, { type: "peer-joined", peer });

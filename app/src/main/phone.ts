@@ -7,7 +7,7 @@
 //                     {type:'state', data}                 whenever monitors or saved layouts change
 //   phone → computer  {type:'command', from, id, name, args}
 //   computer → phone  {type:'result', to, id, ok, data}
-import { createHash, randomUUID } from "node:crypto";
+import { randomUUID } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { hostname } from "node:os";
 import { dirname, join } from "node:path";
@@ -18,6 +18,8 @@ const API_URL = (process.env.SPLIT_API_URL || "https://server.system.runners.im"
 const RELAY_URL = `${API_URL.replace(/^http/, "ws")}/api/relay`;
 /** The relay closes with this code when the access token is wrong or ran out. */
 const TOKEN_REFUSED = 4401;
+/** Closes after which connecting again would not help: another connection took this device's place, or the app name was refused. */
+const NO_RETRY = new Set([4403, 4409]);
 const FIRST_RETRY_MS = 2000;
 const LAST_RETRY_MS = 60_000;
 
@@ -121,7 +123,9 @@ async function post<T>(path: string, body: unknown): Promise<T> {
     body: JSON.stringify(body),
   });
   if (!response.ok) throw Object.assign(new Error(`${path} ${response.status}`), { status: response.status });
-  return (await response.json()) as T;
+  // Why: the system server wraps every successful answer as { code, data }.
+  const answer = (await response.json()) as { code?: unknown; data?: T } | T;
+  return (answer && typeof answer === "object" && "code" in answer && "data" in answer ? answer.data : answer) as T;
 }
 
 /**
@@ -130,10 +134,10 @@ async function post<T>(path: string, body: unknown): Promise<T> {
  */
 export async function signIn(email: string, password: string): Promise<string | null> {
   try {
-    // Why: the system server takes the password as SHA-256 hex, the same as runners-app-kit sends it.
+    // The system server takes the password as typed (letters and numbers, 6 to 20), as runners-app-kit sends it.
     const answer = await post<{ user: { email: string }; tokens: Tokens }>("/api/mobile/auth/login", {
       email,
-      password: createHash("sha256").update(password).digest("hex"),
+      password,
       projectName: "SPLIT",
     });
     writeTokens(answer.tokens, answer.user?.email ?? email);
@@ -241,6 +245,11 @@ function connect(): void {
   ws.addEventListener("close", (event) => {
     if (socket !== ws) return;
     socket = null;
+    // Why: connecting again after "replaced" would push the other connection out in turn, forever.
+    if (NO_RETRY.has(event.code)) {
+      setStatus("offline");
+      return;
+    }
     // Why: a handshake refused before it opens is most often an access token that ran out, too.
     if (event.code === TOKEN_REFUSED || !opened) {
       void refreshTokens().then((fresh) => (fresh ? connect() : retryLater()));
