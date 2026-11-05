@@ -2,13 +2,13 @@
 // config/electron-builder.config.cjs). Release builds set SPLIT_RELEASE=1 so signing and
 // notarization are required; local builds stay unsigned-friendly.
 const isRelease = process.env.SPLIT_RELEASE === '1'
-// File names use the release tag (2.6.1031.2) instead of the in-app version (2.6.1031+2): a "+" in a GitHub
-// release file name is not kept as is, and the tag is what people see anyway.
+// File names use the release tag. Before 2026-11-05 the in-app version of a same-day release was 2.6.1031+2, and a
+// "+" in a GitHub release file name is not kept as is; now the tag and the in-app version are the same (2.6.110502).
 const tag = process.env.SPLIT_TAG || '${version}'
-// Why: Windows keeps a file version as four numbers of at most 65535 each, so the same-day "+2" becomes the
-// fourth number (2.6.1031+2 -> 2.6.1031.2), as Monitor does. The semver version updates compare is not changed.
-const [base, sameDay = '0'] = require('./package.json').version.split('+')
-const shownVersion = sameDay === '0' ? base : `${base}.${sameDay}`
+// Why: Windows keeps a file version as four numbers of at most 65535 each, so 2.6.110502 is written as 2.6.1105.2
+// there (version-parts.cjs). The semver version updates compare is not changed.
+const { versionParts } = require('./version-parts.cjs')
+const { shown: shownVersion, file: fileVersion } = versionParts(require('./package.json').version)
 // Why: the macOS app before this one updated through Sparkle, which compares CFBundleVersion. It used the commit
 // count (789 for 2.6.1030.10), so this build keeps counting commits; a smaller number would not be offered as an update.
 const bundleVersion = process.env.SPLIT_BUILD_NUMBER || require('child_process').execSync('git rev-list --count HEAD').toString().trim()
@@ -16,7 +16,7 @@ const bundleVersion = process.env.SPLIT_BUILD_NUMBER || require('child_process')
 module.exports = {
   appId: 'im.runners.Split',
   productName: 'Split',
-  buildVersion: `${base}.${sameDay}`,
+  buildVersion: fileVersion,
   copyright: '© 2026 RUNNERS. All rights reserved.',
   // Why: .noindex keeps Spotlight from listing the test app next to the installed one.
   directories: { output: 'dist.noindex', buildResources: 'resources/build' },
@@ -80,7 +80,7 @@ module.exports = {
       NSHumanReadableCopyright: '© 2026 RUNNERS. All rights reserved.',
       // Why: App Store Connect takes at most three numbers here, so the same-day "+5" is left out (2.6.1101);
       // scripts/release-app-store.sh passes the version it uploads in SPLIT_MAS_VERSION.
-      CFBundleShortVersionString: process.env.SPLIT_MAS_VERSION || base,
+      CFBundleShortVersionString: process.env.SPLIT_MAS_VERSION || shownVersion,
       ElectronTeamID: 'RGWVXJ8URP',
       ITSAppUsesNonExemptEncryption: false,
     },
