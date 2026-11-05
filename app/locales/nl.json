@@ -215,5 +215,7 @@
   "PhoneOffline": "Niet verbonden. Split blijft het proberen.",
   "PhoneDeviceName": "Naam op de telefoon",
   "PhoneSignOutTitle": "Uitloggen op deze computer",
-  "PhoneSignOut": "Log uit"
+  "PhoneSignOut": "Log uit",
+  "ShortcutsOff": "Sneltoetsen uit",
+  "MoreActions": "Meer"
 }

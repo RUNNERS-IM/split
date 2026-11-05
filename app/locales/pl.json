@@ -215,5 +215,7 @@
   "PhoneOffline": "Brak połączenia. Split próbuje dalej.",
   "PhoneDeviceName": "Nazwa na telefonie",
   "PhoneSignOutTitle": "Wyloguj się na tym komputerze",
-  "PhoneSignOut": "Wyloguj się"
+  "PhoneSignOut": "Wyloguj się",
+  "ShortcutsOff": "Skróty wyłączone",
+  "MoreActions": "Więcej"
 }

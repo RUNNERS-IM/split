@@ -211,5 +211,7 @@
   "PhoneOffline": "Bağlı değil. Split denemeye devam ediyor.",
   "PhoneDeviceName": "Telefonda görünen ad",
   "PhoneSignOutTitle": "Bu bilgisayarda oturumu kapat",
-  "PhoneSignOut": "Oturumu Kapat"
+  "PhoneSignOut": "Oturumu Kapat",
+  "ShortcutsOff": "Kısayollar kapalı",
+  "MoreActions": "Daha fazla"
 }

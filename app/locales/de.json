@@ -212,5 +212,7 @@
   "PhoneOffline": "Nicht verbunden. Split versucht es weiter.",
   "PhoneDeviceName": "Name auf dem Smartphone",
   "PhoneSignOutTitle": "Auf diesem Computer abmelden",
-  "PhoneSignOut": "Abmelden"
+  "PhoneSignOut": "Abmelden",
+  "ShortcutsOff": "Kurzbefehle aus",
+  "MoreActions": "Mehr"
 }

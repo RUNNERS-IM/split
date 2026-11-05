@@ -146,6 +146,32 @@ export type LayoutSaveAnswer = { name: string; restoresForDisplays: boolean } | 
 /** Download progress in percent, or "ready" once the update can be installed. */
 export type UpdateProgress = number | "ready";
 
+/** One line of the tray panel (macOS), made from the menu template by src/core/panelItems.ts. */
+interface PanelLine {
+  label: string;
+  /** The template item's id, for lines the page gives its own picture (the on/off lines). */
+  name?: string;
+  /** A data URL; template pictures are drawn in the text colour. */
+  image?: string;
+  template?: boolean;
+  enabled: boolean;
+  toolTip?: string;
+}
+
+export type PanelItem =
+  | { kind: "separator" }
+  | { kind: "heading"; label: string }
+  | { kind: "layouts"; card: unknown }
+  | (PanelLine & { kind: "item"; id: string; checked: boolean; shortcut?: string; sublabel?: string; pill?: string })
+  | (PanelLine & { kind: "switch"; id: string; on: boolean })
+  | (PanelLine & { kind: "group"; id: string; items: PanelItem[] });
+
+export interface PanelView {
+  items: PanelItem[];
+  /** The system accent colour, for the switches and the chosen monitor. */
+  accent: string;
+}
+
 export interface SplitApi {
   getState(): Promise<ViewState>;
   /** Signs in for the phone app; `error` is the string key of what went wrong, or null. */
@@ -173,6 +199,16 @@ export interface SplitApi {
   onState(listener: (state: ViewState) => void): () => void;
   onOverlay(listener: (payload: OverlayPayload | null) => void): () => void;
   onSheet(listener: (payload: SheetPayload) => void): () => void;
+  /** Tray panel (macOS): what it shows, and what happens on a click. */
+  panelView(): Promise<PanelView>;
+  /** Runs a line; a switch answers with the panel as it is now and the panel stays open. */
+  panelRun(id: string): Promise<PanelView | null>;
+  /** A monitor shape ("shape:<name>\t<display id>") or a saved layout ("saved:<id>") from the layout card. */
+  panelChoose(chosen: string): Promise<void>;
+  panelFit(height: number): void;
+  panelClose(): void;
+  /** The panel was opened again: fold everything and read the items anew. */
+  onPanelShown(listener: (view: PanelView) => void): () => void;
 }
 
 declare global {

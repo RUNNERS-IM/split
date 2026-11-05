@@ -211,5 +211,7 @@
   "PhoneOffline": "未连接。Split 会继续尝试连接。",
   "PhoneDeviceName": "手机上显示的名称",
   "PhoneSignOutTitle": "在这台电脑上退出登录",
-  "PhoneSignOut": "退出登录"
+  "PhoneSignOut": "退出登录",
+  "ShortcutsOff": "快捷键已关闭",
+  "MoreActions": "更多"
 }

@@ -211,5 +211,7 @@
   "PhoneOffline": "Нет подключения. Split продолжает попытки.",
   "PhoneDeviceName": "Имя на телефоне",
   "PhoneSignOutTitle": "Выйти на этом компьютере",
-  "PhoneSignOut": "Выйти"
+  "PhoneSignOut": "Выйти",
+  "ShortcutsOff": "Сочетания клавиш выключены",
+  "MoreActions": "Ещё"
 }

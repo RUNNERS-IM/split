@@ -220,5 +220,7 @@
   "PhoneOffline": "غير متصل. يواصل Split المحاولة.",
   "PhoneDeviceName": "الاسم على الهاتف",
   "PhoneSignOutTitle": "تسجيل الخروج على هذا الكمبيوتر",
-  "PhoneSignOut": "تسجيل الخروج"
+  "PhoneSignOut": "تسجيل الخروج",
+  "ShortcutsOff": "الاختصارات متوقفة",
+  "MoreActions": "المزيد"
 }

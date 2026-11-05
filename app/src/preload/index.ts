@@ -1,6 +1,6 @@
 // Gives every Split page `window.split` (see src/shared/types.ts) and nothing else from Node.
 import { contextBridge, ipcRenderer, type IpcRendererEvent } from "electron";
-import type { OverlayPayload, SheetPayload, SplitApi, UpdateProgress, ViewState } from "../shared/types";
+import type { OverlayPayload, PanelView, SheetPayload, SplitApi, UpdateProgress, ViewState } from "../shared/types";
 
 function listen<T>(channel: string, listener: (value: T) => void): () => void {
   const handler = (_event: IpcRendererEvent, value: T) => listener(value);
@@ -27,6 +27,12 @@ const api: SplitApi = {
   onOverlay: (listener) => listen<OverlayPayload | null>("overlay:show", listener),
   onSheet: (listener) => listen<SheetPayload>("sheet:show", listener),
   onUpdateProgress: (listener) => listen<UpdateProgress>("update:progress", listener),
+  panelView: () => ipcRenderer.invoke("panel:view"),
+  panelRun: (id) => ipcRenderer.invoke("panel:run", id),
+  panelChoose: (chosen) => ipcRenderer.invoke("panel:choose", chosen),
+  panelFit: (height) => ipcRenderer.send("panel:fit", height),
+  panelClose: () => ipcRenderer.send("panel:close"),
+  onPanelShown: (listener) => listen<PanelView>("panel:shown", listener),
 };
 
 contextBridge.exposeInMainWorld("split", api);

@@ -211,5 +211,7 @@
   "PhoneOffline": "ไม่ได้เชื่อมต่อ Split จะพยายามต่อไป",
   "PhoneDeviceName": "ชื่อที่แสดงบนโทรศัพท์",
   "PhoneSignOutTitle": "ออกจากระบบในคอมพิวเตอร์เครื่องนี้",
-  "PhoneSignOut": "ออกจากระบบ"
+  "PhoneSignOut": "ออกจากระบบ",
+  "ShortcutsOff": "ปิดคีย์ลัดอยู่",
+  "MoreActions": "เพิ่มเติม"
 }

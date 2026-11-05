@@ -211,5 +211,7 @@
   "PhoneOffline": "연결 안 됨. Split 이 계속 다시 연결합니다.",
   "PhoneDeviceName": "휴대폰에 보이는 이름",
   "PhoneSignOutTitle": "이 컴퓨터에서 로그아웃",
-  "PhoneSignOut": "로그아웃"
+  "PhoneSignOut": "로그아웃",
+  "ShortcutsOff": "단축키 꺼짐",
+  "MoreActions": "더 보기"
 }

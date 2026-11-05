@@ -211,5 +211,7 @@
   "PhoneOffline": "未接続。Split が再接続を続けます。",
   "PhoneDeviceName": "スマートフォンに表示される名前",
   "PhoneSignOutTitle": "このコンピュータからサインアウト",
-  "PhoneSignOut": "サインアウト"
+  "PhoneSignOut": "サインアウト",
+  "ShortcutsOff": "ショートカット オフ",
+  "MoreActions": "その他"
 }

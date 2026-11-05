@@ -211,5 +211,7 @@
   "PhoneOffline": "Tidak terhubung. Split terus mencoba.",
   "PhoneDeviceName": "Nama di ponsel",
   "PhoneSignOutTitle": "Keluar dari komputer ini",
-  "PhoneSignOut": "Keluar"
+  "PhoneSignOut": "Keluar",
+  "ShortcutsOff": "Pintasan nonaktif",
+  "MoreActions": "Lainnya"
 }

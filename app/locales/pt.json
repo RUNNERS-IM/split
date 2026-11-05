@@ -215,5 +215,7 @@
   "PhoneOffline": "Sem conexão. O Split continua tentando.",
   "PhoneDeviceName": "Nome no telefone",
   "PhoneSignOutTitle": "Sair neste computador",
-  "PhoneSignOut": "Sair"
+  "PhoneSignOut": "Sair",
+  "ShortcutsOff": "Atalhos desativados",
+  "MoreActions": "Mais"
 }

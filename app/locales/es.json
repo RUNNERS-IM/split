@@ -214,5 +214,7 @@
   "PhoneOffline": "Sin conexión. Split sigue intentándolo.",
   "PhoneDeviceName": "Nombre en el teléfono",
   "PhoneSignOutTitle": "Cerrar sesión en este ordenador",
-  "PhoneSignOut": "Cerrar sesión"
+  "PhoneSignOut": "Cerrar sesión",
+  "ShortcutsOff": "Atajos desactivados",
+  "MoreActions": "Más"
 }

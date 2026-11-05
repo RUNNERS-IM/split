@@ -32,15 +32,16 @@ import { defaultShortcut, KeyCombo } from "../core/shortcuts.ts";
 import type { LinkKind, OverlayPayload, Settings, SheetPayload, ViewState } from "../shared/types";
 import { removeLoginItem, runningPids } from "./apps.ts";
 import { displayChangeLabel, recordSoon, startDisplayWatcher } from "./displays.ts";
-import { applyShape, currentDisplays, layoutMenuItems, layoutPanel, layoutRestoringForDisplays, layouts, onLayoutsChanged, restoreLayout, setupLayouts, SHAPES, type LayoutShape } from "./layouts.ts";
+import { applyShape, currentDisplays, LAYOUT_PANEL_ID, layoutMenuItems, layoutPanel, layoutRestoringForDisplays, layouts, onLayoutsChanged, restoreLayout, setupLayouts, SHAPES, type LayoutShape } from "./layouts.ts";
 import { announceState, phoneView, setupPhone, signIn, signOut } from "./phone.ts";
-import { popUpMacMenu } from "./macMenu.ts";
 import { guideGranted, openAccessibilitySettings, registerGuideIpc, showGuide } from "./guide.ts";
 import { currentLanguage, loadLanguage, rightToLeft, strings, t } from "./i18n.ts";
 import { accelerator, displayShortcut, displayText } from "./keys.ts";
 import { createOverlay, fromDip, hideFeedback, hideSheet, showAbout, showFeedback, showNotices, showSheet } from "./overlay.ts";
 import { bindings, loadSettings, sanitize, saveSettings, shortcutText } from "./settings.ts";
 import { checkForUpdatesNow, startUpdater } from "./updater.ts";
+import { proSublabel } from "./pro.ts";
+import { preparePanel, setupTrayPanel, showPanelAtPointer, togglePanelUnder } from "./trayPanel.ts";
 
 const WEBSITE_URL = "https://runners.im/tools/split";
 const ISSUES_URL = "https://github.com/RUNNERS-IM/split/issues";
@@ -94,8 +95,6 @@ interface Native {
   isTrusted(prompt: boolean): boolean;
   frontmostApp(): { id: string; name: string } | null;
   watch(callback: (event: NativeEvent) => void): void;
-  /** macOS only (macMenu.ts). */
-  popUpMenu(spec: string, x: number, y: number): string | null;
 }
 
 function resourcePath(...parts: string[]): string {
@@ -140,6 +139,8 @@ let settingsWindow: BrowserWindow | null = null;
 let failures: Action[] = [];
 let refusingApp: string | null = null;
 let pausedUntil: Date | null = null;
+/** The shortcuts switch at the top of the tray panel was turned off; they stay off until it is turned on (not kept over a restart). */
+let switchedOff = false;
 let pauseTimer: NodeJS.Timeout | null = null;
 let recording = false;
 let frontApp: { id: string; name: string } | null = null;
@@ -158,7 +159,7 @@ function shortcutsBlockedByFrontApp(): boolean {
 function syncShortcuts(): void {
   globalShortcut.unregisterAll();
   failures = [];
-  if (recording || pausedUntil !== null || shortcutsBlockedByFrontApp()) return;
+  if (recording || switchedOff || pausedUntil !== null || shortcutsBlockedByFrontApp()) return;
   for (const [action, combo] of bindings(settings)) {
     let ok = false;
     try {
@@ -405,6 +406,7 @@ function dot(color: [number, number, number]): Electron.NativeImage {
 
 function statusLine(): { label: string; on: boolean } {
   if (!trusted) return { label: t("ShortcutsOffNoPermission"), on: false };
+  if (switchedOff) return { label: t("ShortcutsOff"), on: false };
   if (pausedUntil) {
     const time = pausedUntil.toLocaleTimeString(currentLanguage(), { hour: "numeric", minute: "2-digit" });
     return { label: t("ShortcutsOffForHour", time), on: false };
@@ -413,7 +415,7 @@ function statusLine(): { label: string; on: boolean } {
   return { label: t("ShortcutsOn"), on: true };
 }
 
-/** The tray menu's items. `panel` leaves room for the macOS layout panel (macMenu.ts). */
+/** The tray menu's items. `panel` is the macOS tray panel (trayPanel.ts): switches, the layout card and "More". */
 function menuTemplate(panel: boolean): MenuItemConstructorOptions[] {
   trusted = native.isTrusted(false);
   const status = statusLine();
@@ -435,18 +437,34 @@ function menuTemplate(panel: boolean): MenuItemConstructorOptions[] {
     }
     return item;
   };
+  const statusClick = () => {
+    if (!trusted) {
+      askForTrust();
+    } else if (switchedOff || pausedUntil) {
+      resume();
+    }
+  };
   const template: MenuItemConstructorOptions[] = [
-    {
-      label: status.label,
-      icon: dot(status.on ? [52, 199, 89] : [255, 149, 0]),
-      click: () => {
-        if (!trusted) {
-          askForTrust();
-        } else if (pausedUntil) {
-          resume();
+    panel
+      ? {
+          // Why: on/off lines are switches in the panel (decision 2026-11-05 "메뉴 통일" 1A); off here means off until
+          // it is turned on again, while "Turn Off Shortcuts" below still offers an hour or one app.
+          id: "shortcuts",
+          label: status.label,
+          type: "checkbox",
+          checked: status.on,
+          enabled: trusted ? !(front && BLOCKED_APPS.has(front.id) && shortcutsBlockedByFrontApp()) : true,
+          click: () => {
+            if (status.on) switchOff();
+            else if (trusted && shortcutsBlockedByFrontApp() && front) toggleApp(front);
+            else statusClick();
+          },
         }
-      },
-    },
+      : {
+          label: status.label,
+          icon: dot(status.on ? [52, 199, 89] : [255, 149, 0]),
+          click: statusClick,
+        },
     { type: "separator" },
     ...layoutMenuItems(() => {}, panel),
     {
@@ -466,10 +484,26 @@ function menuTemplate(panel: boolean): MenuItemConstructorOptions[] {
     },
     { label: t("ShowShortcutSheet"), icon: menuIcon("sheet"), click: () => setTimeout(openSheet, 200) },
   ];
-  for (const group of MENU_GROUPS) {
+  // Why: the panel shows the first two groups (7 lines) and folds the other 12 under "More" (decision 2026-11-02
+  // "Split 메뉴는 7줄 + 더 보기로 펼치기"), so the menu fits on a laptop screen; the plain menu elsewhere keeps all.
+  const shown = panel ? MENU_GROUPS.slice(0, 2) : MENU_GROUPS;
+  for (const group of shown) {
     template.push({ type: "separator" }, ...group.map(actionItem));
   }
+  if (panel) {
+    const folded: MenuItemConstructorOptions[] = [];
+    for (const group of MENU_GROUPS.slice(2)) {
+      if (folded.length > 0) folded.push({ type: "separator" });
+      folded.push(...group.map(actionItem));
+    }
+    template.push({ id: "more", label: t("MoreActions"), submenu: folded });
+  }
   template.push(
+    { type: "separator" },
+    { id: "login", label: t("LaunchAtLogin"), type: "checkbox", checked: loginItemEnabled(), click: () => changeSettings({ ...settings, launchAtLogin: !loginItemEnabled() }) },
+    ...(STORE
+      ? []
+      : [{ id: "autoUpdate", label: t("AutoUpdate"), type: "checkbox" as const, checked: settings.autoUpdate, click: () => changeSettings({ ...settings, autoUpdate: !settings.autoUpdate }) }]),
     { type: "separator" },
     { label: t("AboutSplit"), icon: menuIcon("about"), click: () => showAbout() },
     ...(STORE ? [] : [{ label: t("CheckForUpdates"), icon: menuIcon("updates"), click: () => checkForUpdatesNow() }]),
@@ -506,9 +540,7 @@ function updateTray(): void {
   const open = () => {
     if (!tray) return;
     if (MAC) {
-      // Why: below the icon, as a status item's own menu opens.
-      const bounds = tray.getBounds();
-      popUpMacMenu(native, menuTemplate(true), layoutPanel(), bounds.x, bounds.y + bounds.height);
+      togglePanelUnder(tray);
     } else {
       tray.popUpContextMenu(Menu.buildFromTemplate(menuTemplate(false)));
     }
@@ -525,11 +557,16 @@ function updateTray(): void {
 
 function showMenuAtPointer(): void {
   if (MAC) {
-    const point = screen.getCursorScreenPoint();
-    popUpMacMenu(native, menuTemplate(true), layoutPanel(), point.x, point.y);
+    showPanelAtPointer();
   } else {
     Menu.buildFromTemplate(menuTemplate(false)).popup();
   }
+}
+
+function switchOff(): void {
+  switchedOff = true;
+  syncShortcuts();
+  pushState();
 }
 
 function pauseForAnHour(): void {
@@ -542,6 +579,7 @@ function resume(): void {
   if (pauseTimer) clearTimeout(pauseTimer);
   pauseTimer = null;
   pausedUntil = null;
+  switchedOff = false;
   syncShortcuts();
   pushState();
 }
@@ -653,25 +691,28 @@ function applyLoginDefault(): void {
 // ---------------------------------------------------------------------------------------------
 // Pages talking to the main process
 
+/** Saves settings from the settings window or a tray panel switch and applies what changed. */
+function changeSettings(next: Settings): ViewState {
+  const previous = settings;
+  settings = sanitize(next);
+  saveSettings(settings);
+  if (JSON.stringify(previous.shortcuts) !== JSON.stringify(settings.shortcuts) ||
+      JSON.stringify(previous.disabledApps) !== JSON.stringify(settings.disabledApps)) {
+    syncShortcuts();
+  }
+  if (previous.launchAtLogin !== settings.launchAtLogin || loginItemEnabled() !== settings.launchAtLogin) {
+    setLoginItem(settings.launchAtLogin);
+  }
+  if (previous.showTrayIcon !== settings.showTrayIcon) updateTray();
+  if (!STORE && previous.autoUpdate !== settings.autoUpdate) startUpdater(settings.autoUpdate);
+  const state = viewState();
+  pushState();
+  return state;
+}
+
 function registerIpc(): void {
   ipcMain.handle("state:get", () => viewState());
-  ipcMain.handle("settings:save", (_event, next: Settings) => {
-    const previous = settings;
-    settings = sanitize(next);
-    saveSettings(settings);
-    if (JSON.stringify(previous.shortcuts) !== JSON.stringify(settings.shortcuts) ||
-        JSON.stringify(previous.disabledApps) !== JSON.stringify(settings.disabledApps)) {
-      syncShortcuts();
-    }
-    if (previous.launchAtLogin !== settings.launchAtLogin || loginItemEnabled() !== settings.launchAtLogin) {
-      setLoginItem(settings.launchAtLogin);
-    }
-    if (previous.showTrayIcon !== settings.showTrayIcon) updateTray();
-    if (!STORE && previous.autoUpdate !== settings.autoUpdate) startUpdater(settings.autoUpdate);
-    const state = viewState();
-    pushState();
-    return state;
-  });
+  ipcMain.handle("settings:save", (_event, next: Settings) => changeSettings(next));
   ipcMain.handle("shortcuts:restore", () => {
     settings = { ...settings, shortcuts: {} };
     saveSettings(settings);
@@ -909,6 +950,23 @@ function start(): void {
     onArranged: showDisplayNotice,
   });
   syncShortcuts();
+  if (MAC) {
+    setupTrayPanel({
+      template: () => menuTemplate(true),
+      layoutPanelId: LAYOUT_PANEL_ID,
+      layouts: layoutPanel,
+      image: (icon) => {
+        const image = icon as Electron.NativeImage;
+        if (typeof image?.toDataURL !== "function" || image.isEmpty()) return null;
+        return { src: image.toDataURL({ scaleFactor: 2 }), template: image.isTemplateImage() };
+      },
+      proSublabel,
+      accent: accentColor,
+      preload: preloadPath(),
+      url: rendererUrl("panel"),
+    });
+    preparePanel();
+  }
   updateTray();
   watchTrust();
   if (MAC && app.isPackaged) watchBundle();

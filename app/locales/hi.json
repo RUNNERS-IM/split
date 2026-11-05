@@ -214,5 +214,7 @@
   "PhoneOffline": "कनेक्ट नहीं है। Split कोशिश करता रहेगा।",
   "PhoneDeviceName": "फ़ोन पर दिखने वाला नाम",
   "PhoneSignOutTitle": "इस कंप्यूटर से साइन आउट करें",
-  "PhoneSignOut": "साइन आउट करें"
+  "PhoneSignOut": "साइन आउट करें",
+  "ShortcutsOff": "शॉर्टकट बंद",
+  "MoreActions": "और"
 }

@@ -214,5 +214,7 @@
   "PhoneOffline": "Non connesso. Split continua a riprovare.",
   "PhoneDeviceName": "Nome sul telefono",
   "PhoneSignOutTitle": "Esci da questo computer",
-  "PhoneSignOut": "Esci"
+  "PhoneSignOut": "Esci",
+  "ShortcutsOff": "Scorciatoie disattivate",
+  "MoreActions": "Altro"
 }

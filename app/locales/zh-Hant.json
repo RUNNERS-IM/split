@@ -211,5 +211,7 @@
   "PhoneOffline": "未連線。Split 會持續嘗試連線。",
   "PhoneDeviceName": "手機上顯示的名稱",
   "PhoneSignOutTitle": "在這台電腦上登出",
-  "PhoneSignOut": "登出"
+  "PhoneSignOut": "登出",
+  "ShortcutsOff": "快速鍵已關閉",
+  "MoreActions": "更多"
 }

@@ -214,5 +214,7 @@
   "PhoneOffline": "Ei yhteyttä. Split yrittää edelleen.",
   "PhoneDeviceName": "Nimi puhelimessa",
   "PhoneSignOutTitle": "Kirjaudu ulos tältä tietokoneelta",
-  "PhoneSignOut": "Kirjaudu ulos"
+  "PhoneSignOut": "Kirjaudu ulos",
+  "ShortcutsOff": "Pikanäppäimet pois",
+  "MoreActions": "Lisää"
 }

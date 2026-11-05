@@ -211,5 +211,7 @@
   "PhoneOffline": "Chưa kết nối. Split sẽ tiếp tục thử lại.",
   "PhoneDeviceName": "Tên hiển thị trên điện thoại",
   "PhoneSignOutTitle": "Đăng xuất khỏi máy tính này",
-  "PhoneSignOut": "Đăng xuất"
+  "PhoneSignOut": "Đăng xuất",
+  "ShortcutsOff": "Đã tắt phím tắt",
+  "MoreActions": "Thêm"
 }

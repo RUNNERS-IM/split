@@ -215,5 +215,7 @@
   "PhoneOffline": "Not connected. Split keeps trying.",
   "PhoneDeviceName": "Name on the phone",
   "PhoneSignOutTitle": "Sign out of this computer",
-  "PhoneSignOut": "Sign Out"
+  "PhoneSignOut": "Sign Out",
+  "ShortcutsOff": "Shortcuts off",
+  "MoreActions": "More"
 }
