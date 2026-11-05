@@ -197,5 +197,7 @@
   "Side.Left": "ซ้าย",
   "Side.Right": "ขวา",
   "Side.Top": "บน",
-  "Side.Bottom": "ล่าง"
+  "Side.Bottom": "ล่าง",
+  "ShortcutsOff": "ปิดคีย์ลัดอยู่",
+  "MoreActions": "เพิ่มเติม"
 }

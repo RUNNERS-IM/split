@@ -200,5 +200,7 @@
   "Side.Left": "Gauche",
   "Side.Right": "Droite",
   "Side.Top": "Haut",
-  "Side.Bottom": "Bas"
+  "Side.Bottom": "Bas",
+  "ShortcutsOff": "Raccourcis désactivés",
+  "MoreActions": "Plus"
 }

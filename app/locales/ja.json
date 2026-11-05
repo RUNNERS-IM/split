@@ -197,5 +197,7 @@
   "Side.Left": "左",
   "Side.Right": "右",
   "Side.Top": "上",
-  "Side.Bottom": "下"
+  "Side.Bottom": "下",
+  "ShortcutsOff": "ショートカット オフ",
+  "MoreActions": "その他"
 }

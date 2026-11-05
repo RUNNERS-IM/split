@@ -197,5 +197,7 @@
   "Side.Left": "左侧",
   "Side.Right": "右侧",
   "Side.Top": "上方",
-  "Side.Bottom": "下方"
+  "Side.Bottom": "下方",
+  "ShortcutsOff": "快捷键已关闭",
+  "MoreActions": "更多"
 }

@@ -198,5 +198,7 @@
   "Side.Left": "Links",
   "Side.Right": "Rechts",
   "Side.Top": "Oben",
-  "Side.Bottom": "Unten"
+  "Side.Bottom": "Unten",
+  "ShortcutsOff": "Kurzbefehle aus",
+  "MoreActions": "Mehr"
 }

@@ -200,5 +200,7 @@
   "Side.Left": "Sinistra",
   "Side.Right": "Destra",
   "Side.Top": "Alto",
-  "Side.Bottom": "Basso"
+  "Side.Bottom": "Basso",
+  "ShortcutsOff": "Scorciatoie disattivate",
+  "MoreActions": "Altro"
 }

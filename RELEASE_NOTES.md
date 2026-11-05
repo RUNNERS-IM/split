@@ -1,5 +1,6 @@
 ## 한국어
 
+- 맥 메뉴 막대 메뉴를 새로 그렸습니다. 줄 간격을 넓혔고, 맨 위 "단축키 켜짐"과 "로그인할 때 열기 · 업데이트 자동 확인"을 메뉴에서 스위치로 바로 켜고 끕니다. 창 동작은 7줄만 보이고 나머지는 "더 보기"로 펼쳐서, 노트북 화면에서도 메뉴 아래가 잘리지 않습니다.
 - 예전 맥 판에서 업데이트한 경우 "로그인할 때 열기"가 꺼진 채 남던 문제를 고쳤습니다. 이번 판을 처음 켤 때 한 번 켜 둡니다. 직접 끈 경우에는 그대로 둡니다.
 - 아랍어로 쓰다가 다른 언어로 바꾸면 메뉴가 오른쪽→왼쪽으로 뒤집힌 채 남던 문제를 고쳤습니다.
 - 아랍어에서 설정 · 단축키 목록 · 저장 창 · 권한 안내 창이 오른쪽→왼쪽으로 놓입니다. 단축키 글자는 ⌥⌘← 순서 그대로입니다.
@@ -28,6 +29,7 @@
 
 ## English
 
+- The Mac menu bar menu is drawn anew: roomier rows, and switches for "Shortcuts on", "Open at Login" and "Check for Updates Automatically" right in the menu. Seven window actions show and the rest open under "More", so the menu no longer runs off a laptop screen.
 - "Open at login" no longer stays off after updating from the old macOS app. It is turned on once when this version first starts; if you turned it off yourself, it stays off.
 - Menus no longer stay mirrored right to left after switching from Arabic to another language.
 - In Arabic, settings, the shortcut list, the save window and the permission guide lay out right to left; shortcut keys keep their ⌥⌘← order.

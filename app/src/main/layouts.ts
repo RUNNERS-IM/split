@@ -496,7 +496,7 @@ export interface LayoutPanel {
   choose: (chosen: string) => void;
 }
 
-/** Stands in the template for the macOS panel; macMenu.ts puts the panel there. */
+/** Stands in the template for the layout card of the macOS tray panel (src/main/trayPanel.ts). */
 export const LAYOUT_PANEL_ID = "split-layout-panel";
 
 /**
@@ -504,7 +504,7 @@ export const LAYOUT_PANEL_ID = "split-layout-panel";
  * opens, so the monitors, window counts and saved layouts are current. `onChange` runs after a
  * layout was saved or removed.
  *
- * With `panel` (macOS), the monitors, shapes and saved layouts are one item that macMenu.ts
+ * With `panel` (macOS), the monitors, shapes and saved layouts are one item that the tray panel
  * replaces with the panel the macOS app had, and `layoutPanel` describes it. A plain menu cannot
  * hold that panel, so elsewhere with one monitor the shapes are items here, and with more each
  * monitor is a submenu of shapes, in place of choosing a monitor row first.

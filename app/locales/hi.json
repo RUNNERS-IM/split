@@ -200,5 +200,7 @@
   "Side.Left": "बायाँ",
   "Side.Right": "दायाँ",
   "Side.Top": "ऊपर",
-  "Side.Bottom": "नीचे"
+  "Side.Bottom": "नीचे",
+  "ShortcutsOff": "शॉर्टकट बंद",
+  "MoreActions": "और"
 }

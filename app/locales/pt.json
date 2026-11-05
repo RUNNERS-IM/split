@@ -201,5 +201,7 @@
   "Side.Left": "Esquerda",
   "Side.Right": "Direita",
   "Side.Top": "Topo",
-  "Side.Bottom": "Base"
+  "Side.Bottom": "Base",
+  "ShortcutsOff": "Atalhos desativados",
+  "MoreActions": "Mais"
 }

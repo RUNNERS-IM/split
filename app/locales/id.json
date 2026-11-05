@@ -197,5 +197,7 @@
   "Side.Left": "Kiri",
   "Side.Right": "Kanan",
   "Side.Top": "Atas",
-  "Side.Bottom": "Bawah"
+  "Side.Bottom": "Bawah",
+  "ShortcutsOff": "Pintasan nonaktif",
+  "MoreActions": "Lainnya"
 }

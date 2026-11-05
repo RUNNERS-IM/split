@@ -200,5 +200,7 @@
   "Side.Left": "Vasen",
   "Side.Right": "Oikea",
   "Side.Top": "Ylä",
-  "Side.Bottom": "Ala"
+  "Side.Bottom": "Ala",
+  "ShortcutsOff": "Pikanäppäimet pois",
+  "MoreActions": "Lisää"
 }

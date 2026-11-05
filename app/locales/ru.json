@@ -197,5 +197,7 @@
   "Side.Left": "Слева",
   "Side.Right": "Справа",
   "Side.Top": "Сверху",
-  "Side.Bottom": "Снизу"
+  "Side.Bottom": "Снизу",
+  "ShortcutsOff": "Сочетания клавиш выключены",
+  "MoreActions": "Ещё"
 }

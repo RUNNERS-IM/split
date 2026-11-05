@@ -200,5 +200,7 @@
   "Side.Left": "Izquierda",
   "Side.Right": "Derecha",
   "Side.Top": "Arriba",
-  "Side.Bottom": "Abajo"
+  "Side.Bottom": "Abajo",
+  "ShortcutsOff": "Atajos desactivados",
+  "MoreActions": "Más"
 }

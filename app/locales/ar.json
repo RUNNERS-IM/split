@@ -206,5 +206,7 @@
   "Side.Left": "اليسار",
   "Side.Right": "اليمين",
   "Side.Top": "الأعلى",
-  "Side.Bottom": "الأسفل"
+  "Side.Bottom": "الأسفل",
+  "ShortcutsOff": "الاختصارات متوقفة",
+  "MoreActions": "المزيد"
 }

@@ -197,5 +197,7 @@
   "Side.Left": "Trái",
   "Side.Right": "Phải",
   "Side.Top": "Trên",
-  "Side.Bottom": "Dưới"
+  "Side.Bottom": "Dưới",
+  "ShortcutsOff": "Đã tắt phím tắt",
+  "MoreActions": "Thêm"
 }

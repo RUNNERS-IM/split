@@ -197,5 +197,7 @@
   "Side.Left": "왼쪽",
   "Side.Right": "오른쪽",
   "Side.Top": "위쪽",
-  "Side.Bottom": "아래쪽"
+  "Side.Bottom": "아래쪽",
+  "ShortcutsOff": "단축키 꺼짐",
+  "MoreActions": "더 보기"
 }

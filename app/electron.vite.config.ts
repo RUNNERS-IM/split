@@ -31,6 +31,7 @@ export default defineConfig({
           update: resolve("src/renderer/update.html"),
           layout: resolve("src/renderer/layout.html"),
           guide: resolve("src/renderer/guide.html"),
+          panel: resolve("src/renderer/panel.html"),
         },
       },
     },

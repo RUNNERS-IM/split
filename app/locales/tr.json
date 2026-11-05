@@ -197,5 +197,7 @@
   "Side.Left": "Sol",
   "Side.Right": "Sağ",
   "Side.Top": "Üst",
-  "Side.Bottom": "Alt"
+  "Side.Bottom": "Alt",
+  "ShortcutsOff": "Kısayollar kapalı",
+  "MoreActions": "Daha fazla"
 }

@@ -201,5 +201,7 @@
   "Side.Left": "Left",
   "Side.Right": "Right",
   "Side.Top": "Top",
-  "Side.Bottom": "Bottom"
+  "Side.Bottom": "Bottom",
+  "ShortcutsOff": "Shortcuts off",
+  "MoreActions": "More"
 }

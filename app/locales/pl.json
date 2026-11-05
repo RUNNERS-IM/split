@@ -201,5 +201,7 @@
   "Side.Left": "Lewo",
   "Side.Right": "Prawo",
   "Side.Top": "Góra",
-  "Side.Bottom": "Dół"
+  "Side.Bottom": "Dół",
+  "ShortcutsOff": "Skróty wyłączone",
+  "MoreActions": "Więcej"
 }
