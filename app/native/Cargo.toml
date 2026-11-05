@@ -1,6 +1,6 @@
 [package]
 name = "split-native"
-version = "2.6.1105+2"
+version = "2.6.1105+3"
 description = "Split's one native module: monitors, windows, moving windows, the app in front and modifier keys"
 authors = ["RUNNERS-IM"]
 edition = "2024"
