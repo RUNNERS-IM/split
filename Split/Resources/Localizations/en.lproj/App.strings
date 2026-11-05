@@ -177,7 +177,7 @@
 "RunnersGet" = "Get";
 
 /* Split Pro: the pill next to paid features and the sheet it opens */
-"ProFeatures" = "Save and restore layouts, and load a layout automatically for each set of displays";
+"ProFeatures" = "Put each app's windows in a place you choose, open a whole workspace at once, split the screen into your own grid, and keep settings the same on all your Macs";
 "ProPriceMonthly" = "$1 / month";
 "ProPriceYearly" = "$6 / year";
 "ProComingSoon" = "Coming soon";

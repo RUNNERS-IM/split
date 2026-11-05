@@ -156,7 +156,7 @@
 "RunnersGet" = "Obter";
 
 /* Split Pro: the pill next to paid features and the sheet it opens */
-"ProFeatures" = "Salvar e restaurar disposições e carregar uma automaticamente para cada conjunto de monitores";
+"ProFeatures" = "Colocar as janelas de cada app no lugar escolhido, abrir um espaço de trabalho inteiro de uma vez, dividir a tela em uma grade própria e manter os mesmos ajustes em todos os seus Macs";
 "ProPriceMonthly" = "US$ 1 / mês";
 "ProPriceYearly" = "US$ 6 / ano";
 "ProComingSoon" = "Em breve";

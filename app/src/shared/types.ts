@@ -60,6 +60,8 @@ export interface ViewState {
    * Null outside macOS and in the App Store build. The settings page warns when either is on.
    */
   spaces: { reorders: boolean; separate: boolean } | null;
+  /** The RUNNERS account the phone app reaches this computer through (src/main/phone.ts). */
+  phone: { status: "signedOut" | "connecting" | "connected" | "offline"; email: string | null; name: string };
   /** Screen text for the chosen language, already merged over English. */
   strings: Record<string, string>;
   /** BCP 47 tag of that language, for dates and plural rules. */
@@ -146,6 +148,9 @@ export type UpdateProgress = number | "ready";
 
 export interface SplitApi {
   getState(): Promise<ViewState>;
+  /** Signs in for the phone app; `error` is the string key of what went wrong, or null. */
+  phoneSignIn(email: string, password: string): Promise<{ error: string | null; state: ViewState }>;
+  phoneSignOut(): Promise<ViewState>;
   saveSettings(settings: Settings): Promise<ViewState>;
   restoreDefaultShortcuts(): Promise<ViewState>;
   /** While recording, Split lets go of its own shortcuts so the keys reach the page. */

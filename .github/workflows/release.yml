@@ -9,7 +9,7 @@
 #
 # macOS 는 Developer ID 로 서명 · 공증한다. 서명 키는 저장소 비밀값에서 이 실행 동안만 쓰는 임시 키체인에 넣고
 # 끝나면 지운다. 윈도우는 코드 서명 인증서가 없어 서명하지 않는다(처음 열 때 SmartScreen 경고가 뜬다).
-# App Store 판은 아직 예전 맥 판(Split.xcodeproj, scripts/release-app-store.sh)으로 사람이 올린다.
+# App Store 판은 Electron mas 판으로 scripts/release-app-store.sh 를 돌려 사람이 올린다(TestFlight 까지).
 #
 # 손으로 돌릴 때(workflow_dispatch) publish 를 끄면 버전을 올리지 않고 빌드 · 서명 · 공증까지만 해서
 # 결과를 실행 기록 첨부로만 남긴다. 아무에게도 배포되지 않으니 빌드 시험에 쓴다.

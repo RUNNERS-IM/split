@@ -4,7 +4,7 @@
 
 키보드 단축키로 macOS 창을 옮기고 크기를 맞추는 앱입니다. 마우스가 필요 없습니다.
 
-Split 은 RUNNERS 가 만드는 무료 창 정렬 앱입니다. Apple 실리콘 · 인텔 맥 유니버설 빌드, 공증된 배포판, 창 자동 배치 · 배치 저장, 18개 언어를 지원합니다.
+Split 은 RUNNERS 가 만드는 무료 창 정렬 앱입니다. Apple 실리콘 · 인텔 맥 유니버설 빌드, 공증된 배포판, 창 자동 배치 · 배치 저장, 20개 언어를 지원합니다.
 
 ## 설치
 
@@ -22,7 +22,7 @@ brew trust runners-im/tap   # 최신 Homebrew 는 공식 목록 밖 저장소를
 brew install --cask split
 ```
 
-Split 은 한국어, 영어, 일본어, 중국어(간체), 독일어, 프랑스어, 스페인어, 이탈리아어, 포르투갈어, 네덜란드어, 폴란드어, 러시아어, 아랍어, 힌디어, 인도네시아어, 태국어, 베트남어, 핀란드어로 나옵니다. 맥에 설정한 언어를 따라갑니다.
+Split 은 한국어, 영어, 일본어, 중국어(간체), 독일어, 프랑스어, 스페인어, 이탈리아어, 포르투갈어, 네덜란드어, 폴란드어, 러시아어, 아랍어, 힌디어, 인도네시아어, 태국어, 베트남어, 핀란드어, 튀르키예어, 중국어(번체)로 나옵니다. 맥에 설정한 언어를 따라갑니다.
 
 ## 기본 단축키
 
@@ -90,6 +90,27 @@ Split 은 한국어, 영어, 일본어, 중국어(간체), 독일어, 프랑스�
 - 마지막 동작 취소 — ⌥⌘Z
 - 다시 실행 — ⌥⇧⌘Z
 
+⌥⌘ 를 1초 누르고 있으면 단축키 목록이 화면에 뜹니다. 설정에서 끌 수 있습니다.
+
+### 단축키 잠시 끄기
+
+다른 앱이 같은 키를 써야 할 때는 Split 메뉴에서 **단축키 잠시 끄기** 를 고릅니다.
+
+- **1시간 동안** — Split 단축키가 1시간 동안 모두 꺼집니다.
+- **(앱) 앱을 쓰는 동안** — 그 앱이 맨 앞에 있을 때만 Split 단축키가 꺼지고, 다른 앱으로 옮기면 바로 다시 켜집니다. 그 앱을 맨 앞에 둔 채 같은 항목을 다시 고르면 단축키가 다시 켜집니다.
+
+## 실행 인자
+
+Releases 나 Homebrew 로 받은 판에서 확인했습니다. 맥 앱스토어판에서는 아직 해 보지 않았습니다. Split 이 이미 켜져 있어야 하고, 인자는 켜져 있는 Split 에 전달됩니다.
+
+```sh
+open -g -a Split --args --perform MoveToLeftHalf   # 창 동작 하나 실행 (스크립트 · 실행기용)
+open -g -a Split --args --menu                     # 마우스 자리에 Split 메뉴 띄우기
+open -g -a Split --args --guide                    # 손쉬운 사용 안내 다시 보기
+```
+
+`--perform` 에 쓰는 동작 이름은 MoveToCenter, MoveToFullscreen, MoveToLeftHalf, MoveToRightHalf, MoveToTopHalf, MoveToBottomHalf, MoveToUpperLeft, MoveToUpperRight, MoveToLowerLeft, MoveToLowerRight, MoveToNextThird, MoveToPreviousThird, MoveToNextDisplay, MoveToPreviousDisplay, MakeLarger, MakeSmaller, UndoLastMove, RedoLastMove, ArrangeWindows 입니다. 인자 없이 Split 을 한 번 더 열면 설정 창이 뜹니다.
+
 ## 로드맵
 
 끝난 것:
@@ -122,6 +143,10 @@ Split 은 macOS 의 손쉬운 사용(Accessibility) 프로토콜로 다른 앱�
 ### 터미널 창이 이상하게 움직입니다
 
 터미널과 비슷한 앱(iTerm2 등)은 글자 행·열이 온전히 보이는 크기만 허용합니다. Split 은 먼저 정확한 크기를 시도하고, 안 되면 들어갈 때까지 조금씩 줄입니다. 그래서 살짝 덜컹거려 보일 수 있고, 결과는 목표 영역 가운데에 놓입니다.
+
+### Split 아이콘이 노치에 가려졌습니다
+
+노치가 있는 맥북에서 메뉴 막대가 꽉 차면 Split 아이콘이 노치 밑으로 밀려 안 보일 수 있습니다. Split 을 한 번 더 열면(응용 프로그램 폴더나 Spotlight) 설정 창이 뜨고, `open -g -a Split --args --menu` 를 실행하면 마우스 자리에 Split 메뉴가 뜹니다. 설정에서 메뉴 막대 아이콘을 꺼 둔 때도 같습니다.
 
 ### 어떤 앱은 아예 안 됩니다
 

@@ -156,7 +156,7 @@
 "RunnersGet" = "Tải";
 
 /* Split Pro: the pill next to paid features and the sheet it opens */
-"ProFeatures" = "Lưu và khôi phục bố cục, tự động tải bố cục cho từng bộ màn hình";
+"ProFeatures" = "Đặt cửa sổ của từng ứng dụng vào chỗ bạn chọn, mở cả không gian làm việc một lần, chia màn hình theo lưới riêng và giữ cài đặt giống nhau trên mọi máy Mac";
 "ProPriceMonthly" = "$1 / tháng";
 "ProPriceYearly" = "$6 / năm";
 "ProComingSoon" = "Sắp ra mắt";

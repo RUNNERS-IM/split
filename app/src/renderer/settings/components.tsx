@@ -73,7 +73,7 @@ export function Row({
   );
 }
 
-/** A small macOS switch (NSSwitch, NSControlSizeSmall). */
+/** The on/off switch every RUNNERS app shares (26 × 16, see settings.css). */
 export function Switch({
   checked,
   onChange,

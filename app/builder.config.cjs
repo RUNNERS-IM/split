@@ -62,6 +62,29 @@ module.exports = {
       NSAppleEventsUsageDescription: 'Split removes Spectacle from your login items so the two apps do not answer the same shortcuts.',
     },
   },
+  // App Store build (electron-builder --mac mas:universal, scripts/release-app-store.sh). It runs in the App Sandbox,
+  // has no update check (process.mas) and is signed with Apple Distribution and the profile in SPLIT_MAS_PROFILE.
+  mas: {
+    type: 'distribution',
+    artifactName: `Split-${tag}-mas.\${ext}`,
+    bundleVersion,
+    hardenedRuntime: false,
+    notarize: false,
+    entitlements: 'resources/build/entitlements.mas.plist',
+    entitlementsInherit: 'resources/build/entitlements.mas.inherit.plist',
+    provisioningProfile: process.env.SPLIT_MAS_PROFILE,
+    extraResources: [{ from: 'native', to: 'native', filter: ['split-native.darwin-universal.node'] }],
+    x64ArchFiles: 'Contents/Resources/native/*.node',
+    extendInfo: {
+      LSUIElement: true,
+      NSHumanReadableCopyright: '© 2026 RUNNERS. All rights reserved.',
+      // Why: App Store Connect takes at most three numbers here, so the same-day "+5" is left out (2.6.1101);
+      // scripts/release-app-store.sh passes the version it uploads in SPLIT_MAS_VERSION.
+      CFBundleShortVersionString: process.env.SPLIT_MAS_VERSION || base,
+      ElectronTeamID: 'RGWVXJ8URP',
+      ITSAppUsesNonExemptEncryption: false,
+    },
+  },
   win: {
     icon: 'resources/build/icon.ico',
     artifactName: `Split-${tag}-windows-x64-setup.\${ext}`,

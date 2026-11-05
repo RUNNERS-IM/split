@@ -177,7 +177,7 @@
 "RunnersGet" = "Hae";
 
 /* Split Pro: the pill next to paid features and the sheet it opens */
-"ProFeatures" = "Asettelujen tallennus ja palautus sekä automaattinen lataus kullekin näyttöyhdistelmälle";
+"ProFeatures" = "Jokaisen apin ikkunat valitsemaasi paikkaan, koko työtila auki kerralla, oma ruudukko näytön jakamiseen ja samat asetukset kaikissa Maceissasi";
 "ProPriceMonthly" = "1 $ / kk";
 "ProPriceYearly" = "6 $ / vuosi";
 "ProComingSoon" = "Tulossa pian";
