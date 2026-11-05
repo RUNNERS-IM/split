@@ -739,7 +739,10 @@ function registerIpc(): void {
     });
   });
   ipcMain.handle("link:open", (_event, kind: LinkKind) => openLink(kind));
-  ipcMain.handle("phone:signIn", async (_event, email: string, password: string) => ({ error: await signIn(email, password), state: viewState() }));
+  ipcMain.handle("phone:signIn", async (_event, mode: "login" | "signup", email: string, password: string) => ({
+    error: await signIn(mode === "signup" ? "signup" : "login", email, password),
+    state: viewState(),
+  }));
   ipcMain.handle("phone:signOut", () => {
     signOut();
     return viewState();

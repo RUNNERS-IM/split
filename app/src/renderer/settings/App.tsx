@@ -9,7 +9,8 @@ import { makeStrings, StringsContext } from "./strings.ts";
 import GeneralTab from "./tabs/GeneralTab.tsx";
 import EffectsTab from "./tabs/EffectsTab.tsx";
 import ShortcutsTab from "./tabs/ShortcutsTab.tsx";
-import PhoneTab from "./tabs/PhoneTab.tsx";
+import PhoneTab, { PHONE_STATUS_KEYS } from "./tabs/PhoneTab.tsx";
+import { AccountButton, SignInSheet, type SignMode } from "../runners-account/runners-account";
 
 type Tab = "general" | "effects" | "shortcuts" | "phone";
 
@@ -27,6 +28,7 @@ export type Update = (change: (settings: Settings) => Settings) => Promise<void>
 export default function App() {
   const [tab, setTab] = useState<Tab>("general");
   const [state, setState] = useState<ViewState | null>(null);
+  const [signingIn, setSigningIn] = useState(false);
   const stateRef = useRef<ViewState | null>(null);
   // Saves can overlap when switches are flipped quickly; only the answer to the newest one
   // is shown, so an older answer never undoes a newer click.
@@ -101,9 +103,21 @@ export default function App() {
     [show],
   );
 
+  // The shared sheet (runners-app-kit/desktop) closes when this resolves and shows the code it rejects with.
+  const signIn = useCallback(
+    async (mode: SignMode, email: string, password: string) => {
+      const answer = await window.split.phoneSignIn(mode, email.trim(), password);
+      show(answer.state);
+      if (answer.error) throw new Error(answer.error);
+    },
+    [show],
+  );
+  const closeSignIn = useCallback(() => setSigningIn(false), []);
+
   if (!state) {
     return null;
   }
+  const { phone } = state;
 
   return (
     <StringsContext.Provider value={strings}>
@@ -123,11 +137,23 @@ export default function App() {
               <span>{strings.t(label)}</span>
             </button>
           ))}
+          {phone.status !== "signedOut" && phone.email && (
+            <div className="toolbar-account">
+              <AccountButton
+                lang={state.locale}
+                account={phone.email}
+                line={strings.t(PHONE_STATUS_KEYS[phone.status])}
+                items={[{ label: strings.t("TabPhone"), icon: <Smartphone size={16} strokeWidth={1.75} aria-hidden />, onSelect: () => setTab("phone") }]}
+                onSignOut={() => void window.split.phoneSignOut().then(show)}
+              />
+            </div>
+          )}
         </nav>
         {tab === "general" && <GeneralTab state={state} update={update} />}
         {tab === "effects" && <EffectsTab state={state} update={update} />}
         {tab === "shortcuts" && <ShortcutsTab state={state} update={update} show={show} />}
-        {tab === "phone" && <PhoneTab state={state} show={show} />}
+        {tab === "phone" && <PhoneTab state={state} openSignIn={() => setSigningIn(true)} />}
+        {signingIn && <SignInSheet lang={state.locale} signIn={signIn} onClose={closeSignIn} />}
       </div>
     </StringsContext.Provider>
   );
