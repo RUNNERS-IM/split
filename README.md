@@ -4,7 +4,7 @@
 
 Move and resize macOS windows with keyboard shortcuts. No mouse required.
 
-Split is a free window manager by RUNNERS: a universal app for Apple silicon and Intel Macs with notarized releases, auto-arrange, saved layouts and 18 languages.
+Split is a free window manager by RUNNERS: a universal app for Apple silicon and Intel Macs with notarized releases, auto-arrange, saved layouts and 20 languages.
 
 ## Install
 
@@ -22,7 +22,7 @@ brew trust runners-im/tap   # recent Homebrew asks you to trust third-party taps
 brew install --cask split
 ```
 
-Split speaks Arabic, Chinese (Simplified), Dutch, English, Finnish, French, German, Hindi, Indonesian, Italian, Japanese, Korean, Polish, Portuguese, Russian, Spanish, Thai and Vietnamese. It follows the language set for your Mac.
+Split speaks Arabic, Chinese (Simplified), Chinese (Traditional), Dutch, English, Finnish, French, German, Hindi, Indonesian, Italian, Japanese, Korean, Polish, Portuguese, Russian, Spanish, Thai, Turkish and Vietnamese. It follows the language set for your Mac.
 
 ## Default keyboard shortcuts
 
@@ -90,6 +90,27 @@ Split keeps the window touching the screen edges it already touches while resizi
 - Undo last window action — ⌥⌘Z
 - Redo — ⌥⇧⌘Z
 
+Hold ⌥⌘ for a second to see the list of shortcuts on screen. This can be turned off in Settings.
+
+### Pausing shortcuts
+
+When another app needs the same keys, choose **Pause Shortcuts** in the Split menu:
+
+- **For an Hour** — every Split shortcut is off for an hour.
+- **While (app) Is in Front** — Split shortcuts are off whenever that app is the front app, and come back as soon as you switch away. With that app in front, choose the same item again to turn its shortcuts back on.
+
+## Launch options
+
+These are checked in the version downloaded from Releases or Homebrew; the Mac App Store version has not been tried. Split must already be running; the options are passed to it.
+
+```sh
+open -g -a Split --args --perform MoveToLeftHalf   # run one window action, for scripts and launchers
+open -g -a Split --args --menu                     # show the Split menu at the pointer
+open -g -a Split --args --guide                    # show the Accessibility guide again
+```
+
+The action names for `--perform` are MoveToCenter, MoveToFullscreen, MoveToLeftHalf, MoveToRightHalf, MoveToTopHalf, MoveToBottomHalf, MoveToUpperLeft, MoveToUpperRight, MoveToLowerLeft, MoveToLowerRight, MoveToNextThird, MoveToPreviousThird, MoveToNextDisplay, MoveToPreviousDisplay, MakeLarger, MakeSmaller, UndoLastMove, RedoLastMove and ArrangeWindows. Opening Split again without options opens its settings.
+
 ## Roadmap
 
 Done:
@@ -120,6 +141,10 @@ Applications may set a minimum or maximum size for their windows. Split always r
 ### Terminal windows behave oddly
 
 Terminal and similar apps (iTerm2 and others) only allow sizes that show whole rows and columns. Split tries the exact size first and then shrinks the window step by step until it fits, which can look slightly jittery. The result is centered inside the intended region.
+
+### The Split icon is hidden behind the notch
+
+On a MacBook with a notch, a full menu bar can push the Split icon under the notch. Open Split again (from Applications or Spotlight) to get its settings, or run `open -g -a Split --args --menu` to show the Split menu at the pointer. The same works when the menu bar icon is turned off in Settings.
 
 ### Some applications cannot be controlled
 

@@ -10,6 +10,8 @@ function listen<T>(channel: string, listener: (value: T) => void): () => void {
 
 const api: SplitApi = {
   getState: () => ipcRenderer.invoke("state:get"),
+  phoneSignIn: (email, password) => ipcRenderer.invoke("phone:signIn", email, password),
+  phoneSignOut: () => ipcRenderer.invoke("phone:signOut"),
   saveSettings: (settings) => ipcRenderer.invoke("settings:save", settings),
   restoreDefaultShortcuts: () => ipcRenderer.invoke("shortcuts:restore"),
   setRecording: (recording) => ipcRenderer.invoke("shortcuts:recording", recording),

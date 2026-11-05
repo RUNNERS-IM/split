@@ -2,55 +2,14 @@
 
 - 맥 메뉴 막대 메뉴를 새로 그렸습니다. 줄 간격을 넓혔고, 맨 위 "단축키 켜짐"과 "로그인할 때 열기 · 업데이트 자동 확인"을 메뉴에서 스위치로 바로 켜고 끕니다. 창 동작은 7줄만 보이고 나머지는 "더 보기"로 펼쳐서, 노트북 화면에서도 메뉴 아래가 잘리지 않습니다.
 - 예전 맥 판에서 업데이트한 경우 "로그인할 때 열기"가 꺼진 채 남던 문제를 고쳤습니다. 이번 판을 처음 켤 때 한 번 켜 둡니다. 직접 끈 경우에는 그대로 둡니다.
-- 아랍어로 쓰다가 다른 언어로 바꾸면 메뉴가 오른쪽→왼쪽으로 뒤집힌 채 남던 문제를 고쳤습니다.
-- 아랍어에서 설정 · 단축키 목록 · 저장 창 · 권한 안내 창이 오른쪽→왼쪽으로 놓입니다. 단축키 글자는 ⌥⌘← 순서 그대로입니다.
-- 단축키 목록에서 긴 이름이 "…"로 잘리지 않고 끝까지 보입니다.
-- 창 개수에 맞는 낱말을 씁니다(영어 "1 window", 아랍어 · 폴란드어 복수형 등). 한국어 "⌥⌘Z을(를)" 같은 어색한 조사도 고쳤습니다.
-- 권한이 이미 켜져 있으면 권한 안내 창이 시스템 설정을 열지 않습니다.
-- 메뉴 배치 칸의 "자동" 모양을 테두리로 그려, 창 개수가 같은 다른 모양과 구별됩니다.
-- 창이 없는 모니터에서도 메뉴 배치 칸의 "자동" 모양이 빈 상자 대신 예시 모양으로 보입니다.
-- 한국어 안내 문구의 말투를 "~하십시오"로 맞췄습니다.
-- 반복해서 누를 때 창 이동 알림에 "왼쪽 반 → 왼쪽 3/4 → 왼쪽 1/4"처럼 지금 크기가 나옵니다.
-- 손쉬운 사용 권한 안내 창을 새로 그렸습니다. 권한이 켜지면 처음 써 볼 단축키를 보여 줍니다.
-- 메뉴가 열린 채로 Split 을 다시 실행하면 Split 이 꺼지던 문제를 고쳤습니다.
-- `Split --perform 동작이름` 이 앞에 `--` 를 붙이지 않아도 동작합니다.
-- 예전 맥 판(2.6.1030)에서 자동 업데이트로 새 판을 받을 때 "잘못 서명된 업데이트" 오류가 나던 문제를 고쳤습니다.
-- 배치 저장 · 되살리기는 무료 기능이라 메뉴와 저장 창에서 Pro 표시를 뺐습니다.
-- 반 · 모서리 단축키를 반복해서 누르면 1/2 → 3/4 → 1/4 로 바뀝니다. 3분의 1은 ⌃⌥← · ⌃⌥→ 로 그대로 쓸 수 있습니다.
-- Spectacle 이 Split 보다 늦게 켜져도 알아채고, 끌지 묻습니다. 끄면 로그인 항목에서도 빼서 다음 로그인 때 다시 켜지지 않습니다. Rectangle · Magnet 이 켜져 있으면 설정 창에 단축키가 겹칠 수 있다고 알려 줍니다.
-- Homebrew 등으로 새 판을 덮어 설치하면 켜져 있던 Split 이 새 판으로 스스로 다시 켜집니다. 껐다 켜지 않아도 됩니다.
-- 맥 메뉴 막대의 배치 칸이 예전 맥 판처럼 돌아왔습니다. 모니터를 고르고 2개 · 3개 · 4개 · 자동 모양 중 하나를 누르면 됩니다.
-- 창을 오른쪽이나 아래쪽으로 보낼 때 창이 화면 끝까지 붙지 않고 가운데에 걸리던 문제를 고쳤습니다.
-- 맥 · 윈도우 · 리눅스가 같은 Split을 씁니다. 단축키와 설정은 예전 맥 판에서 그대로 가져옵니다.
-- 메뉴 막대의 배치 메뉴에서 지금 창 배치를 저장하고, 저장한 배치를 한 번에 되돌릴 수 있습니다.
-- 모니터를 뺐다가 다시 꽂으면 창이 원래 모니터의 원래 자리로 돌아갑니다.
-- 처음 켤 때 손쉬운 사용 권한을 켜는 방법을 그림과 함께 안내합니다.
-- 업데이트 창에서 바뀐 점을 보고 바로 설치할 수 있습니다.
+- 설정에 휴대폰 탭이 생겼습니다. RUNNERS 계정으로 로그인하면 Split 휴대폰 앱에서 이 컴퓨터의 창을 모양대로 정리하고, 저장한 배치를 되돌리고, 마지막 정리를 되돌릴 수 있습니다.
+- 설정의 켜고 끄기 단추 크기를 다른 RUNNERS 앱과 같게 맞췄습니다.
+- 맥 앱 아이콘에 큰 크기를 넣어 Finder 와 앱스토어에서 또렷하게 보입니다.
 
 ## English
 
 - The Mac menu bar menu is drawn anew: roomier rows, and switches for "Shortcuts on", "Open at Login" and "Check for Updates Automatically" right in the menu. Seven window actions show and the rest open under "More", so the menu no longer runs off a laptop screen.
 - "Open at login" no longer stays off after updating from the old macOS app. It is turned on once when this version first starts; if you turned it off yourself, it stays off.
-- Menus no longer stay mirrored right to left after switching from Arabic to another language.
-- In Arabic, settings, the shortcut list, the save window and the permission guide lay out right to left; shortcut keys keep their ⌥⌘← order.
-- Long names in the shortcut list show in full instead of ending in "…".
-- Window counts use the right word for the number ("1 window", Arabic and Polish plurals).
-- The permission guide no longer opens System Settings when permission is already on.
-- The Auto shape in the menu's layout panel is drawn as outlines, so it no longer looks like the fixed shape with the same window count.
-- The Auto shape in the menu's layout panel now shows an example instead of an empty box on a monitor with no windows.
-- Pressing a shortcut again now says which size you landed on: "Left Half → Left 3/4 → Left 1/4".
-- The Accessibility guide is redrawn, and once permission is on it shows the first shortcut to try.
-- Opening Split again while its menu was open no longer makes Split quit.
-- `Split --perform ActionName` works without a leading `--`.
-- Updating from the previous Mac app (2.6.1030) no longer fails with an "improperly signed" error.
-- Saving and restoring layouts is free, so the Pro mark is gone from the menu and the save window.
-- Pressing a half or corner shortcut again now goes 1/2 → 3/4 → 1/4. Thirds are still on ⌃⌥← and ⌃⌥→.
-- Split now notices Spectacle even when it starts later, and offers to quit it and remove it from your login items. Settings also warns when Rectangle or Magnet is running, since their shortcuts can be the same.
-- When a new version is installed over Split while it is running (for example with Homebrew), Split restarts into it on its own.
-- The layout panel in the Mac menu bar is back as in the previous Mac version: pick a monitor, then a 2, 3, 4 or Auto shape.
-- Moving a window to the right or bottom now fills up to the screen edge instead of stopping partway.
-- Split is now the same app on macOS, Windows and Linux. Your shortcuts and settings come over from the previous Mac version.
-- Save the current window layout from the Layout menu in the menu bar, and bring a saved layout back in one go.
-- When you unplug a monitor and plug it back in, windows go back to where they were on it.
-- The first launch shows, with pictures, how to turn on Accessibility for Split.
-- The update window shows what changed and installs the new version right away.
+- Settings has a new Phone tab. Sign in with your RUNNERS account to arrange this computer's windows into a shape, bring back a saved layout or undo the last arrangement from the Split phone app.
+- The switches in settings are now the same size as in the other RUNNERS apps.
+- The Mac app icon now includes the large sizes, so it looks sharp in Finder and on the App Store.

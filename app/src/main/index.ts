@@ -32,7 +32,8 @@ import { defaultShortcut, KeyCombo } from "../core/shortcuts.ts";
 import type { LinkKind, OverlayPayload, Settings, SheetPayload, ViewState } from "../shared/types";
 import { removeLoginItem, runningPids } from "./apps.ts";
 import { displayChangeLabel, recordSoon, startDisplayWatcher } from "./displays.ts";
-import { LAYOUT_PANEL_ID, layoutMenuItems, layoutPanel, layoutRestoringForDisplays, restoreLayout, setupLayouts } from "./layouts.ts";
+import { applyShape, currentDisplays, LAYOUT_PANEL_ID, layoutMenuItems, layoutPanel, layoutRestoringForDisplays, layouts, onLayoutsChanged, restoreLayout, setupLayouts, SHAPES, type LayoutShape } from "./layouts.ts";
+import { announceState, phoneView, setupPhone, signIn, signOut } from "./phone.ts";
 import { guideGranted, openAccessibilitySettings, registerGuideIpc, showGuide } from "./guide.ts";
 import { currentLanguage, loadLanguage, rightToLeft, strings, t } from "./i18n.ts";
 import { accelerator, displayShortcut, displayText } from "./keys.ts";
@@ -191,6 +192,7 @@ function viewState(): ViewState {
     spaces: MAC && !STORE ? spacesSettings() : null,
     strings: strings(),
     locale: currentLanguage(),
+    phone: phoneView(),
   };
 }
 
@@ -737,6 +739,11 @@ function registerIpc(): void {
     });
   });
   ipcMain.handle("link:open", (_event, kind: LinkKind) => openLink(kind));
+  ipcMain.handle("phone:signIn", async (_event, email: string, password: string) => ({ error: await signIn(email, password), state: viewState() }));
+  ipcMain.handle("phone:signOut", () => {
+    signOut();
+    return viewState();
+  });
   ipcMain.handle("trust:request", () => {
     trusted = native.isTrusted(true);
     return trusted;
@@ -971,6 +978,37 @@ function start(): void {
   // Shortcuts registered before sleep can stop firing on some systems; register them again on wake.
   powerMonitor.on("resume", syncShortcuts);
   screen.on("display-metrics-changed", () => hideFeedback());
+  setupPhone({ state: phoneState, run: phoneCommand, changed: pushState });
+  onLayoutsChanged(announceState);
+  screen.on("display-added", announceState);
+  screen.on("display-removed", announceState);
+}
+
+/** What the phone app shows for this computer; also the answer to layouts.list. */
+function phoneState(): unknown {
+  return { displays: currentDisplays(), shapes: [...SHAPES], layouts: layouts().map(({ id, name }) => ({ id, name })) };
+}
+
+/** Runs a command from the phone app (src/main/phone.ts). Throwing answers it with ok: false. */
+function phoneCommand(name: string, args: Record<string, unknown>): unknown {
+  if (name === "layouts.list") return phoneState();
+  trusted = native.isTrusted(false);
+  if (!trusted) throw new Error("untrusted");
+  if (name === "shape.apply") {
+    const shape = args.shape as LayoutShape;
+    if (!SHAPES.includes(shape) || typeof args.displayId !== "string") throw new Error("bad-args");
+    return { moved: applyShape(shape, args.displayId) };
+  }
+  if (name === "layout.apply") {
+    const layout = layouts().find((l) => l.id === args.id);
+    if (!layout) throw new Error("no-layout");
+    return { moved: restoreLayout(layout) };
+  }
+  if (name === "layout.restore") {
+    perform("UndoLastMove");
+    return {};
+  }
+  throw new Error("unknown-command");
 }
 
 /** "Monitors changed, so 3 windows were rearranged" (or "went back"), on the monitor under the pointer. */

@@ -184,6 +184,14 @@ function displayNameOf(nativeScreen: NativeScreen): string {
   return display.label || t("LayoutDisplays");
 }
 
+/** The monitors connected now with the ids layouts and shapes use, the main one first. */
+export function currentDisplays(): { id: string; name: string; primary: boolean }[] {
+  const shot = snapshot(false);
+  if (!shot) return [];
+  const displays = shot.screens.map((s) => ({ id: displayIdOf(s), name: displayNameOf(s), primary: s.primary }));
+  return displays.sort((a, b) => Number(b.primary) - Number(a.primary));
+}
+
 /** Ids of the monitors connected now, sorted, as a layout saves them. */
 export function currentDisplayIds(): string[] {
   const shot = snapshot(false);
@@ -282,6 +290,14 @@ function write(): void {
   const temp = `${file}.tmp`;
   writeFileSync(temp, `${JSON.stringify(load(), null, 2)}\n`);
   renameSync(temp, file);
+  for (const listener of listeners) listener();
+}
+
+const listeners: (() => void)[] = [];
+
+/** Calls `listener` after every change to the saved layouts (the phone app shows them). */
+export function onLayoutsChanged(listener: () => void): void {
+  listeners.push(listener);
 }
 
 /** Saved layouts, oldest first, as the menu shows them. */
