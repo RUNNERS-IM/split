@@ -133,6 +133,7 @@ p {
 
 /* Toolbar tabs (NSTabViewControllerTabStyleToolbar with the Preference toolbar style). */
 .toolbar {
+  position: relative;
   flex: none;
   display: flex;
   justify-content: center;
@@ -143,6 +144,15 @@ p {
 }
 
 .toolbar-item {
+  -webkit-app-region: no-drag;
+}
+
+/* The RUNNERS account badge at the window's top right, beside the centred tabs. */
+.toolbar-account {
+  position: absolute;
+  top: 50%;
+  inset-inline-end: 14px;
+  transform: translateY(-50%);
   -webkit-app-region: no-drag;
 }
 
@@ -758,37 +768,12 @@ p {
   flex-shrink: 0;
 }
 
-/* Phone tab: the sign-in form inside a card, and the dot that says whether the relay is reached. */
-.phone-form {
+/* Phone tab: signed out, one Sign In button in the middle (the sheet is runners-account); signed in, the dot that says
+   whether the relay is reached. */
+.phone-sign-in {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 13px 16px;
-}
-
-.phone-form input {
-  font: inherit;
-  font-size: 13px;
-  padding: 6px 8px;
-  border-radius: 6px;
-  border: 0.5px solid var(--button-border);
-  background: var(--button);
-  color: inherit;
-}
-
-.phone-form input:focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--accent) 50%, transparent);
-}
-
-.phone-error {
-  margin: 0;
-  font-size: 11px;
-  color: var(--red);
-}
-
-.phone-actions {
-  display: flex;
-  justify-content: flex-end;
+  justify-content: center;
+  padding: 28px 0 8px;
 }
 
 .phone-dot {

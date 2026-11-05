@@ -129,13 +129,14 @@ async function post<T>(path: string, body: unknown): Promise<T> {
 }
 
 /**
- * Signs in and connects. Returns null when it worked, otherwise the string key of the reason
- * ("PhoneSignInWrong" for a wrong email or password, "PhoneSignInFailed" for anything else).
+ * Signs in (or makes the account) and connects. Returns null when it worked, otherwise the code the shared sign-in
+ * sheet (src/renderer/runners-account) shows: "bad" for a wrong email or password, "exists" for an email that
+ * already has an account, "network" for anything else.
  */
-export async function signIn(email: string, password: string): Promise<string | null> {
+export async function signIn(mode: "login" | "signup", email: string, password: string): Promise<"bad" | "exists" | "network" | null> {
   try {
     // The system server takes the password as typed (letters and numbers, 6 to 20), as runners-app-kit sends it.
-    const answer = await post<{ user: { email: string }; tokens: Tokens }>("/api/mobile/auth/login", {
+    const answer = await post<{ user: { email: string }; tokens: Tokens }>(`/api/mobile/auth/${mode}`, {
       email,
       password,
       projectName: "SPLIT",
@@ -146,7 +147,8 @@ export async function signIn(email: string, password: string): Promise<string | 
     return null;
   } catch (error) {
     const code = (error as { status?: number }).status;
-    return code === 400 || code === 401 || code === 404 ? "PhoneSignInWrong" : "PhoneSignInFailed";
+    if (code === 409) return "exists";
+    return code === 400 || code === 401 || code === 404 ? "bad" : "network";
   }
 }
 
