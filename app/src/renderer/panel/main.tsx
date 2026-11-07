@@ -130,11 +130,11 @@ function Lines({ items, open, toggle, run }: { items: PanelItem[]; open: Set<str
         break;
       case "switch":
         out.push(
-          <label key={key} className={`rm-item switch${item.enabled ? "" : " disabled"}`} title={item.toolTip}>
+          <label key={key} className={`rm-item rm-switch${item.enabled ? "" : " disabled"}`} title={item.toolTip}>
             <Picture item={item} />
             <span className="rm-label">{item.label}</span>
             <input type="checkbox" checked={item.on} disabled={!item.enabled} onChange={() => run(item.id)} />
-            <span className="knob" aria-hidden />
+            <span className="rm-knob" aria-hidden />
           </label>,
         );
         break;

@@ -19,12 +19,6 @@ export interface Move {
   rect: Rect
 }
 
-/**
- * macOS only: shows the tray menu described by `spec` (JSON, see src/main/macMenu.ts) with its
- * top-left corner at (`x`, `y`) and returns the id of what was chosen. It returns once the menu closed.
- */
-export declare function popUpMenu(spec: string, x: number, y: number): string | null
-
 export interface Rect {
   x: number
   y: number

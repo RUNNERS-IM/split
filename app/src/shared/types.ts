@@ -174,8 +174,18 @@ export interface PanelView {
 
 export interface SplitApi {
   getState(): Promise<ViewState>;
-  /** Signs in for the phone app; `error` is the string key of what went wrong, or null. */
-  phoneSignIn(mode: "login" | "signup", email: string, password: string): Promise<{ error: string | null; state: ViewState }>;
+  /** Signs in for the phone app (making the account takes the code `phoneSendCode` mailed); `error` is the code the
+   *  shared sign-in sheet shows (`bad`, `none`, `format`, `exists`, `code`, `many`, `network`), or null. */
+  phoneSignIn(
+    mode: "login" | "signup",
+    email: string,
+    password: string,
+    code?: string,
+  ): Promise<{ error: string | null; state: ViewState }>;
+  /** Mails a six-digit code for making the account (`signup`) or choosing a new password (`reset`). */
+  phoneSendCode(purpose: "signup" | "reset", email: string): Promise<{ error: string | null; state: ViewState }>;
+  /** Sets a new password with the mailed code and signs in. */
+  phoneResetPassword(email: string, code: string, password: string): Promise<{ error: string | null; state: ViewState }>;
   phoneSignOut(): Promise<ViewState>;
   saveSettings(settings: Settings): Promise<ViewState>;
   restoreDefaultShortcuts(): Promise<ViewState>;

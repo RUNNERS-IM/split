@@ -4,27 +4,26 @@ import { test } from "node:test";
 import { Action } from "../../src/core/actions.ts";
 import { calculate } from "../../src/core/calc.ts";
 import { Rect } from "../../src/core/geometry.ts";
-import { SCRIPTS } from "./scripts.ts";
 
 const SCREEN = new Rect(0.0, 0.0, 1920.0, 1040.0);
 
 function calc(action: Action, window: Rect): Rect {
-  const rect = calculate(action, window, SCREEN, SCREEN, SCRIPTS);
+  const rect = calculate(action, window, SCREEN, SCREEN);
   assert.ok(rect !== null);
   return rect;
 }
 
-test("halves cycle through three quarters and one quarter", () => {
+test("halves cycle through two thirds and one third", () => {
   const half = calc(Action.MoveToLeftHalf, new Rect(100.0, 100.0, 800.0, 600.0));
   assert.deepEqual(half, new Rect(0.0, 0.0, 960.0, 1040.0));
-  const threeQuarters = calc(Action.MoveToLeftHalf, half);
-  assert.deepEqual(threeQuarters, new Rect(0.0, 0.0, 1440.0, 1040.0));
-  const oneQuarter = calc(Action.MoveToLeftHalf, threeQuarters);
-  assert.deepEqual(oneQuarter, new Rect(0.0, 0.0, 480.0, 1040.0));
-  assert.deepEqual(calc(Action.MoveToLeftHalf, oneQuarter), half);
+  const twoThirds = calc(Action.MoveToLeftHalf, half);
+  assert.deepEqual(twoThirds, new Rect(0.0, 0.0, 1280.0, 1040.0));
+  const oneThird = calc(Action.MoveToLeftHalf, twoThirds);
+  assert.deepEqual(oneThird, new Rect(0.0, 0.0, 640.0, 1040.0));
+  assert.deepEqual(calc(Action.MoveToLeftHalf, oneThird), half);
   const right = calc(Action.MoveToRightHalf, half);
-  assert.deepEqual(calc(Action.MoveToRightHalf, right), new Rect(480.0, 0.0, 1440.0, 1040.0));
-  assert.deepEqual(calc(Action.MoveToRightHalf, new Rect(480.0, 0.0, 1440.0, 1040.0)), new Rect(1440.0, 0.0, 480.0, 1040.0));
+  assert.deepEqual(calc(Action.MoveToRightHalf, right), new Rect(640.0, 0.0, 1280.0, 1040.0));
+  assert.deepEqual(calc(Action.MoveToRightHalf, new Rect(640.0, 0.0, 1280.0, 1040.0)), new Rect(1280.0, 0.0, 640.0, 1040.0));
 });
 
 test("top and bottom follow a downward y axis", () => {
@@ -57,7 +56,7 @@ test("thirds go left to right then top to bottom", () => {
 
 test("next display centers a window that fits", () => {
   const other = new Rect(1920.0, 0.0, 1280.0, 1000.0);
-  const moved = calculate(Action.MoveToNextDisplay, new Rect(0.0, 0.0, 800.0, 600.0), SCREEN, other, SCRIPTS);
+  const moved = calculate(Action.MoveToNextDisplay, new Rect(0.0, 0.0, 800.0, 600.0), SCREEN, other);
   assert.deepEqual(moved, new Rect(2160.0, 200.0, 800.0, 600.0));
 });
 
@@ -67,5 +66,5 @@ test("larger grows by thirty points", () => {
 });
 
 test("undo has no calculation", () => {
-  assert.equal(calculate(Action.UndoLastMove, SCREEN, SCREEN, SCREEN, SCRIPTS), null);
+  assert.equal(calculate(Action.UndoLastMove, SCREEN, SCREEN, SCREEN), null);
 });

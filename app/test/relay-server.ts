@@ -7,11 +7,15 @@
 // Any email signs in with a password the system server would take (letters and numbers, 6 to 20);
 // the account is the email, so a computer and a phone signed in with the same email see each other.
 // Tokens are made up and kept in memory. Answers are wrapped as { code, data } like the system server's.
+// Access tokens carry `exp` like the real ones and run out after TOKEN_SECONDS (3600 by default).
+// Mailed codes are always 123456 and nothing is mailed. To see the sheet's other messages: an email starting with
+// "none" has no account, "taken" already has one, and the password "wrong1" is a wrong password.
 import { randomUUID } from "node:crypto";
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { WebSocketServer, type WebSocket } from "ws";
 
 const PORT = Number(process.env.PORT || 8788);
+const TOKEN_SECONDS = Number(process.env.TOKEN_SECONDS || 3600);
 
 interface Peer {
   deviceId: string;
@@ -23,6 +27,8 @@ interface Client {
   socket: WebSocket;
   account: string;
   peer: Peer | null;
+  /** When the token this connection holds runs out, in seconds. */
+  exp: number;
 }
 
 /** Access and refresh token → the account (email) it belongs to. */
@@ -32,7 +38,8 @@ const clients = new Set<Client>();
 const lastState = new Map<string, unknown>();
 
 function issue(account: string) {
-  const accessToken = `access-${randomUUID()}`;
+  const exp = Math.floor(Date.now() / 1000) + TOKEN_SECONDS;
+  const accessToken = `access-${randomUUID()}.${Buffer.from(JSON.stringify({ exp })).toString("base64url")}.x`;
   const refreshToken = `refresh-${randomUUID()}`;
   tokens.set(accessToken, account);
   tokens.set(refreshToken, account);
@@ -58,9 +65,30 @@ const PASSWORD_RULE = /^(?=.*[A-Za-z])(?=.*\d).{6,20}$/;
 
 const http = createServer(async (req, res) => {
   const data = await body(req);
+  const email = String(data.email || "");
+  const none = email.startsWith("none");
   if (req.method === "POST" && (req.url === "/api/mobile/auth/login" || req.url === "/api/mobile/auth/signup")) {
-    const email = String(data.email || "");
+    const signup = req.url.endsWith("signup");
     if (!email || !PASSWORD_RULE.test(String(data.password || ""))) return reply(res, 400, { message: "bad request" });
+    if (!signup && none) return reply(res, 401, { message: "User not found" });
+    if (!signup && data.password === "wrong1") return reply(res, 401, { message: "Invalid credentials" });
+    if (signup && email.startsWith("taken")) return reply(res, 409, { message: "exists" });
+    if (signup && data.code !== undefined && data.code !== "123456") return reply(res, 422, { message: "code" });
+    return reply(res, 200, { user: { id: email, email }, tokens: issue(email) });
+  }
+  if (req.method === "POST" && req.url === "/api/mobile/auth/email-code") {
+    if (email.startsWith("taken")) return reply(res, 409, { message: "exists" });
+    res.writeHead(204).end();
+    return;
+  }
+  if (req.method === "POST" && req.url === "/api/mobile/auth/password-reset") {
+    if (none) return reply(res, 404, { message: "User not found" });
+    res.writeHead(204).end();
+    return;
+  }
+  if (req.method === "POST" && req.url === "/api/mobile/auth/password-reset/confirm") {
+    if (data.code !== "123456") return reply(res, 422, { message: "code" });
+    if (!PASSWORD_RULE.test(String(data.password || ""))) return reply(res, 400, { message: "bad request" });
     return reply(res, 200, { user: { id: email, email }, tokens: issue(email) });
   }
   if (req.method === "POST" && req.url === "/api/mobile/auth/refresh") {
@@ -73,6 +101,15 @@ const http = createServer(async (req, res) => {
 });
 
 const relay = new WebSocketServer({ noServer: true });
+
+function tokenExp(token: string): number {
+  return (JSON.parse(Buffer.from(token.split(".")[1], "base64url").toString()) as { exp: number }).exp;
+}
+
+// Like the real relay: an open connection whose token ran out is closed.
+setInterval(() => {
+  for (const client of clients) if (client.exp * 1000 <= Date.now()) client.socket.close(4401, "token expired");
+}, 1000);
 
 function sameAccount(client: Client): Client[] {
   return [...clients].filter((other) => other !== client && other.account === client.account && other.peer);
@@ -92,8 +129,8 @@ http.on("upgrade", (req, socket, head) => {
   const token = (req.headers.authorization || "").replace(/^Bearer /, "") || url.searchParams.get("token") || "";
   const account = tokens.get(token);
   relay.handleUpgrade(req, socket, head, (ws) => {
-    if (!account || !token.startsWith("access-")) return ws.close(4401, "token");
-    const client: Client = { socket: ws, account, peer: null };
+    if (!account || !token.startsWith("access-") || tokenExp(token) * 1000 <= Date.now()) return ws.close(4401, "token");
+    const client: Client = { socket: ws, account, peer: null, exp: tokenExp(token) };
     clients.add(client);
     ws.on("message", (raw) => {
       let message: Record<string, unknown>;
@@ -101,6 +138,13 @@ http.on("upgrade", (req, socket, head) => {
         message = JSON.parse(String(raw));
       } catch {
         return send(client, { type: "error", error: "bad json" });
+      }
+      if (message.type === "auth") {
+        const next = String(message.token || "");
+        if (tokens.get(next) !== account || !next.startsWith("access-") || tokenExp(next) * 1000 <= Date.now()) return ws.close(4401, "token");
+        client.exp = tokenExp(next);
+        console.log(`auth ${account}`);
+        return send(client, { type: "auth", ok: true, exp: client.exp });
       }
       if (message.type === "hello") {
         const peer: Peer = { deviceId: String(message.deviceId), name: String(message.name), role: message.role === "host" ? "host" : "viewer" };

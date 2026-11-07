@@ -9,6 +9,7 @@ Search the existing issues first. When reporting a defect, include the Split ver
 ## Pull requests
 
 - Branch from `master` and keep each pull request to one change.
-- Run the tests before sending: `xcodebuild test -project Split.xcodeproj -scheme Split -destination 'platform=macOS'`.
-- New text shown to users goes into `Split/Resources/Localizations/*/App.strings` for all 18 languages.
+- Run the tests before sending: `cd app && pnpm typecheck && pnpm test`.
+- New text shown to users goes into `app/locales` for all 20 languages.
+- Comments that name a `.m` file point to the earlier Objective-C app, kept at the tag `legacy-objc`.
 - Releases are made by merging `master` into `release`; do not bump versions by hand.

@@ -1,8 +1,0 @@
-{
-  "uuid": "split@runners.im",
-  "name": "Split",
-  "description": "Lets the Split app move windows with keyboard shortcuts on GNOME with Wayland. Install the Split app too; this extension only does what Wayland does not let the app do itself.",
-  "shell-version": ["45", "46", "47", "48", "49"],
-  "url": "https://github.com/RUNNERS-IM/split",
-  "version-name": "0.1.0"
-}

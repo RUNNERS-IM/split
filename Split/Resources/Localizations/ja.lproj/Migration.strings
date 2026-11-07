@@ -1,4 +1,0 @@
-"LegacyRunningTitle" = "Spectacleがまだ実行中です";
-"LegacyRunningBody" = "SplitとSpectacleが同じショートカットに両方反応してしまいます。Spectacleを終了してゴミ箱に入れ、Splitだけを使うようにしてください。SpectacleのショートカットはすでにSplitにコピーされています。";
-"LegacyRunningQuit" = "Spectacleを終了";
-"LegacyRunningKeep" = "両方使う";

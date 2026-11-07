@@ -1,5 +1,5 @@
 //! Windows, through Win32: monitors, top-level windows, moving them, the app in front and the
-//! modifier keys held. Taken from the Tauri desktop app (desktop/src-tauri/src/platform/windows.rs).
+//! modifier keys held.
 //!
 //! All coordinates are physical pixels: Electron makes the process per-monitor DPI aware (v2),
 //! so Win32 reports real pixels on every monitor, and each screen's `scale` turns the gap into pixels.

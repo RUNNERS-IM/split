@@ -4,7 +4,6 @@ import { test } from "node:test";
 import { Action, cycleStep } from "../../src/core/actions.ts";
 import { Engine, type Screen, type Snapshot, screensInConsistentOrder } from "../../src/core/engine.ts";
 import { Rect } from "../../src/core/geometry.ts";
-import { SCRIPTS } from "./scripts.ts";
 
 function screen(x: number, primary: boolean): Screen {
   return {
@@ -24,17 +23,17 @@ function snapshot(rect: Rect): Snapshot {
 }
 
 test("halves keep cycling with a gap", () => {
-  const engine = new Engine(SCRIPTS);
+  const engine = new Engine();
   const first = engine.plan(Action.MoveToLeftHalf, snapshot(new Rect(100.0, 100.0, 800.0, 600.0)), 16.0);
   assert.deepEqual(first.moves[0]!.rect, new Rect(0.0, 0.0, 952.0, 1040.0));
   const second = engine.plan(Action.MoveToLeftHalf, snapshot(first.moves[0]!.rect), 16.0);
-  assert.deepEqual(second.moves[0]!.rect, new Rect(0.0, 0.0, 1432.0, 1040.0));
+  assert.deepEqual(second.moves[0]!.rect, new Rect(0.0, 0.0, 1272.0, 1040.0));
   const third = engine.plan(Action.MoveToLeftHalf, snapshot(second.moves[0]!.rect), 16.0);
-  assert.deepEqual(third.moves[0]!.rect, new Rect(0.0, 0.0, 472.0, 1040.0));
+  assert.deepEqual(third.moves[0]!.rect, new Rect(0.0, 0.0, 632.0, 1040.0));
 });
 
 test("the label names each turn of the half and corner cycle", () => {
-  const engine = new Engine(SCRIPTS);
+  const engine = new Engine();
   const area = screen(0.0, true).workArea;
   for (const action of [Action.MoveToLeftHalf, Action.MoveToTopHalf, Action.MoveToUpperRight]) {
     let rect = new Rect(100.0, 100.0, 800.0, 600.0);
@@ -43,13 +42,13 @@ test("the label names each turn of the half and corner cycle", () => {
       rect = engine.plan(action, snapshot(rect), 16.0).moves[0]!.rect;
       steps.push(cycleStep(action, rect, area));
     }
-    assert.deepEqual(steps, [null, "3/4", "1/4"], action);
+    assert.deepEqual(steps, [null, "2/3", "1/3"], action);
   }
   assert.equal(cycleStep(Action.MoveToCenter, new Rect(0.0, 0.0, 480.0, 260.0), area), null);
 });
 
 test("fullscreen twice restores", () => {
-  const engine = new Engine(SCRIPTS);
+  const engine = new Engine();
   const start = new Rect(100.0, 100.0, 800.0, 600.0);
   const full = engine.plan(Action.MoveToFullscreen, snapshot(start), 0.0);
   assert.deepEqual(full.moves[0]!.rect, new Rect(0.0, 0.0, 1920.0, 1040.0));
@@ -58,7 +57,7 @@ test("fullscreen twice restores", () => {
 });
 
 test("undo and redo walk the history", () => {
-  const engine = new Engine(SCRIPTS);
+  const engine = new Engine();
   const start = new Rect(100.0, 100.0, 800.0, 600.0);
   const half = engine.plan(Action.MoveToRightHalf, snapshot(start), 0.0).moves[0]!.rect;
   const undo = engine.plan(Action.UndoLastMove, snapshot(half), 0.0);
@@ -69,7 +68,7 @@ test("undo and redo walk the history", () => {
 });
 
 test("next display wraps around", () => {
-  const engine = new Engine(SCRIPTS);
+  const engine = new Engine();
   const moved = engine.plan(Action.MoveToNextDisplay, snapshot(new Rect(0.0, 0.0, 800.0, 600.0)), 0.0);
   assert.deepEqual(moved.moves[0]!.rect, new Rect(2480.0, 220.0, 800.0, 600.0));
   const back = engine.plan(Action.MoveToNextDisplay, snapshot(moved.moves[0]!.rect), 0.0);
@@ -77,7 +76,7 @@ test("next display wraps around", () => {
 });
 
 test("arrange then one undo puts everything back", () => {
-  const engine = new Engine(SCRIPTS);
+  const engine = new Engine();
   const snap = snapshot(new Rect(100.0, 100.0, 800.0, 600.0));
   snap.windows = [
     { id: 1, rect: new Rect(100.0, 100.0, 800.0, 600.0), app: "a" },

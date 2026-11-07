@@ -1,5 +1,5 @@
 // Auto-arrange layout. Port of `SplitArrangeLayoutRects` in
-// `Split/Sources/SplitWindowArranger.m`:
+// `SplitWindowArranger.m`:
 //
 // 1 full · 2 halves · 3 left half + right column of two · 4 a 2×2 grid ·
 // 5 a 2×2 grid with the front window floating in the middle at 60% ·

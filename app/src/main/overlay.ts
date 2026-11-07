@@ -371,18 +371,25 @@ function openAbout(notices: boolean): void {
 }
 
 let updateWindow: BrowserWindow | null = null;
-let answerUpdate: ((install: boolean) => void) | null = null;
+let answerUpdate: ((install: boolean | null) => void) | null = null;
 
 /**
  * Shows the "new version" window and resolves with the answer: true for Install Now, false for
- * Later or closing the window. A second call while it is open just brings it forward.
+ * Later or closing the window, null when nobody answered (this call only brought an open window
+ * forward, or closeUpdateWindow closed it).
+ * `focus` is for a check from the menu, where the person is waiting for it. The daily check shows
+ * the window without taking focus, so keys typed in another app never land on it.
  */
-export function askToInstall(payload: UpdatePayload): Promise<boolean> {
-  if (isMac) app.focus({ steal: true });
+export function askToInstall(payload: UpdatePayload, focus: boolean): Promise<boolean | null> {
+  if (focus && isMac) app.focus({ steal: true });
   if (updateWindow && !updateWindow.isDestroyed()) {
-    updateWindow.show();
-    updateWindow.focus();
-    return Promise.resolve(false);
+    if (focus) {
+      updateWindow.show();
+      updateWindow.focus();
+    } else {
+      updateWindow.showInactive();
+    }
+    return Promise.resolve(null);
   }
   const window = new BrowserWindow({
     width: 400,
@@ -420,8 +427,12 @@ export function askToInstall(payload: UpdatePayload): Promise<boolean> {
         .finally(() => {
           if (window.isDestroyed()) return;
           window.center();
-          window.show();
-          window.focus();
+          if (focus) {
+            window.show();
+            window.focus();
+          } else {
+            window.showInactive();
+          }
         });
     });
     void window.loadURL(`${urlFor("update.html")}#${encodeURIComponent(JSON.stringify(payload))}`);
@@ -432,6 +443,13 @@ export function askToInstall(payload: UpdatePayload): Promise<boolean> {
 export function setUpdateProgress(progress: UpdateProgress): boolean {
   if (!updateWindow || updateWindow.isDestroyed()) return false;
   updateWindow.webContents.send("update:progress", progress);
+  return true;
+}
+
+/** Closes the update window with no answer, when the download it shows has failed; false when none is open. */
+export function closeUpdateWindow(): boolean {
+  if (!updateWindow || updateWindow.isDestroyed()) return false;
+  answerUpdate?.(null);
   return true;
 }
 
