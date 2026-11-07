@@ -136,34 +136,86 @@ async function post<T>(path: string, body: unknown): Promise<T> {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
-  if (!response.ok) throw Object.assign(new Error(`${path} ${response.status}`), { status: response.status });
-  // Why: the system server wraps every successful answer as { code, data }.
-  const answer = (await response.json()) as { code?: unknown; data?: T } | T;
+  if (!response.ok) {
+    const said = await response.text().catch(() => "");
+    throw Object.assign(new Error(`${path} ${response.status}`), { status: response.status, said });
+  }
+  // Why: mailing a code answers 204 with no body; the system server wraps every other answer as { code, data }.
+  const text = await response.text();
+  const answer = (text ? JSON.parse(text) : null) as { code?: unknown; data?: T } | T;
   return (answer && typeof answer === "object" && "code" in answer && "data" in answer ? answer.data : answer) as T;
 }
 
 /**
- * Signs in (or makes the account) and connects. Returns null when it worked, otherwise the code the shared sign-in
- * sheet (src/renderer/runners-account) shows: "bad" for a wrong email or password, "exists" for an email that
- * already has an account, "network" for anything else.
+ * What the shared sign-in sheet (src/renderer/runners-account, SignInProblem) shows for a failed request, as
+ * runners-app-kit desktop/main/account.ts makes it. A 401 that says "User not found" is an email with no account.
  */
-export async function signIn(mode: "login" | "signup", email: string, password: string): Promise<"bad" | "exists" | "network" | null> {
+type Problem = "bad" | "none" | "format" | "exists" | "code" | "many" | "network";
+
+function problem(error: unknown): Problem {
+  const { status, said } = error as { status?: number; said?: string };
+  if (status === 404 || (status === 401 && said?.includes("User not found"))) return "none";
+  const codes: Partial<Record<number, Problem>> = { 400: "format", 401: "bad", 409: "exists", 422: "code", 429: "many" };
+  return (status && codes[status]) || "network";
+}
+
+type SignedIn = { user: { email: string }; tokens: Tokens };
+
+function startSignedIn(answer: SignedIn, email: string): void {
+  writeTokens(answer.tokens, answer.user?.email ?? email);
+  retryMs = FIRST_RETRY_MS;
+  refreshedOnce = false;
+  connect();
+}
+
+/**
+ * Signs in (or makes the account with the code `sendCode` mailed) and connects. Returns null when it worked,
+ * otherwise a `Problem`.
+ */
+export async function signIn(mode: "login" | "signup", email: string, password: string, code?: string): Promise<Problem | null> {
   try {
     // The system server takes the password as typed (letters and numbers, 6 to 20), as runners-app-kit sends it.
-    const answer = await post<{ user: { email: string }; tokens: Tokens }>(`/api/mobile/auth/${mode}`, {
+    const answer = await post<SignedIn>(`/api/mobile/auth/${mode}`, {
       email,
       password,
       projectName: "SPLIT",
+      ...(code ? { code } : {}),
     });
-    writeTokens(answer.tokens, answer.user?.email ?? email);
-    retryMs = FIRST_RETRY_MS;
-    refreshedOnce = false;
-    connect();
+    startSignedIn(answer, email);
     return null;
   } catch (error) {
-    const code = (error as { status?: number }).status;
-    if (code === 409) return "exists";
-    return code === 400 || code === 401 || code === 404 ? "bad" : "network";
+    return problem(error);
+  }
+}
+
+/** Mails a six-digit code: `signup` to make the account ("exists" when there is one), `reset` for a new password
+ *  ("none" when there is no account). The mail is written in `locale`. */
+export async function sendCode(purpose: "signup" | "reset", email: string, locale: string): Promise<Problem | null> {
+  try {
+    await post(purpose === "signup" ? "/api/mobile/auth/email-code" : "/api/mobile/auth/password-reset", {
+      email,
+      projectName: "SPLIT",
+      locale,
+    });
+    return null;
+  } catch (error) {
+    return problem(error);
+  }
+}
+
+/** Sets a new password with the mailed code, then signs in with it. The RUNNERS apps share the password. */
+export async function resetPassword(email: string, code: string, password: string): Promise<Problem | null> {
+  try {
+    const answer = await post<SignedIn>("/api/mobile/auth/password-reset/confirm", {
+      email,
+      code,
+      password,
+      projectName: "SPLIT",
+    });
+    startSignedIn(answer, email);
+    return null;
+  } catch (error) {
+    return problem(error);
   }
 }
 

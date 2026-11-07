@@ -10,7 +10,7 @@ import GeneralTab from "./tabs/GeneralTab.tsx";
 import EffectsTab from "./tabs/EffectsTab.tsx";
 import ShortcutsTab from "./tabs/ShortcutsTab.tsx";
 import PhoneTab, { PHONE_STATUS_KEYS } from "./tabs/PhoneTab.tsx";
-import { AccountButton, SignInSheet, type SignMode } from "../runners-account/runners-account";
+import { AccountButton, SignInSheet, type CodePurpose, type SignMode } from "../runners-account/runners-account";
 
 type Tab = "general" | "effects" | "shortcuts" | "phone";
 
@@ -105,8 +105,20 @@ export default function App() {
 
   // The shared sheet (runners-app-kit/desktop) closes when this resolves and shows the code it rejects with.
   const signIn = useCallback(
-    async (mode: SignMode, email: string, password: string) => {
-      const answer = await window.split.phoneSignIn(mode, email.trim(), password);
+    async (mode: SignMode, email: string, password: string, code?: string) => {
+      const answer = await window.split.phoneSignIn(mode, email.trim(), password, code);
+      show(answer.state);
+      if (answer.error) throw new Error(answer.error);
+    },
+    [show],
+  );
+  const sendCode = useCallback(async (purpose: CodePurpose, email: string) => {
+    const answer = await window.split.phoneSendCode(purpose, email.trim());
+    if (answer.error) throw new Error(answer.error);
+  }, []);
+  const resetPassword = useCallback(
+    async (email: string, code: string, password: string) => {
+      const answer = await window.split.phoneResetPassword(email.trim(), code, password);
       show(answer.state);
       if (answer.error) throw new Error(answer.error);
     },
@@ -153,7 +165,15 @@ export default function App() {
         {tab === "effects" && <EffectsTab state={state} update={update} />}
         {tab === "shortcuts" && <ShortcutsTab state={state} update={update} show={show} />}
         {tab === "phone" && <PhoneTab state={state} openSignIn={() => setSigningIn(true)} />}
-        {signingIn && <SignInSheet lang={state.locale} signIn={signIn} onClose={closeSignIn} />}
+        {signingIn && (
+          <SignInSheet
+            lang={state.locale}
+            signIn={signIn}
+            sendCode={sendCode}
+            resetPassword={resetPassword}
+            onClose={closeSignIn}
+          />
+        )}
       </div>
     </StringsContext.Provider>
   );

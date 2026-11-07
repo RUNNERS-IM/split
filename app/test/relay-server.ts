@@ -8,6 +8,8 @@
 // the account is the email, so a computer and a phone signed in with the same email see each other.
 // Tokens are made up and kept in memory. Answers are wrapped as { code, data } like the system server's.
 // Access tokens carry `exp` like the real ones and run out after TOKEN_SECONDS (3600 by default).
+// Mailed codes are always 123456 and nothing is mailed. To see the sheet's other messages: an email starting with
+// "none" has no account, "taken" already has one, and the password "wrong1" is a wrong password.
 import { randomUUID } from "node:crypto";
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { WebSocketServer, type WebSocket } from "ws";
@@ -63,9 +65,30 @@ const PASSWORD_RULE = /^(?=.*[A-Za-z])(?=.*\d).{6,20}$/;
 
 const http = createServer(async (req, res) => {
   const data = await body(req);
+  const email = String(data.email || "");
+  const none = email.startsWith("none");
   if (req.method === "POST" && (req.url === "/api/mobile/auth/login" || req.url === "/api/mobile/auth/signup")) {
-    const email = String(data.email || "");
+    const signup = req.url.endsWith("signup");
     if (!email || !PASSWORD_RULE.test(String(data.password || ""))) return reply(res, 400, { message: "bad request" });
+    if (!signup && none) return reply(res, 401, { message: "User not found" });
+    if (!signup && data.password === "wrong1") return reply(res, 401, { message: "Invalid credentials" });
+    if (signup && email.startsWith("taken")) return reply(res, 409, { message: "exists" });
+    if (signup && data.code !== undefined && data.code !== "123456") return reply(res, 422, { message: "code" });
+    return reply(res, 200, { user: { id: email, email }, tokens: issue(email) });
+  }
+  if (req.method === "POST" && req.url === "/api/mobile/auth/email-code") {
+    if (email.startsWith("taken")) return reply(res, 409, { message: "exists" });
+    res.writeHead(204).end();
+    return;
+  }
+  if (req.method === "POST" && req.url === "/api/mobile/auth/password-reset") {
+    if (none) return reply(res, 404, { message: "User not found" });
+    res.writeHead(204).end();
+    return;
+  }
+  if (req.method === "POST" && req.url === "/api/mobile/auth/password-reset/confirm") {
+    if (data.code !== "123456") return reply(res, 422, { message: "code" });
+    if (!PASSWORD_RULE.test(String(data.password || ""))) return reply(res, 400, { message: "bad request" });
     return reply(res, 200, { user: { id: email, email }, tokens: issue(email) });
   }
   if (req.method === "POST" && req.url === "/api/mobile/auth/refresh") {
