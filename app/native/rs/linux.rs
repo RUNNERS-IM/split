@@ -1,6 +1,6 @@
 //! Linux X11 sessions (any window manager that follows EWMH: GNOME on Xorg, KDE on X11, Xfce,
 //! Cinnamon, MATE, i3…): windows are read and moved through the EWMH properties and messages,
-//! monitors come from RandR. Taken from the Tauri desktop app (desktop/src-tauri/src/platform/linux_x11.rs).
+//! monitors come from RandR.
 //!
 //! Wayland lets no app move another app's window, so there Split reports that it cannot.
 

@@ -23,11 +23,10 @@ module.exports = {
   files: ['out/**', 'package.json'],
   extraResources: [
     // The native module (native/split-native.<os>-<cpu>*.node) is added per system below.
-    { from: '../Split/Resources/Window Position Calculations', to: 'Window Position Calculations' },
     { from: 'resources/menu', to: 'menu' },
     { from: 'resources/tray', to: 'tray' },
   ],
-  // The window math and icons sit outside app.asar, so nothing in node_modules is needed at run time but electron-updater.
+  // The icons sit outside app.asar, so nothing in node_modules is needed at run time but electron-updater.
   asar: true,
   // Why: no npm package with native code ships; the one native module is built by cargo (pnpm native).
   npmRebuild: false,

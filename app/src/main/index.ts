@@ -24,7 +24,6 @@ import {
   Tray,
 } from "electron";
 import { ALL, type Action, cycleStep } from "../core/actions.ts";
-import { loadScripts } from "../core/calc.ts";
 import { Engine, type Outcome, type Snapshot, screenContaining, screensInConsistentOrder } from "../core/engine.ts";
 import { Rect } from "../core/geometry.ts";
 import { shouldTurnOnAtLogin } from "../core/loginDefault.ts";
@@ -33,7 +32,7 @@ import type { LinkKind, OverlayPayload, Settings, SheetPayload, ViewState } from
 import { removeLoginItem, runningPids } from "./apps.ts";
 import { displayChangeLabel, recordSoon, startDisplayWatcher } from "./displays.ts";
 import { applyShape, currentDisplays, LAYOUT_PANEL_ID, layoutMenuItems, layoutPanel, layoutRestoringForDisplays, layouts, onLayoutsChanged, restoreLayout, setupLayouts, SHAPES, type LayoutShape } from "./layouts.ts";
-import { announceState, phoneView, setupPhone, signIn, signOut } from "./phone.ts";
+import { announceState, phoneView, resetPassword, sendCode, setupPhone, signIn, signOut } from "./phone.ts";
 import { guideGranted, openAccessibilitySettings, registerGuideIpc, showGuide } from "./guide.ts";
 import { currentLanguage, loadLanguage, rightToLeft, strings, t } from "./i18n.ts";
 import { accelerator, displayShortcut, displayText } from "./keys.ts";
@@ -739,8 +738,21 @@ function registerIpc(): void {
     });
   });
   ipcMain.handle("link:open", (_event, kind: LinkKind) => openLink(kind));
-  ipcMain.handle("phone:signIn", async (_event, mode: "login" | "signup", email: string, password: string) => ({
-    error: await signIn(mode === "signup" ? "signup" : "login", email, password),
+  ipcMain.handle("phone:signIn", async (_event, mode: unknown, email: unknown, password: unknown, code: unknown) => ({
+    error: await signIn(
+      mode === "signup" ? "signup" : "login",
+      String(email),
+      String(password),
+      typeof code === "string" ? code : undefined,
+    ),
+    state: viewState(),
+  }));
+  ipcMain.handle("phone:sendCode", async (_event, purpose: unknown, email: unknown) => ({
+    error: await sendCode(purpose === "reset" ? "reset" : "signup", String(email), currentLanguage()),
+    state: viewState(),
+  }));
+  ipcMain.handle("phone:resetPassword", async (_event, email: unknown, code: unknown, password: unknown) => ({
+    error: await resetPassword(String(email), String(code), String(password)),
     state: viewState(),
   }));
   ipcMain.handle("phone:signOut", () => {
@@ -906,10 +918,7 @@ function start(): void {
   }
   const loaded = loadSettings();
   settings = loaded.settings;
-  const scripts = app.isPackaged
-    ? join(process.resourcesPath, "Window Position Calculations")
-    : join(app.getAppPath(), "../Split/Resources/Window Position Calculations");
-  engine = new Engine(loadScripts(scripts));
+  engine = new Engine();
   trusted = native.isTrusted(false);
   frontApp = native.frontmostApp();
   native.watch((event) => {

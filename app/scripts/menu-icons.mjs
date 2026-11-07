@@ -1,6 +1,6 @@
 // Draws the tray icon frames and the menu row pictures as PNG files in resources/.
-// Same drawings as the macOS app (SplitAppDelegate.m status item, SplitWindowFeedback.m menu
-// images); `sips` turns the SVGs into PNGs, so this runs on a Mac and the PNGs are committed.
+// Same drawings as the earlier macOS app; `sips` turns the SVGs into PNGs, so this runs on a Mac
+// and the PNGs are committed.
 //   node scripts/menu-icons.mjs
 import { execFileSync } from "node:child_process";
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
@@ -8,7 +8,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 const root = new URL("..", import.meta.url).pathname;
-const lucide = join(root, "../Split/Resources/Images.xcassets");
+const lucide = join(root, "scripts/lucide");
 const work = mkdtempSync(join(tmpdir(), "split-icons-"));
 
 function png(svg, out, width, height) {
@@ -63,14 +63,14 @@ const icons = {
 for (const [name, icon] of Object.entries(icons)) {
   // Why: NSMenu starts each title right after its own picture, so every picture is 22 pt wide like the
   // screen pictures above; the 16 pt Lucide icon sits in the middle of that width.
-  const inner = readFileSync(join(lucide, `lucide-${icon}.imageset/${icon}.svg`), "utf8")
+  const inner = readFileSync(join(lucide, `${icon}.svg`), "utf8")
     .replaceAll("currentColor", "#000")
     .replace(/<svg[^>]*>/, (tag) => tag.replace(/\swidth="[^"]*"/, ' width="16"').replace(/\sheight="[^"]*"/, ' height="16"').replace("<svg", '<svg x="3" y="0"'));
   png(`<svg xmlns="http://www.w3.org/2000/svg" width="22" height="16" viewBox="0 0 22 16">${inner}</svg>`, join(root, "resources/menu", `${name}Template`), 22, 16);
 }
 
 // Status item: a screen outline whose inside goes halves → big + two → 2 × 2, sliding between them.
-// SplitLayoutShapeFractions in SplitLayouts.m: halves, big + two, 2 × 2 (top-down, as the flipped image draws them).
+// Halves, big + two, 2 × 2 (top-down, as the flipped image draws them).
 const shapes = [[[0, 0, 0.5, 1], [0.5, 0, 0.5, 1]], [[0, 0, 0.6, 1], [0.6, 0, 0.4, 0.5], [0.6, 0.5, 0.4, 0.5]],
   [[0, 0, 0.5, 0.5], [0.5, 0, 0.5, 0.5], [0, 0.5, 0.5, 0.5], [0.5, 0.5, 0.5, 0.5]]];
 const cellForPane = [[0, 1, 1, 0], [0, 1, 2, 0], [0, 1, 3, 2]];

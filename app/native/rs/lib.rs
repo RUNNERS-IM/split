@@ -133,17 +133,3 @@ pub fn watch(callback: Function<WatchEvent, ()>) -> Result<()> {
     Ok(())
 }
 
-/// macOS only: shows the tray menu described by `spec` (JSON, see src/main/macMenu.ts) with its
-/// top-left corner at (`x`, `y`) and returns the id of what was chosen. It returns once the menu closed.
-#[napi]
-pub fn pop_up_menu(spec: String, x: f64, y: f64) -> Result<Option<String>> {
-    #[cfg(target_os = "macos")]
-    {
-        mac::pop_up_menu(&spec, x, y).map_err(Error::from_reason)
-    }
-    #[cfg(not(target_os = "macos"))]
-    {
-        let _ = (spec, x, y);
-        Err(Error::from_reason("the native tray menu is macOS only"))
-    }
-}

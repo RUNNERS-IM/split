@@ -163,10 +163,10 @@ pnpm test       # tests
 pnpm typecheck  # type check
 ```
 
-Pushing to the `release` branch makes GitHub Actions build, sign and notarize the macOS, Windows and Linux versions and upload them to GitHub Releases. To build by hand use `pnpm dist:mac`, `pnpm dist:win` or `pnpm dist:linux`. `Split.xcodeproj` in the repository is the earlier Swift Mac version.
+Pushing to the `release` branch makes GitHub Actions build, sign and notarize the macOS, Windows and Linux versions and upload them to GitHub Releases. To build by hand use `pnpm dist:mac`, `pnpm dist:win` or `pnpm dist:linux`. The earlier Objective-C Mac version is kept at the tag `legacy-objc`.
 
 ## License
 
 Copyright (c) 2026 Runners Co., Ltd. All rights reserved. See [LICENSE.md](LICENSE.md).
 
-The notices of the open source code Split uses (Lucide, Sparkle and Spectacle) are in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and in the app under About Split → Open Source Notices.
+The notices of the open source code Split uses (Lucide and Spectacle) are in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and in the app under About Split → Open Source Notices.

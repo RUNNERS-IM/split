@@ -108,7 +108,7 @@ export const DEFAULT_GAP = 8.0;
 /**
  * Shrinks `rect` by half of `gap` on every side that faces another window, so two neighbours
  * end up `gap` apart. Sides on the edge of `visibleFrame` stay on the edge.
- * Port of `SplitRectWithGap` in `Split/Sources/SplitWindowArranger.m`.
+ * Port of `SplitRectWithGap` in `SplitWindowArranger.m`.
  */
 export function rectWithGap(rect: Rect, visibleFrame: Rect, gap: number): Rect {
   if (gap <= 0.0) {

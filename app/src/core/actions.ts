@@ -1,5 +1,5 @@
 // The window actions. Names match the macOS app: `name()` is the shortcut name and the
-// translation key, `jsName()` is the action the JavaScript calculations register under.
+// translation key.
 
 export const Action = {
   MoveToCenter: "MoveToCenter",
@@ -68,33 +68,6 @@ export function name(action: Action): string {
 
 export function fromName(name: string): Action | null {
   return ALL.find((a) => a === name) ?? null;
-}
-
-const JS_NAMES: Readonly<Record<Action, string | null>> = {
-  MoveToCenter: "SplitWindowActionCenter",
-  MoveToFullscreen: "SplitWindowActionFullscreen",
-  MoveToLeftHalf: "SplitWindowActionLeftHalf",
-  MoveToRightHalf: "SplitWindowActionRightHalf",
-  MoveToTopHalf: "SplitWindowActionTopHalf",
-  MoveToBottomHalf: "SplitWindowActionBottomHalf",
-  MoveToUpperLeft: "SplitWindowActionUpperLeft",
-  MoveToLowerLeft: "SplitWindowActionLowerLeft",
-  MoveToUpperRight: "SplitWindowActionUpperRight",
-  MoveToLowerRight: "SplitWindowActionLowerRight",
-  MoveToNextDisplay: "SplitWindowActionNextDisplay",
-  MoveToPreviousDisplay: "SplitWindowActionPreviousDisplay",
-  MoveToNextThird: "SplitWindowActionNextThird",
-  MoveToPreviousThird: "SplitWindowActionPreviousThird",
-  MakeLarger: "SplitWindowActionLarger",
-  MakeSmaller: "SplitWindowActionSmaller",
-  UndoLastMove: null,
-  RedoLastMove: null,
-  ArrangeWindows: null,
-};
-
-/** The name used by `windowPositionCalculationRegistry` in the JavaScript files. */
-export function jsName(action: Action): string | null {
-  return JS_NAMES[action];
 }
 
 /** Actions that fill a fraction of the screen and so leave a gap around the window. */
