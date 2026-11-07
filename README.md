@@ -48,7 +48,7 @@ All shortcuts can be changed or cleared in Settings → Shortcuts.
 - Upper right — ⌃⌘→
 - Lower right — ⌃⇧⌘→
 
-Pressing a half or corner shortcut repeatedly cycles the window through 1/2, 3/4 and 1/4 of that region.
+Pressing a half or corner shortcut repeatedly cycles the window through 1/2, 2/3 and 1/3 of that region.
 
 ### Auto arrange
 
