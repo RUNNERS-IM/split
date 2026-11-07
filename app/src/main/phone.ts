@@ -95,10 +95,15 @@ function saveAccount(): void {
   renameSync(temp, file);
 }
 
+// Why debug runs skip the keychain: the dev copy of Electron has no stable signature, so macOS asks for the keychain
+// password on every run and again after each Electron update. Debug runs keep tokens in memory only, like a system
+// without a key store, and never read what an installed Split sealed. The same rule as Remote.
+const KEYCHAIN = app.isPackaged;
+
 function readTokens(): Tokens | null {
   if (unsealedTokens) return unsealedTokens;
   const sealed = loadAccount().tokens;
-  if (!sealed) return null;
+  if (!sealed || !KEYCHAIN) return null;
   try {
     return JSON.parse(safeStorage.decryptString(Buffer.from(sealed, "base64"))) as Tokens;
   } catch {
@@ -108,7 +113,7 @@ function readTokens(): Tokens | null {
 
 function writeTokens(tokens: Tokens | null, email?: string | null): void {
   const current = loadAccount();
-  const seal = tokens !== null && safeStorage.isEncryptionAvailable();
+  const seal = tokens !== null && KEYCHAIN && safeStorage.isEncryptionAvailable();
   unsealedTokens = tokens && !seal ? tokens : null;
   current.tokens = seal ? safeStorage.encryptString(JSON.stringify(tokens)).toString("base64") : null;
   if (email !== undefined) current.email = email;
