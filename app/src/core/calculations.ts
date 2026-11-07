@@ -41,28 +41,28 @@ function moveToDisplay(window: Frame, _source: Frame, destination: Frame): Frame
   return window.width <= destination.width && window.height <= destination.height ? center(window, destination) : destination;
 }
 
-/** Pressing a half or corner again goes 1/2 → 3/4 → 1/4 of that side, while the window is still lined up with it. */
-function cycle(window: Frame, lined: boolean, half: Frame, threeQuarters: Frame, oneFourth: Frame): Frame {
+/** Pressing a half or corner again goes 1/2 → 2/3 → 1/3 of that side, while the window is still lined up with it. */
+function cycle(window: Frame, lined: boolean, half: Frame, twoThirds: Frame, oneThird: Frame): Frame {
   if (lined) {
-    if (centeredWithin(half, window)) return threeQuarters;
-    if (centeredWithin(threeQuarters, window)) return oneFourth;
+    if (centeredWithin(half, window)) return twoThirds;
+    if (centeredWithin(twoThirds, window)) return oneThird;
   }
   return half;
 }
 
-const threeQuarters = (length: number): number => Math.floor((length * 3) / 4);
-const oneFourth = (length: number): number => Math.floor(length / 4);
+const twoThirds = (length: number): number => Math.floor((length * 2) / 3);
+const oneThird = (length: number): number => Math.floor(length / 3);
 const half = (length: number): number => Math.floor(length / 2);
 
 /** Same width or height steps for a side or corner that keeps to the left of the screen. */
 function fromLeft(window: Frame, s: Frame, one: Frame): Frame {
-  return cycle(window, Math.abs(midY(window) - midY(one)) <= NEAR, one, { ...one, width: threeQuarters(s.width) }, { ...one, width: oneFourth(s.width) });
+  return cycle(window, Math.abs(midY(window) - midY(one)) <= NEAR, one, { ...one, width: twoThirds(s.width) }, { ...one, width: oneThird(s.width) });
 }
 
 /** The same for one that keeps to the right: the window's right edge stays on the screen's. */
 function fromRight(window: Frame, s: Frame, one: Frame): Frame {
   const sized = (width: number): Frame => ({ ...one, width, x: s.x + s.width - width });
-  return cycle(window, Math.abs(midY(window) - midY(one)) <= NEAR, one, sized(threeQuarters(s.width)), sized(oneFourth(s.width)));
+  return cycle(window, Math.abs(midY(window) - midY(one)) <= NEAR, one, sized(twoThirds(s.width)), sized(oneThird(s.width)));
 }
 
 const leftHalf: Calculation = (window, _source, s) => fromLeft(window, s, { ...s, width: half(s.width) });
@@ -71,13 +71,13 @@ const rightHalf: Calculation = (window, _source, s) => fromRight(window, s, { ..
 
 const bottomHalf: Calculation = (window, _source, s) => {
   const one = { ...s, height: half(s.height) };
-  return cycle(window, Math.abs(midX(window) - midX(one)) <= NEAR, one, { ...one, height: threeQuarters(s.height) }, { ...one, height: oneFourth(s.height) });
+  return cycle(window, Math.abs(midX(window) - midX(one)) <= NEAR, one, { ...one, height: twoThirds(s.height) }, { ...one, height: oneThird(s.height) });
 };
 
 const topHalf: Calculation = (window, _source, s) => {
   const one = { ...s, height: half(s.height), y: s.y + half(s.height) + s.height % 2 };
   const sized = (height: number): Frame => ({ ...one, height, y: s.y + s.height - height });
-  return cycle(window, Math.abs(midX(window) - midX(one)) <= NEAR, one, sized(threeQuarters(s.height)), sized(oneFourth(s.height)));
+  return cycle(window, Math.abs(midX(window) - midX(one)) <= NEAR, one, sized(twoThirds(s.height)), sized(oneThird(s.height)));
 };
 
 /** A corner of the screen: half as wide and half as high. */

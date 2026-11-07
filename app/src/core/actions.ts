@@ -95,11 +95,11 @@ export function movesToDisplay(action: Action): boolean {
 }
 
 /**
- * Where a half or corner move landed in its 1/2 → 3/4 → 1/4 cycle, so the label can say which turn
- * it was: "3/4", "1/4", or null at 1/2 and for every other action. Top and bottom halves cycle the
+ * Where a half or corner move landed in its 1/2 → 2/3 → 1/3 cycle, so the label can say which turn
+ * it was: "2/3", "1/3", or null at 1/2 and for every other action. Top and bottom halves cycle the
  * height, the rest the width; the nearest step wins because the gap trims a few points off each.
  */
-export function cycleStep(action: Action, rect: { width: number; height: number }, workArea: { width: number; height: number }): "3/4" | "1/4" | null {
+export function cycleStep(action: Action, rect: { width: number; height: number }, workArea: { width: number; height: number }): "2/3" | "1/3" | null {
   let share: number;
   switch (action) {
     case Action.MoveToTopHalf:
@@ -117,7 +117,7 @@ export function cycleStep(action: Action, rect: { width: number; height: number 
     default:
       return null;
   }
-  const steps = [0.25, 0.5, 0.75] as const;
+  const steps = [1 / 3, 1 / 2, 2 / 3] as const;
   const nearest = steps.reduce((best, step) => (Math.abs(share - step) < Math.abs(share - best) ? step : best));
-  return nearest === 0.75 ? "3/4" : nearest === 0.25 ? "1/4" : null;
+  return nearest === steps[2] ? "2/3" : nearest === steps[0] ? "1/3" : null;
 }

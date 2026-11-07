@@ -13,17 +13,17 @@ function calc(action: Action, window: Rect): Rect {
   return rect;
 }
 
-test("halves cycle through three quarters and one quarter", () => {
+test("halves cycle through two thirds and one third", () => {
   const half = calc(Action.MoveToLeftHalf, new Rect(100.0, 100.0, 800.0, 600.0));
   assert.deepEqual(half, new Rect(0.0, 0.0, 960.0, 1040.0));
-  const threeQuarters = calc(Action.MoveToLeftHalf, half);
-  assert.deepEqual(threeQuarters, new Rect(0.0, 0.0, 1440.0, 1040.0));
-  const oneQuarter = calc(Action.MoveToLeftHalf, threeQuarters);
-  assert.deepEqual(oneQuarter, new Rect(0.0, 0.0, 480.0, 1040.0));
-  assert.deepEqual(calc(Action.MoveToLeftHalf, oneQuarter), half);
+  const twoThirds = calc(Action.MoveToLeftHalf, half);
+  assert.deepEqual(twoThirds, new Rect(0.0, 0.0, 1280.0, 1040.0));
+  const oneThird = calc(Action.MoveToLeftHalf, twoThirds);
+  assert.deepEqual(oneThird, new Rect(0.0, 0.0, 640.0, 1040.0));
+  assert.deepEqual(calc(Action.MoveToLeftHalf, oneThird), half);
   const right = calc(Action.MoveToRightHalf, half);
-  assert.deepEqual(calc(Action.MoveToRightHalf, right), new Rect(480.0, 0.0, 1440.0, 1040.0));
-  assert.deepEqual(calc(Action.MoveToRightHalf, new Rect(480.0, 0.0, 1440.0, 1040.0)), new Rect(1440.0, 0.0, 480.0, 1040.0));
+  assert.deepEqual(calc(Action.MoveToRightHalf, right), new Rect(640.0, 0.0, 1280.0, 1040.0));
+  assert.deepEqual(calc(Action.MoveToRightHalf, new Rect(640.0, 0.0, 1280.0, 1040.0)), new Rect(1280.0, 0.0, 640.0, 1040.0));
 });
 
 test("top and bottom follow a downward y axis", () => {

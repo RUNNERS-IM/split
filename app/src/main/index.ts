@@ -310,7 +310,7 @@ const SIDES: Partial<Record<Action, string>> = {
   MoveToBottomHalf: "Side.Bottom",
 };
 
-/** "Left Half", then "Left 3/4" and "Left 1/4" as the same shortcut is pressed again; corners add the step to their name. */
+/** "Left Half", then "Left 2/3" and "Left 1/3" as the same shortcut is pressed again; corners add the step to their name. */
 function movedTitle(action: Action, rect: Rect, area: Rect | null): string {
   const step = area ? cycleStep(action, rect, area) : null;
   if (!step) return t(action);
