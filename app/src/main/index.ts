@@ -24,7 +24,6 @@ import {
   Tray,
 } from "electron";
 import { ALL, type Action, cycleStep } from "../core/actions.ts";
-import { loadScripts } from "../core/calc.ts";
 import { Engine, type Outcome, type Snapshot, screenContaining, screensInConsistentOrder } from "../core/engine.ts";
 import { Rect } from "../core/geometry.ts";
 import { shouldTurnOnAtLogin } from "../core/loginDefault.ts";
@@ -906,10 +905,7 @@ function start(): void {
   }
   const loaded = loadSettings();
   settings = loaded.settings;
-  const scripts = app.isPackaged
-    ? join(process.resourcesPath, "Window Position Calculations")
-    : join(app.getAppPath(), "../Split/Resources/Window Position Calculations");
-  engine = new Engine(loadScripts(scripts));
+  engine = new Engine();
   trusted = native.isTrusted(false);
   frontApp = native.frontmostApp();
   native.watch((event) => {

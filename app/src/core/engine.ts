@@ -4,7 +4,7 @@
 
 import { Action, movesToDisplay, usesGap } from "./actions.ts";
 import { layoutRects, MAXIMUM_WINDOW_COUNT, MINIMUM_WINDOW_SIDE } from "./arrange.ts";
-import { calculate, type Scripts } from "./calc.ts";
+import { calculate } from "./calc.ts";
 import { type Rect, rectWithGap, roughlyEqual } from "./geometry.ts";
 
 /** One monitor. Both rects are top-left based in the coordinates the platform moves windows in. */
@@ -171,7 +171,6 @@ function neighbourScreen(source: Screen, action: Action, ordered: readonly Scree
 }
 
 export class Engine {
-  private readonly scripts: Scripts;
   private readonly histories = new Map<string, History>();
   /** Window → (rect before full screen, full screen rect), so pressing full screen again restores it. */
   private readonly fullscreenRestore = new Map<number, [Rect, Rect]>();
@@ -183,11 +182,6 @@ export class Engine {
   private readonly gapless = new Map<number, [Rect, Rect]>();
   /** Where each window of the last auto-arrange was before, so one undo puts all of them back. */
   private lastArrangement: Move[] = [];
-
-  /** `scripts` comes from `loadScripts`. */
-  constructor(scripts: Scripts) {
-    this.scripts = scripts;
-  }
 
   private history(app: string): History {
     let history = this.histories.get(app);
@@ -282,7 +276,7 @@ export class Engine {
 
     let target: Rect | null;
     try {
-      target = calculate(action, windowRect, source.workArea, destination.workArea, this.scripts);
+      target = calculate(action, windowRect, source.workArea, destination.workArea);
     } catch {
       return failed();
     }
