@@ -1,5 +1,5 @@
 // What to do with the windows when monitors are plugged in or out. Port of the calculation in
-// `SplitDisplayChangeArranger` (`Split/Sources/SplitWindowArranger.m`); the timers and screen
+// `SplitDisplayChangeArranger` (`SplitWindowArranger.m`); the timers and screen
 // events live in `src/main/displays.ts`.
 //
 // - Windows from a monitor that went away move to the monitors left, which are re-arranged.

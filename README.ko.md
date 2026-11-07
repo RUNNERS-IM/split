@@ -165,10 +165,10 @@ pnpm test       # 시험
 pnpm typecheck  # 타입 검사
 ```
 
-배포판은 `release` 가지에 올리면 GitHub Actions 가 macOS · Windows · Linux 판을 만들고 서명·공증한 뒤 GitHub Releases 에 올립니다. 손으로 만들 때는 `pnpm dist:mac` · `pnpm dist:win` · `pnpm dist:linux` 를 씁니다. 저장소에 남은 `Split.xcodeproj` 는 예전 Swift 맥 판입니다.
+배포판은 `release` 가지에 올리면 GitHub Actions 가 macOS · Windows · Linux 판을 만들고 서명·공증한 뒤 GitHub Releases 에 올립니다. 손으로 만들 때는 `pnpm dist:mac` · `pnpm dist:win` · `pnpm dist:linux` 를 씁니다. 예전 Objective-C 맥 판은 태그 `legacy-objc` 에 남아 있습니다.
 
 ## 라이선스
 
 Copyright (c) 2026 Runners Co., Ltd. All rights reserved. [LICENSE.md](LICENSE.md) 를 보세요.
 
-Split 이 쓰는 오픈소스(Lucide · Sparkle · Spectacle)의 저작권 문구는 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) 와 앱의 Split 정보 → 오픈소스 고지에 있습니다.
+Split 이 쓰는 오픈소스(Lucide · Spectacle)의 저작권 문구는 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) 와 앱의 Split 정보 → 오픈소스 고지에 있습니다.

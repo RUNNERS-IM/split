@@ -550,22 +550,3 @@ pub fn watch(sink: Sink) {
     };
     WATCHING.set(Some(Watching { _global: global, _local: local, _activation: activation }));
 }
-
-
-unsafe extern "C" {
-    /// mac/menu.m
-    fn split_pop_up_menu(json: *const std::ffi::c_char, x: f64, y: f64) -> *mut std::ffi::c_char;
-    fn free(pointer: *mut c_void);
-}
-
-pub fn pop_up_menu(spec: &str, x: f64, y: f64) -> Result<Option<String>, String> {
-    main_thread()?;
-    let json = std::ffi::CString::new(spec).map_err(|e| e.to_string())?;
-    let chosen = unsafe { split_pop_up_menu(json.as_ptr(), x, y) };
-    if chosen.is_null() {
-        return Ok(None);
-    }
-    let id = unsafe { std::ffi::CStr::from_ptr(chosen) }.to_string_lossy().into_owned();
-    unsafe { free(chosen.cast()) };
-    Ok(Some(id))
-}

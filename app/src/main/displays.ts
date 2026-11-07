@@ -1,5 +1,5 @@
 // Moving windows when monitors are plugged in or out. Port of `SplitDisplayChangeArranger`
-// (`Split/Sources/SplitWindowArranger.m`).
+// (`SplitWindowArranger.m`).
 //
 // Flow: every 4 seconds (and half a second after Split moves a window) it records which monitor
 // and where each window is → a screen event comes → it waits a second for macOS to finish
