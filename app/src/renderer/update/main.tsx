@@ -54,7 +54,7 @@ function App({ payload }: { payload: UpdatePayload }) {
           <button type="button" className="rw-button" disabled={installing} onClick={() => answer(false)}>
             {payload.later}
           </button>
-          <button type="button" className="rw-button default" autoFocus disabled={installing} onClick={() => answer(true)}>
+          <button type="button" className="rw-button default" disabled={installing} onClick={() => answer(true)}>
             {installing ? payload.installingText : payload.install}
           </button>
         </div>
