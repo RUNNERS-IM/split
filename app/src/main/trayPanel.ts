@@ -23,7 +23,6 @@ export interface PanelSource {
   layouts(): { card: unknown; choose: (chosen: string) => void };
   image(icon: unknown): { src: string; template: boolean } | null;
   proSublabel(): string;
-  accent(): string;
   account(): PanelView["account"];
   openSettings(tab?: SettingsTab, signIn?: boolean): void;
   preload: string;
@@ -42,7 +41,7 @@ let anchor: { x: number; y: number; centered: boolean } = { x: 0, y: 0, centered
 let lastItems: PanelView["items"] = [];
 
 function view(): PanelView {
-  if (!source) return { items: [], accent: "#007aff", account: { status: "signedOut", email: null, name: "", signInLine: "", connecting: "" } };
+  if (!source) return { items: [], account: { status: "signedOut", email: null, name: "", signInLine: "", connecting: "" } };
   const layouts = source.layouts();
   choose = layouts.choose;
   const converted = convertTemplate(source.template(), {
@@ -54,7 +53,7 @@ function view(): PanelView {
   });
   clicks = converted.clicks;
   lastItems = converted.items;
-  return { items: converted.items, accent: source.accent(), account: source.account() };
+  return { items: converted.items, account: source.account() };
 }
 
 export function setupTrayPanel(from: PanelSource): void {

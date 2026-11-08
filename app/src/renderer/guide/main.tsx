@@ -4,7 +4,7 @@
 import { StrictMode, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import type { ViewState } from "../../shared/types";
-import "../runners-window.css";
+import "../runners-account/runners-window.css";
 import "./guide.css";
 
 const SPLIT_ICON = new URL("../about/assets/split-icon.png", import.meta.url).href;

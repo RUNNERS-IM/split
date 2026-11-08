@@ -3,7 +3,6 @@
    main.tsx), shared by every RUNNERS app; only what is Split's own is defined here. */
 
 :root {
-  --accent: #007aff;
   --label: var(--rw-text);
   --secondary: var(--rw-text-secondary);
   --tertiary: rgba(0, 0, 0, 0.26);
@@ -28,10 +27,9 @@
   --purple: #af52de;
   --pink: #ff2d55;
   --gray: #8e8e93;
-  --yellow: #ffcc00;
 
   color-scheme: light dark;
-  font-family: -apple-system, BlinkMacSystemFont, system-ui, "Segoe UI", Ubuntu, Cantarell, "Noto Sans", "Malgun Gothic", sans-serif;
+  font-family: var(--rw-font-family);
   font-size: var(--rw-font);
   line-height: 1.3;
   color: var(--label);
@@ -40,16 +38,8 @@
   cursor: default;
 }
 
-/* Follow the accent color chosen in the system when the browser can read it. */
-@supports (color: AccentColor) {
-  :root {
-    --accent: AccentColor;
-  }
-}
-
 @media (prefers-color-scheme: dark) {
   :root {
-    --accent: #0a84ff;
     --tertiary: rgba(255, 255, 255, 0.25);
     --control-selected: rgba(255, 255, 255, 0.24);
     --button: rgba(255, 255, 255, 0.15);
@@ -68,13 +58,6 @@
     --purple: #bf5af2;
     --pink: #ff375f;
     --gray: #98989d;
-    --yellow: #ffd60a;
-  }
-
-  @supports (color: AccentColor) {
-    :root {
-      --accent: AccentColor;
-    }
   }
 }
 
@@ -103,7 +86,7 @@ button {
 }
 
 button:focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--accent) 50%, transparent);
+  outline: 3px solid color-mix(in srgb, var(--rw-primary) 50%, transparent);
   outline-offset: 1px;
 }
 
@@ -171,7 +154,7 @@ p {
 
 .toolbar-item.selected {
   background: var(--control-track);
-  color: var(--accent);
+  color: var(--rw-primary);
 }
 
 /* Content */
@@ -434,8 +417,8 @@ p {
 }
 
 .recorder.recording .recorder-field {
-  background: color-mix(in srgb, var(--accent) 16%, transparent);
-  box-shadow: inset 0 0 0 1.5px var(--accent);
+  background: color-mix(in srgb, var(--rw-primary) 16%, transparent);
+  box-shadow: inset 0 0 0 1.5px var(--rw-primary);
 }
 
 .recorder-field:focus-visible {
@@ -483,7 +466,7 @@ p {
 }
 
 .switch.on {
-  background: var(--accent);
+  background: var(--rw-primary);
 }
 
 .switch-knob {
@@ -498,6 +481,7 @@ p {
 }
 
 .switch.on .switch-knob {
+  background: var(--rw-on-primary);
   transform: translateX(10px);
 }
 
@@ -570,8 +554,8 @@ p {
 }
 
 .button.primary {
-  background: var(--accent);
-  color: #fff;
+  background: var(--rw-primary);
+  color: var(--rw-on-primary);
   box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.2);
 }
 
@@ -642,16 +626,9 @@ p {
   --swatch: var(--gray);
 }
 
-/* Follows the system accent color, so it is drawn as a color wheel. */
+/* The default: black or white, like every other chosen thing in the app. */
 .swatch-accent {
-  --swatch: conic-gradient(
-    var(--purple) 0deg 60deg,
-    var(--blue) 60deg 120deg,
-    var(--green) 120deg 180deg,
-    var(--yellow) 180deg 240deg,
-    var(--orange) 240deg 300deg,
-    var(--red) 300deg 360deg
-  );
+  --swatch: var(--rw-primary);
 }
 
 /* In-page alert in place of NSAlert */

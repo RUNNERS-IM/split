@@ -157,7 +157,7 @@ h1 {
 
 .guide-halves i:first-child {
   border-radius: 4px;
-  background: var(--rw-accent);
+  background: var(--rw-primary);
 }
 
 .guide-keys {
@@ -221,7 +221,7 @@ h1 {
   padding: 0;
   border: 0;
   background: none;
-  color: var(--rw-accent);
+  color: var(--rw-primary);
   font: inherit;
   font-size: 12px;
   cursor: pointer;

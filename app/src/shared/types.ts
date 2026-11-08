@@ -81,8 +81,6 @@ export interface OverlayPayload {
   shortcut: string;
   tip: string;
   feedback: FeedbackSettings;
-  /** CSS color for "accent", read from the system. */
-  accent: string;
   /** Milliseconds the label stays before fading. */
   duration: number;
 }
@@ -106,8 +104,6 @@ export interface UpdatePayload {
   /** "Downloading… %@%" and "Installing…". */
   downloadingText: string;
   installingText: string;
-  /** The system accent color as CSS, or "" to keep the page default. */
-  accent: string;
 }
 
 /** What the "Save Current Layout" window shows; it arrives in the page URL's hash as JSON. */
@@ -170,8 +166,6 @@ export type PanelItem =
 
 export interface PanelView {
   items: PanelItem[];
-  /** The system accent colour, for the switches and the chosen monitor. */
-  accent: string;
   /** The line on top: who is signed in and how the phone connection stands, with its two words in the chosen language. */
   account: ViewState["phone"] & { signInLine: string; connecting: string };
 }

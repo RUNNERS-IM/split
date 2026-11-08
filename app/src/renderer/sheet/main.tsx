@@ -5,6 +5,7 @@ import { StrictMode, useEffect, useState, type ComponentType } from "react";
 import { createRoot } from "react-dom/client";
 import { Maximize2, Minimize2, Redo2, SquareArrowLeft, SquareArrowRight, Undo2 } from "lucide-react";
 import type { SheetPayload } from "../../shared/types";
+import "../runners-account/runners-window.css";
 import "./sheet.css";
 
 type Fraction = [x: number, y: number, width: number, height: number];

@@ -48,7 +48,7 @@ const POSITIONS: { value: FeedbackPosition; label: string }[] = [
   { value: "center", label: "PositionCenter" },
 ];
 
-/** A round color button; "accent" is a color wheel because it follows the system accent color. */
+/** A round color button; "accent" is the black or white default. */
 function Swatch({
   color,
   chosen,

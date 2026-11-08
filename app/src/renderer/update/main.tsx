@@ -3,7 +3,7 @@
 import { StrictMode, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import type { UpdatePayload, UpdateProgress } from "../../shared/types";
-import "../runners-window.css";
+import "../runners-account/runners-window.css";
 import "./update.css";
 
 const SPLIT_ICON = new URL("../about/assets/split-icon.png", import.meta.url).href;
@@ -75,7 +75,6 @@ function App({ payload }: { payload: UpdatePayload }) {
 const payload = readPayload();
 if (payload) {
   document.title = payload.title;
-  if (payload.accent) document.documentElement.style.setProperty("--rw-accent", payload.accent);
   createRoot(document.getElementById("root")!).render(
     <StrictMode>
       <App payload={payload} />

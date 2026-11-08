@@ -5,7 +5,7 @@
 import { StrictMode, useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import type { LayoutPagePayload, LayoutSavePayload, ProPayload } from "../../shared/types";
-import "../runners-window.css";
+import "../runners-account/runners-window.css";
 import "../update/update.css";
 import "./layout.css";
 

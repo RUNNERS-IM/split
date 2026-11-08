@@ -40,7 +40,7 @@
 }
 
 .layout-fields input[type="text"]:focus {
-  outline: 3px solid color-mix(in srgb, var(--rw-accent) 50%, transparent);
+  outline: 3px solid color-mix(in srgb, var(--rw-primary) 50%, transparent);
   outline-offset: 0;
 }
 
@@ -59,7 +59,7 @@
 
 .layout-auto input[type="checkbox"] {
   margin: 0;
-  accent-color: var(--rw-accent);
+  accent-color: var(--rw-primary);
 }
 
 /* Split Pro: 360 wide, 24 around, as kSheetWidth and kSheetPadding. */
