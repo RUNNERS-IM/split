@@ -2,7 +2,7 @@
 // The counting, saving and sending are runners-app-kit's (src/main/runners/usage-stats.ts).
 import { join } from "node:path";
 import { app } from "electron";
-import { phoneAccessToken, USAGE_URL } from "./phone";
+import { phoneAccessToken, USAGE_URL, USER_AGENT } from "./phone";
 import { createUsageStats, type UsageStats } from "./runners/usage-stats";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -15,6 +15,7 @@ export function usageStats(): UsageStats {
     filePath: join(app.getPath("userData"), "usage-stats.json"),
     token: phoneAccessToken,
     endpoint: USAGE_URL,
+    userAgent: USER_AGENT,
   });
   return stats;
 }
