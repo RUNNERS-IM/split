@@ -61,6 +61,8 @@ h1 {
   margin: 0;
   padding-inline-start: 16px;
   overflow-y: auto;
+  /* Why: without it macOS draws a black scroll bar on the dark window. Only here, as the save-layout window shares this file and its checkbox would change. */
+  color-scheme: light dark;
   font-size: 13px;
   line-height: 1.6;
   user-select: text;
