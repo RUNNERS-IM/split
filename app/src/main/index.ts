@@ -63,13 +63,13 @@ const SECTIONS: [string, Action[]][] = [
   ["SectionHistory", ["UndoLastMove", "RedoLastMove"]],
 ];
 
-/** Tray menu groups, in the order of the macOS status menu. */
+/** Tray menu groups, in the same order as the shortcut settings. */
 const MENU_GROUPS: Action[][] = [
   ["MoveToCenter", "MoveToFullscreen", "ArrangeWindows"],
   ["MoveToLeftHalf", "MoveToRightHalf", "MoveToTopHalf", "MoveToBottomHalf"],
-  ["MoveToUpperLeft", "MoveToLowerLeft", "MoveToUpperRight", "MoveToLowerRight"],
-  ["MoveToNextDisplay", "MoveToPreviousDisplay"],
-  ["MoveToNextThird", "MoveToPreviousThird"],
+  ["MoveToUpperLeft", "MoveToUpperRight", "MoveToLowerLeft", "MoveToLowerRight"],
+  ["MoveToPreviousThird", "MoveToNextThird"],
+  ["MoveToPreviousDisplay", "MoveToNextDisplay"],
   ["MakeLarger", "MakeSmaller"],
   ["UndoLastMove", "RedoLastMove"],
 ];
