@@ -7,11 +7,8 @@ import type { ViewState } from "../../../shared/types.ts";
 import { useStrings } from "../strings.ts";
 
 const open = (url: string) => void window.open(url, "_blank");
-const close = () => window.close();
 // Why: the notices are large, so they are read only when opened.
 const loadNotices = () => import("../../about/THIRD_PARTY_NOTICES.md?raw").then((file) => file.default);
-// Why: the tab sits in a window of its own size, so the part's fitting is not wanted here.
-const keepHeight = () => undefined;
 
 export default function AboutTab({ state }: { state: ViewState }) {
   const { t, f } = useStrings();
@@ -44,8 +41,7 @@ export default function AboutTab({ state }: { state: ViewState }) {
         t={text}
         version={version}
         openExternal={open}
-        closeWindow={close}
-        fitHeight={keepHeight}
+        embedded
         loadNotices={loadNotices}
       />
     </div>

@@ -7,7 +7,7 @@ import { Check, ChevronDown, ChevronRight, Command, type LucideIcon } from "luci
 import type { PanelItem, PanelView } from "../../shared/types";
 import { RunnersMark } from "../runners-account/runners-account";
 import "../runners-account/runners-account.css";
-import "../runners-menu.css";
+import "../runners-account/runners-menu.css";
 import "./panel.css";
 
 const ICON_SIZE = 16;
@@ -198,7 +198,8 @@ function Lines({ items, open, toggle, run }: { items: PanelItem[]; open: Set<str
             {item.checked || item.shortcut ? (
               <span className="rm-trailing">
                 {item.checked ? <Check size={16} strokeWidth={2} className="accent" aria-hidden /> : null}
-                {item.shortcut ? <span className="shortcut">{item.shortcut}</span> : null}
+                {/* Why: on an Arabic line the keys would otherwise read backwards (A⇧⌘). */}
+                {item.shortcut ? <span className="shortcut"><bdi>{item.shortcut}</bdi></span> : null}
               </span>
             ) : null}
           </button>,

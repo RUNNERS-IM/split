@@ -754,7 +754,7 @@ p {
   overflow-y: auto;
 }
 
-/* Why: the same margins as the other tabs; the part's extra room on top is for a window of its own. */
+/* Why: the same side margins as the other tabs. */
 .settings-about .about {
-  padding: var(--rw-pad) max(var(--rw-pad), calc((100% - 544px) / 2));
+  padding-inline: max(var(--rw-pad), calc((100% - 544px) / 2));
 }

@@ -23,7 +23,7 @@
   align-self: stretch;
   gap: 8px;
   margin-top: 14px;
-  text-align: left;
+  text-align: start;
   -webkit-app-region: no-drag;
 }
 
