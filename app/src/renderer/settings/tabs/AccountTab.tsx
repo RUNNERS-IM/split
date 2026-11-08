@@ -3,6 +3,7 @@
 // relay is reached and the name the phone lists.
 import type { ViewState } from "../../../shared/types.ts";
 import { accountText, RunnersMark } from "../../runners-account/runners-account";
+import panda from "../../runners-account/assets/panda/face.webp";
 import { Button, Card, Row, Section } from "../components.tsx";
 import { useStrings } from "../strings.ts";
 
@@ -51,7 +52,7 @@ export default function AccountTab({ state, openSignIn, signOut }: { state: View
             title={
               <span className="account-line">
                 <span className="ra-badge ra-large" aria-hidden>
-                  {((phone.email ?? "").match(/[\p{L}\p{N}]/u)?.[0] ?? "?").toUpperCase()}
+                  <img src={panda} alt="" draggable={false} />
                 </span>
                 <span>{phone.email}</span>
               </span>

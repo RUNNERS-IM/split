@@ -13,7 +13,7 @@
     "native": "napi build --manifest-path native/Cargo.toml --package-json-path native/package.json --platform --release --output-dir native --no-js",
     "dev": "electron-vite dev",
     "build": "pnpm check:account && electron-vite build",
-    "check:account": "node src/renderer/runners-account/check.mjs",
+    "check:account": "node src/renderer/runners-account/check.mjs && node src/main/runners/check.mjs",
     "test": "tsx --test test/core/*.test.ts",
     "relay": "tsx test/relay-server.ts",
     "dist:mac": "pnpm run native:mac-universal && pnpm check:account && electron-vite build && electron-builder --mac --config builder.config.cjs",

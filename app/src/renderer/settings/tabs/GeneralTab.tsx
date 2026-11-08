@@ -13,6 +13,7 @@ import {
 } from "../components.tsx";
 import { displayShortcut, shortcutFor } from "../keys.ts";
 import { useStrings } from "../strings.ts";
+import { usageText } from "../../runners-account/runners-usage";
 
 // Card 544 wide (600 − 2 × 28); text wraps in what is left after the padding and the control.
 const CARD_WIDTH = 544;
@@ -49,9 +50,11 @@ function useProblems(state: ViewState): string[] {
 export default function GeneralTab({
   state,
   update,
+  show,
 }: {
   state: ViewState;
   update: Update;
+  show: (state: ViewState) => void;
 }) {
   const { t, f } = useStrings();
   const { settings } = state;
@@ -144,6 +147,13 @@ export default function GeneralTab({
               />
             </Row>
           )}
+          <Row title={usageText(state.locale, "rowTitle")} hint={usageText(state.locale, "rowHint")} textWidth={TEXT_WIDTH}>
+            <Switch
+              label={usageText(state.locale, "rowTitle")}
+              checked={state.usageConsent === "granted"}
+              onChange={(granted) => void window.split.setUsageConsent(granted).then(show)}
+            />
+          </Row>
           {/* Why: the panel's bottom lines are only Settings, Help and Quit, so the check sits next to the version it would replace. */}
           {!state.store && (
             <Row title={`Split ${state.version}`} textWidth={TEXT_WIDTH}>

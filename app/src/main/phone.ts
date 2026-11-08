@@ -16,6 +16,8 @@ import { app, safeStorage } from "electron";
 /** Set SPLIT_API_URL to try a local relay (test/relay-server.ts). Why not when packaged: the password and tokens go to this address. */
 const API_URL = ((!app.isPackaged && process.env.SPLIT_API_URL) || "https://server.system.runners.im").replace(/\/$/, "");
 const RELAY_URL = `${API_URL.replace(/^http/, "ws")}/api/relay`;
+/** Where usage counts go. Why null: a debug run without a local server must not report to the real one. */
+export const USAGE_URL = app.isPackaged || process.env.SPLIT_API_URL ? `${API_URL}/api/mobile/usage` : null;
 /** The relay closes with this code when the access token is wrong or ran out. */
 const TOKEN_REFUSED = 4401;
 /** Closes after which connecting again would not help: another connection took this device's place, or the app name was refused. */
@@ -129,6 +131,10 @@ function setStatus(next: PhoneStatus): void {
   if (status === next) return;
   status = next;
   hooks?.changed();
+}
+
+export function phoneAccessToken(): string | null {
+  return readTokens()?.accessToken ?? null;
 }
 
 export function phoneView(): PhoneView {
