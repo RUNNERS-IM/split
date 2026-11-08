@@ -70,8 +70,6 @@ let refreshTimer: NodeJS.Timeout | null = null;
 let refreshedOnce = false;
 /** The refresh under way. Why one: the timer and a 4401 can ask at the same moment, and the refresh token is only good once. */
 let refreshing: Promise<boolean> | null = null;
-/** True when the person signed out while a refresh was on its way. */
-let signedOutDuringRefresh = false;
 
 function userFile(name: string): string {
   return join(app.getPath("userData"), name);
@@ -169,8 +167,6 @@ function problem(error: unknown): Problem {
 /** Runs a kit call that signs in, then connects. Returns null when it worked, otherwise a `Problem`. */
 async function startSignedIn(call: (account: Account) => Promise<void>): Promise<Problem | null> {
   try {
-    // Why wait: a refresh still on its way would save its answer over the new sign-in.
-    await refreshing;
     await call(runnersAccount());
   } catch (error) {
     return problem(error);
@@ -204,7 +200,6 @@ export function resetPassword(email: string, code: string, password: string): Pr
 
 export function signOut(): void {
   void runnersAccount().signOut();
-  signedOutDuringRefresh = refreshing !== null;
   disconnect();
   setStatus("signedOut");
 }
@@ -218,12 +213,6 @@ function refreshTokens(): Promise<boolean> {
 
 async function refreshOnce(): Promise<boolean> {
   const result = await runnersAccount().refresh();
-  // Why: the kit saves the answer even when the person signed out meanwhile, which would bring the old sign-in back.
-  if (signedOutDuringRefresh) {
-    signedOutDuringRefresh = false;
-    void runnersAccount().signOut();
-    return false;
-  }
   // A refused refresh token means the account was signed out elsewhere; a network error keeps it.
   if (!result.ok && result.reason === "rejected") setStatus("signedOut");
   return result.ok;
