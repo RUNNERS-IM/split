@@ -25,6 +25,7 @@
   "ArrangeUndone": "Finestre riportate com’erano",
   "ArrangeWindows": "Disponi tutte le finestre",
   "ArrangedCount": "Finestre disposte: %ld",
+  "ArrangedCount|one": "%ld finestra disposta",
   "AutoUpdate": "Verifica automaticamente gli aggiornamenti",
   "AutoUpdateHint": "Split cerca una nuova versione una volta al giorno e chiede conferma prima di installarla.",
   "ButtonLabelAffirmative": "OK",
