@@ -25,6 +25,7 @@
   "ArrangeUndone": "Ikkunat palautettu",
   "ArrangeWindows": "Järjestä kaikki ikkunat",
   "ArrangedCount": "Ikkunoita järjestetty: %ld",
+  "ArrangedCount|one": "%ld ikkuna järjestetty",
   "AutoUpdate": "Tarkista päivitykset automaattisesti",
   "AutoUpdateHint": "Split etsii uutta versiota kerran päivässä ja kysyy ennen asentamista.",
   "ButtonLabelAffirmative": "OK",
