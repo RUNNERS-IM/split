@@ -42,7 +42,8 @@ function App({ payload }: { payload: UpdatePayload }) {
       {payload.changes.length > 0 && (
         <section className="changes" aria-label={payload.changesTitle}>
           <h2>{payload.changesTitle}</h2>
-          <ul>
+          {/* Why: the notes are only in Korean or English, so the list stays left-to-right on an Arabic screen. */}
+          <ul dir="auto">
             {payload.changes.map((line, index) => (
               <li key={index}>{line}</li>
             ))}
