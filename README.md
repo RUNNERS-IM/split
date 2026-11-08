@@ -116,7 +116,7 @@ The action names for `--perform` are MoveToCenter, MoveToFullscreen, MoveToLeftH
 Done:
 
 - Rebuilt with Electron for macOS, Windows and Linux, plus a Mac App Store version
-- The Phone tab in settings: arrange windows into a shape or bring back a saved layout from the Split phone app
+- The Account tab in settings: arrange windows into a shape or bring back a saved layout from the Split phone app
 - Developer ID signing, notarization and automatic updates from GitHub Releases
 - A step-by-step Accessibility permission guide
 - Homebrew tap
@@ -169,4 +169,4 @@ Pushing to the `release` branch makes GitHub Actions build, sign and notarize th
 
 Copyright (c) 2026 Runners Co., Ltd. All rights reserved. See [LICENSE.md](LICENSE.md).
 
-The notices of the open source code Split uses (Lucide and Spectacle) are in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and in the app under About Split → Open Source Notices.
+The notices of the open source code Split uses (Lucide and Spectacle) are in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and in the app under Settings → About → Open Source Notices.

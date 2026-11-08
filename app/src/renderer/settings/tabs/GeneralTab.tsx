@@ -1,11 +1,9 @@
-// General tab: the options card, the Desktops (Spaces) card, Accessibility permission, the About
-// line and the other RUNNERS apps — in the order of -makeGeneralView.
+// General tab: the options card with the update check, the Desktops (Spaces) card and the Accessibility permission.
 import { useState } from "react";
 import type { ViewState } from "../../../shared/types.ts";
 import type { Update } from "../App.tsx";
 import {
   Alert,
-  AppIcon,
   Button,
   Card,
   Row,
@@ -14,7 +12,6 @@ import {
   Switch,
 } from "../components.tsx";
 import { displayShortcut, shortcutFor } from "../keys.ts";
-import { RunnersApps } from "../RunnersApps.tsx";
 import { useStrings } from "../strings.ts";
 
 // Card 544 wide (600 − 2 × 28); text wraps in what is left after the padding and the control.
@@ -29,8 +26,6 @@ const GAPS = [
   { value: 16, label: "GapNormal" },
   { value: 24, label: "GapWide" },
 ];
-
-const GITHUB_URL = "https://github.com/RUNNERS-IM/split";
 
 /** Shortcuts another app holds, apps that turn Split away and window apps answering the same keys, so odd moves have a reason. */
 function useProblems(state: ViewState): string[] {
@@ -149,6 +144,14 @@ export default function GeneralTab({
               />
             </Row>
           )}
+          {/* Why: the panel's bottom lines are only Settings, Help and Quit, so the check sits next to the version it would replace. */}
+          {!state.store && (
+            <Row title={`Split ${state.version}`} textWidth={TEXT_WIDTH}>
+              <Button small onClick={() => void window.split.checkForUpdates()}>
+                {t("CheckForUpdates")}
+              </Button>
+            </Row>
+          )}
         </Card>
       </Section>
 
@@ -229,29 +232,6 @@ export default function GeneralTab({
           </Section>
         )
       )}
-
-      <Section title={t("SectionAbout")}>
-        <Card>
-          <div className="about-line">
-            <AppIcon size={40} />
-            <div className="about-text">
-              <div className="about-name">Split</div>
-              <div className="about-version">
-                {f("AboutLine", state.version)}
-              </div>
-            </div>
-            <div className="row-space" />
-            <Button small onClick={() => window.split.openLink("website")}>
-              {t("Website")}
-            </Button>
-            <Button small onClick={() => window.open(GITHUB_URL, "_blank")}>
-              GitHub
-            </Button>
-          </div>
-        </Card>
-      </Section>
-
-      <RunnersApps locale={state.locale} />
 
       {confirmHide && (
         <Alert

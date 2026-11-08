@@ -98,7 +98,8 @@ button.rm-item:disabled:hover {
   transform: rotate(180deg);
 }
 
-[dir="rtl"] .rm-item.group .rm-trailing .chevron {
+[dir="rtl"] .rm-item.group .rm-trailing .chevron,
+[dir="rtl"] .account-line .chevron {
   transform: scaleX(-1);
 }
 
@@ -156,4 +157,44 @@ button.rm-item:disabled:hover {
 /* The switch itself is .rm-switch in runners-menu.css. A line that cannot be changed dims as a whole. */
 .rm-switch.disabled {
   opacity: 0.4;
+}
+
+/* The account line on top: the badge and the R mark take the icon's place, the badge a little larger so its letter stays legible. */
+.account-line .rm-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-line .account-badge {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin-inline: -1px;
+  font-size: 10px;
+  cursor: inherit;
+}
+
+.account-line .account-mark {
+  display: inline-grid;
+  flex: none;
+  width: 16px;
+  place-items: center;
+}
+
+.account-line .ra-mark {
+  margin-bottom: 0;
+}
+
+.account-line .rm-trailing {
+  gap: 6px;
+}
+
+.account-status {
+  color: var(--rm-secondary, inherit);
+  opacity: 0.7;
+}
+
+.account-line .chevron {
+  opacity: 0.7;
 }

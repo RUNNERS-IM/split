@@ -2,7 +2,7 @@
 // - the move feedback overlay (glow, label, menu preview), one see-through window over one screen,
 // - the shortcut list card shown while ⌥⌘ is held,
 // - the About window.
-// The pages live in src/renderer/{overlay,sheet,about}; this file only places, shows and hides them.
+// The pages live in src/renderer/{overlay,sheet}; this file only places, shows and hides them.
 import { app, BrowserWindow, ipcMain, screen, shell, type Display } from "electron";
 import type { OverlayPayload, SheetPayload, UpdatePayload, UpdateProgress } from "../shared/types";
 import { durationMs, overlayLifetime, type OverlayMessage } from "../renderer/overlay/metrics";
@@ -35,7 +35,6 @@ let sheetLoaded: Promise<void> = Promise.resolve();
 let sheetFade: ReturnType<typeof setInterval> | null = null;
 let sheetGeneration = 0;
 
-let aboutWindow: BrowserWindow | null = null;
 
 /** A see-through, click-through window that floats over everything, on every Space, and never takes focus. */
 function makeFloatingWindow(page: string): { window: BrowserWindow; loaded: Promise<void> } {
@@ -281,93 +280,6 @@ export function hideSheet(): void {
       window.setOpacity(1);
     }
   }, 120 / steps);
-}
-
-/** http(s) links from the About page (app cards, GitHub) open in the default browser, never inside Split. */
-function openOutside(url: string): void {
-  if (/^https?:\/\//i.test(url)) void shell.openExternal(url);
-}
-
-/** Opens the About window, or brings it forward if it is already open. */
-export function showAbout(): void {
-  openAbout(false);
-}
-
-/** Opens the About window with the open source notices over it (link kind "notices"). */
-export function showNotices(): void {
-  openAbout(true);
-}
-
-function openAbout(notices: boolean): void {
-  if (isMac) app.focus({ steal: true });
-  if (aboutWindow && !aboutWindow.isDestroyed()) {
-    if (notices) void aboutWindow.webContents.executeJavaScript('location.hash = "notices"').catch(() => undefined);
-    aboutWindow.show();
-    aboutWindow.focus();
-    return;
-  }
-  const width = 520;
-  const window = new BrowserWindow({
-    width,
-    height: 640,
-    useContentSize: true,
-    show: false,
-    resizable: false,
-    minimizable: false,
-    maximizable: false,
-    fullscreenable: false,
-    autoHideMenuBar: true,
-    title: "Split",
-    ...(isMac ? { titleBarStyle: "hiddenInset" as const } : {}),
-    webPreferences: {
-      preload: preloadPath,
-      contextIsolation: true,
-      sandbox: true,
-    },
-  });
-  aboutWindow = window;
-  window.on("closed", () => {
-    if (aboutWindow === window) aboutWindow = null;
-  });
-  window.webContents.setWindowOpenHandler(({ url }) => {
-    openOutside(url);
-    return { action: "deny" };
-  });
-  window.webContents.on("will-navigate", (event, url) => {
-    event.preventDefault();
-    openOutside(url);
-  });
-
-  let shown = false;
-  const reveal = () => {
-    if (shown || window.isDestroyed()) return;
-    shown = true;
-    window.center();
-    window.show();
-    window.focus();
-  };
-  window.webContents.once("did-finish-load", () => {
-    // The page marks <body data-ready> once its text and icons are in; size the window to fit them.
-    const measure = `new Promise((resolve) => {
-      const started = Date.now();
-      const check = () => document.body.dataset.ready || Date.now() - started > 2000
-        ? resolve(Math.ceil(document.documentElement.scrollHeight))
-        : setTimeout(check, 20);
-      check();
-    })`;
-    window.webContents
-      .executeJavaScript(measure)
-      .then((height: unknown) => {
-        if (!window.isDestroyed() && typeof height === "number" && height > 0) {
-          window.setContentSize(width, height);
-        }
-      })
-      .catch(() => undefined)
-      .finally(reveal);
-  });
-  // Never leave the window hidden if the page fails to load.
-  setTimeout(reveal, 3000);
-  void window.loadURL(urlFor("about.html") + (notices ? "#notices" : ""));
 }
 
 let updateWindow: BrowserWindow | null = null;
