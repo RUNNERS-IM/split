@@ -117,7 +117,7 @@ open -g -a Split --args --guide                    # 손쉬운 사용 안내 다
 
 - Electron 으로 다시 만든 판(macOS · Windows · Linux), 맥 앱스토어 판
 - Developer ID 서명·공증, GitHub Releases 에서 받는 자동 업데이트
-- 설정의 휴대폰 탭: Split 휴대폰 앱에서 창을 모양대로 정리하고 저장한 배치를 되돌리기
+- 설정의 계정 탭: Split 휴대폰 앱에서 창을 모양대로 정리하고 저장한 배치를 되돌리기
 - 단계별 손쉬운 사용 권한 안내 창
 - Homebrew tap
 - 새 아이콘, 미리 보기가 나오는 그림 메뉴, 옮긴 뒤 반짝임
@@ -171,4 +171,4 @@ pnpm typecheck  # 타입 검사
 
 Copyright (c) 2026 Runners Co., Ltd. All rights reserved. [LICENSE.md](LICENSE.md) 를 보세요.
 
-Split 이 쓰는 오픈소스(Lucide · Spectacle)의 저작권 문구는 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) 와 앱의 Split 정보 → 오픈소스 고지에 있습니다.
+Split 이 쓰는 오픈소스(Lucide · Spectacle)의 저작권 문구는 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) 와 앱의 설정 → 정보 → 오픈소스 고지에 있습니다.

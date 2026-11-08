@@ -4,7 +4,7 @@
 // front). Checked 2026-11-05 with Electron 43: the panel is focused while the front app stays the same.
 import { BrowserWindow, ipcMain, screen, type Tray } from "electron";
 import { convertTemplate, macShortcut, type TemplateItem } from "../core/panelItems.ts";
-import type { PanelView } from "../shared/types";
+import type { PanelView, SettingsTab } from "../shared/types";
 
 // Why: the same width as Monitor's and Prompt's panels.
 const WIDTH = 300;
@@ -24,6 +24,8 @@ export interface PanelSource {
   image(icon: unknown): { src: string; template: boolean } | null;
   proSublabel(): string;
   accent(): string;
+  account(): PanelView["account"];
+  openSettings(tab?: SettingsTab, signIn?: boolean): void;
   preload: string;
   url: string;
 }
@@ -40,7 +42,7 @@ let anchor: { x: number; y: number; centered: boolean } = { x: 0, y: 0, centered
 let lastItems: PanelView["items"] = [];
 
 function view(): PanelView {
-  if (!source) return { items: [], accent: "#007aff" };
+  if (!source) return { items: [], accent: "#007aff", account: { status: "signedOut", email: null, name: "", signInLine: "", connecting: "" } };
   const layouts = source.layouts();
   choose = layouts.choose;
   const converted = convertTemplate(source.template(), {
@@ -52,7 +54,7 @@ function view(): PanelView {
   });
   clicks = converted.clicks;
   lastItems = converted.items;
-  return { items: converted.items, accent: source.accent() };
+  return { items: converted.items, accent: source.accent(), account: source.account() };
 }
 
 export function setupTrayPanel(from: PanelSource): void {
@@ -73,6 +75,10 @@ export function setupTrayPanel(from: PanelSource): void {
   ipcMain.handle("panel:choose", (_event, chosen: string) => {
     hidePanel();
     choose(String(chosen));
+  });
+  ipcMain.handle("panel:settings", (_event, tab: unknown, signIn: unknown) => {
+    hidePanel();
+    source?.openSettings(tab === "account" ? "account" : undefined, signIn === true);
   });
   ipcMain.on("panel:fit", (event, height: number) => {
     if (!panel || BrowserWindow.fromWebContents(event.sender) !== panel || !Number.isFinite(height) || height <= 0) return;

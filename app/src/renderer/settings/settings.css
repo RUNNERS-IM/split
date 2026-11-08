@@ -147,15 +147,6 @@ p {
   -webkit-app-region: no-drag;
 }
 
-/* The RUNNERS account badge at the window's top right, beside the centred tabs. */
-.toolbar-account {
-  position: absolute;
-  top: 50%;
-  inset-inline-end: 14px;
-  transform: translateY(-50%);
-  -webkit-app-region: no-drag;
-}
-
 .toolbar-item {
   display: flex;
   flex-direction: column;
@@ -319,63 +310,9 @@ p {
   white-space: pre-line;
 }
 
-/* About line */
-/* The app's own row inside the "About" card, padded like any other row. */
-.about-line {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: var(--rw-row-pad-y) var(--rw-row-pad-x);
-}
-
-.about-text {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
-
-.about-name {
-  font-weight: 600;
-}
-
-.about-version {
-  font-size: 11px;
-  color: var(--secondary);
-}
-
 .app-icon {
   flex: none;
   display: block;
-}
-
-/* RUNNERS apps */
-.runners-app {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-width: 0;
-}
-
-.runners-app img,
-.runners-app-blank {
-  flex: none;
-  width: 32px;
-  height: 32px;
-}
-
-.runners-app-text {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  min-width: 0;
-}
-
-.runners-app-desc {
-  overflow: hidden;
-  font-size: 11px;
-  color: var(--secondary);
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 /* The app rows' text takes all the room left of the button; the spacer gives way. */
@@ -770,12 +707,6 @@ p {
 
 /* Phone tab: signed out, one Sign In button in the middle (the sheet is runners-account); signed in, the dot that says
    whether the relay is reached. */
-.phone-sign-in {
-  display: flex;
-  justify-content: center;
-  padding: 28px 0 8px;
-}
-
 .phone-dot {
   display: block;
   width: 8px;
@@ -790,4 +721,40 @@ p {
 
 .phone-dot.offline {
   background: var(--red);
+}
+
+/* Account tab: the badge or R mark next to the email */
+.account-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.account-line .ra-mark {
+  margin-bottom: 0;
+}
+
+.account-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.account-hint {
+  font-size: 11px;
+  color: var(--secondary);
+}
+
+/* About tab: the shared part scrolls inside the window */
+.settings-about {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* Why: the same margins as the other tabs; the part's extra room on top is for a window of its own. */
+.settings-about .about {
+  padding: var(--rw-pad) max(var(--rw-pad), calc((100% - 544px) / 2));
 }
