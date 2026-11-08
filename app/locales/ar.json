@@ -164,7 +164,7 @@
   "ShortcutsNotRegistered": "اختصارات لم تُفعَّل لأن تطبيقًا آخر يستخدمها: %@",
   "ShortcutsOffForApplication": "الاختصارات متوقفة · أثناء استخدام %@",
   "ShortcutsOffForHour": "الاختصارات متوقفة · تعود في %@",
-  "ShortcutsOffNoPermission": "الاختصارات متوقفة · يلزم إذن إمكانية الوصول",
+  "ShortcutsOffNoPermission": "الاختصارات متوقفة · يلزم إذن تسهيلات الاستخدام",
   "ShortcutsOn": "الاختصارات مفعّلة",
   "ShowMenuBarIcon": "الإظهار في شريط القائمة",
   "ShowMenuBarIconHint": "عند إيقافه، افتح Split من مجلد التطبيقات للعودة إلى هذه الإعدادات.",

@@ -20,6 +20,8 @@ import {
 import { useStrings } from "../strings.ts";
 
 const TEXT_WIDTH = 544 - 32 - 240;
+// Why: a switch takes far less room than the segmented controls, so its hint can stay on one line.
+const SWITCH_TEXT_WIDTH = 544 - 32 - 70;
 
 const STYLES: { value: FeedbackStyle; label: string }[] = [
   { value: "off", label: "FeedbackOff" },
@@ -146,7 +148,7 @@ export default function EffectsTab({
           <Row
             title={t("FeedbackShortcut")}
             hint={t("FeedbackShortcutHint")}
-            textWidth={TEXT_WIDTH}
+            textWidth={SWITCH_TEXT_WIDTH}
             disabled={!enabled}
           >
             <Switch
