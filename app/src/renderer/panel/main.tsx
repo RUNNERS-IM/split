@@ -234,10 +234,6 @@ function Panel() {
     };
   }, []);
 
-  useEffect(() => {
-    if (view) document.documentElement.style.setProperty("--rm-accent", view.accent);
-  }, [view]);
-
   // Why: the window follows the menu's height; the main process keeps it inside the screen, and the page scrolls when it is cut.
   useLayoutEffect(() => {
     const node = ref.current?.firstElementChild;

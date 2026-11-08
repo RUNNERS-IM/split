@@ -2,7 +2,7 @@
 // the background, then ask before installing, the same as every RUNNERS app.
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { app, dialog, powerMonitor, systemPreferences } from "electron";
+import { app, dialog, powerMonitor } from "electron";
 import updater, { type UpdateInfo } from "electron-updater";
 import type { UpdatePayload } from "../shared/types";
 import { currentLanguage, t } from "./i18n.ts";
@@ -95,7 +95,6 @@ function payload(info: UpdateInfo, downloading: boolean): UpdatePayload {
     downloading,
     downloadingText: t("UpdateDownloading"),
     installingText: t("UpdateInstalling"),
-    accent: process.platform === "darwin" ? `#${systemPreferences.getAccentColor().slice(0, 6)}` : "",
   };
 }
 

@@ -1,6 +1,5 @@
 /* The tray panel: sizes and colours come from runners-menu.css (--rm-*), the same file Monitor and Prompt use. */
 :root {
-  font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Segoe UI", system-ui, sans-serif;
   /* Why: Korean otherwise breaks inside a word; keep-all breaks at spaces. */
   word-break: keep-all;
 }
@@ -67,7 +66,7 @@ button.rm-item:disabled:hover {
 
 .rm-trailing.accent,
 .accent {
-  color: var(--rm-accent);
+  color: var(--rm-primary);
 }
 
 .shortcut {
@@ -79,7 +78,7 @@ button.rm-item:disabled:hover {
   padding: 0 6px;
   border-radius: 999px;
   background: var(--rm-selected);
-  color: var(--rm-accent);
+  color: var(--rm-primary);
   font-size: 10px;
   font-weight: 600;
   line-height: 16px;

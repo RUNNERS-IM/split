@@ -221,15 +221,10 @@ function pushState(): void {
 // ---------------------------------------------------------------------------------------------
 // Moving windows
 
-function accentColor(): string {
-  if (!MAC && process.platform !== "win32") return "#0a84ff";
-  return `#${systemPreferences.getAccentColor().slice(0, 6)}`;
-}
-
 const DURATION_SCALE = { short: 0.6, normal: 1, long: 1.6 } as const;
 
 function overlayBase(): Omit<OverlayPayload, "kind" | "rects" | "title" | "shortcut" | "tip"> {
-  return { feedback: settings.feedback, accent: accentColor(), duration: DURATION_SCALE[settings.feedback.duration] * 1000 };
+  return { feedback: settings.feedback, duration: DURATION_SCALE[settings.feedback.duration] * 1000 };
 }
 
 /** Every window action from the keyboard or the tray menu goes through here. */
@@ -979,7 +974,6 @@ function start(): void {
         return { src: image.toDataURL({ scaleFactor: 2 }), template: image.isTemplateImage() };
       },
       proSublabel,
-      accent: accentColor,
       account: () => ({ ...phoneView(), signInLine: t("AccountSignInLine"), connecting: t("AccountConnecting") }),
       openSettings: showSettings,
       preload: preloadPath(),
