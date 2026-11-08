@@ -6,6 +6,7 @@ import { createRoot } from "react-dom/client";
 import { Check, ChevronDown, ChevronRight, Command, type LucideIcon } from "lucide-react";
 import type { PanelItem, PanelView } from "../../shared/types";
 import { RunnersMark } from "../runners-account/runners-account";
+import panda from "../runners-account/assets/panda/face.webp";
 import "../runners-account/runners-account.css";
 import "../runners-account/runners-menu.css";
 import "./panel.css";
@@ -123,7 +124,7 @@ function AccountLine({ account }: { account: PanelView["account"] }) {
     <button type="button" className="rm-item account-line" onClick={() => void window.split.panelSettings("account", !email)}>
       {email ? (
         <span className="ra-badge account-badge" aria-hidden>
-          {(email.match(/[\p{L}\p{N}]/u)?.[0] ?? "?").toUpperCase()}
+          <img src={panda} alt="" draggable={false} />
         </span>
       ) : (
         <span className="account-mark" aria-hidden>

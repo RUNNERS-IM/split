@@ -97,6 +97,11 @@ const http = createServer(async (req, res) => {
   }
   if (req.method === "POST" && req.url === "/api/mobile/auth/logout") return reply(res, 200, {});
   if (req.method === "POST" && req.url === "/api/mobile/devices") return reply(res, 200, {});
+  // Logged so a run can show what was sent, and that nothing is without consent.
+  if (req.url === "/api/mobile/usage") {
+    console.log(`usage ${req.method} ${JSON.stringify(data)}`);
+    return reply(res, 200, {});
+  }
   reply(res, 404, { message: "not found" });
 });
 

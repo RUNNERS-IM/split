@@ -12,6 +12,7 @@ import GeneralTab from "./tabs/GeneralTab.tsx";
 import EffectsTab from "./tabs/EffectsTab.tsx";
 import ShortcutsTab from "./tabs/ShortcutsTab.tsx";
 import { SignInSheet, type CodePurpose, type SignMode } from "../runners-account/runners-account";
+import { UsageConsentSheet } from "../runners-account/runners-usage";
 
 const TABS: { id: SettingsTab; label: string; Icon: LucideIcon }[] = [
   { id: "shortcuts", label: "TabShortcuts", Icon: Keyboard },
@@ -160,7 +161,7 @@ export default function App() {
             </button>
           ))}
         </nav>
-        {tab === "general" && <GeneralTab state={state} update={update} />}
+        {tab === "general" && <GeneralTab state={state} update={update} show={show} />}
         {tab === "effects" && <EffectsTab state={state} update={update} />}
         {tab === "shortcuts" && <ShortcutsTab state={state} update={update} show={show} />}
         {tab === "account" && (
@@ -175,6 +176,9 @@ export default function App() {
             resetPassword={resetPassword}
             onClose={closeSignIn}
           />
+        )}
+        {state.usageConsent === "unasked" && !signingIn && (
+          <UsageConsentSheet lang={state.locale} app="Split" onChoose={(granted) => void window.split.setUsageConsent(granted).then(show)} />
         )}
       </div>
     </StringsContext.Provider>
