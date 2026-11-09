@@ -66,8 +66,6 @@ export interface ViewState {
   strings: Record<string, string>;
   /** BCP 47 tag of that language, for dates and plural rules. */
   locale: string;
-  /** Whether usage counts may be sent; "unasked" shows the sheet. */
-  usageConsent: "unasked" | "granted" | "denied";
 }
 
 export type LinkKind = "website" | "help" | "issues" | "accessibility" | "spaces";
@@ -187,8 +185,6 @@ export interface SplitApi {
   /** Sets a new password with the mailed code and signs in. */
   phoneResetPassword(email: string, code: string, password: string): Promise<{ error: string | null; state: ViewState }>;
   phoneSignOut(): Promise<ViewState>;
-  /** The answer to the usage statistics sheet or its Settings line. */
-  setUsageConsent(granted: boolean): Promise<ViewState>;
   saveSettings(settings: Settings): Promise<ViewState>;
   restoreDefaultShortcuts(): Promise<ViewState>;
   /** While recording, Split lets go of its own shortcuts so the keys reach the page. */
