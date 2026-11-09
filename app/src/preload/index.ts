@@ -21,7 +21,6 @@ const api: SplitApi = {
   openLink: (kind) => ipcRenderer.invoke("link:open", kind),
   requestTrust: () => ipcRenderer.invoke("trust:request"),
   checkForUpdates: () => ipcRenderer.invoke("update:check"),
-  setUsageConsent: (granted) => ipcRenderer.invoke("usage:consent", granted),
   onSettingsTab: (listener) => {
     const handler = (_event: IpcRendererEvent, tab: SettingsTab, signIn: boolean) => listener(tab, signIn);
     ipcRenderer.on("settings:tab", handler);

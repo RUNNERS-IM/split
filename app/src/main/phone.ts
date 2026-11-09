@@ -18,9 +18,7 @@ import { createAccount, type Account } from "./runners/account";
 const API_URL = ((!app.isPackaged && process.env.SPLIT_API_URL) || "https://server.system.runners.im").replace(/\/$/, "");
 const RELAY_URL = `${API_URL.replace(/^http/, "ws")}/api/relay`;
 /** The name the system server sees for Split's requests; without it they say node. */
-export const USER_AGENT = `Split/${app.getVersion()}`;
-/** Where usage counts go. Why null: a debug run without a local server must not report to the real one. */
-export const USAGE_URL = app.isPackaged || process.env.SPLIT_API_URL ? `${API_URL}/api/mobile/usage` : null;
+const USER_AGENT = `Split/${app.getVersion()}`;
 /** The relay closes with this code when the access token is wrong or ran out. */
 const TOKEN_REFUSED = 4401;
 /** Closes after which connecting again would not help: another connection took this device's place, or the app name was refused. */
@@ -148,7 +146,7 @@ function setStatus(next: PhoneStatus): void {
   hooks?.changed();
 }
 
-export function phoneAccessToken(): string | null {
+function phoneAccessToken(): string | null {
   return runnersAccount().accessToken();
 }
 

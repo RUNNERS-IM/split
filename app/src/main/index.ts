@@ -33,7 +33,6 @@ import { removeLoginItem, runningPids } from "./apps.ts";
 import { displayChangeLabel, recordSoon, startDisplayWatcher } from "./displays.ts";
 import { applyShape, currentDisplays, LAYOUT_PANEL_ID, layoutMenuItems, layoutPanel, layoutRestoringForDisplays, layouts, onLayoutsChanged, restoreLayout, setupLayouts, SHAPES, type LayoutShape } from "./layouts.ts";
 import { announceState, phoneView, resetPassword, sendCode, setupPhone, signIn, signOut } from "./phone.ts";
-import { startUsageStats, usageStats } from "./usage";
 import { guideGranted, openAccessibilitySettings, registerGuideIpc, showGuide } from "./guide.ts";
 import { currentLanguage, loadLanguage, rightToLeft, strings, t } from "./i18n.ts";
 import { accelerator, displayShortcut, displayText } from "./keys.ts";
@@ -192,7 +191,6 @@ function viewState(): ViewState {
     spaces: MAC && !STORE ? spacesSettings() : null,
     strings: strings(),
     locale: currentLanguage(),
-    usageConsent: usageStats().consent(),
     phone: phoneView(),
   };
 }
@@ -262,7 +260,6 @@ function perform(action: Action): void {
     return;
   }
   setRefusingApp(raw.refusingApp ?? (refusingApp === activeApp ? null : refusingApp));
-  usageStats().count(action.toLowerCase());
   showOutcome(action, outcome, snapshot);
   recordSoon();
 }
@@ -766,10 +763,6 @@ function registerIpc(): void {
     return viewState();
   });
   ipcMain.handle("update:check", () => checkForUpdatesNow());
-  ipcMain.handle("usage:consent", (_event, granted: unknown) => {
-    usageStats().setConsent(granted === true);
-    return viewState();
-  });
   ipcMain.handle("trust:request", () => {
     trusted = native.isTrusted(true);
     return trusted;
@@ -994,22 +987,12 @@ function start(): void {
   applyLoginDefault();
   if (!STORE) startUpdater(settings.autoUpdate);
   if (!trusted) askForTrust();
-  // Why settings: the consent sheet needs a window and Split has none at start; without permission the guide goes first.
-  else if (loaded.firstLaunch || !settings.showTrayIcon || usageStats().shouldAsk()) showSettings();
+  else if (loaded.firstLaunch || !settings.showTrayIcon) showSettings();
   if (MAC) watchConflictingApps();
   // Shortcuts registered before sleep can stop firing on some systems; register them again on wake.
   powerMonitor.on("resume", syncShortcuts);
   screen.on("display-metrics-changed", () => hideFeedback());
-  setupPhone({
-    state: phoneState,
-    run: phoneCommand,
-    changed: () => {
-      pushState();
-      // Why here and not at start: connecting is when the sign-in is known to be good.
-      if (phoneView().status === "connected") void usageStats().flush();
-    },
-  });
-  startUsageStats();
+  setupPhone({ state: phoneState, run: phoneCommand, changed: pushState });
   onLayoutsChanged(announceState);
   screen.on("display-added", announceState);
   screen.on("display-removed", announceState);
