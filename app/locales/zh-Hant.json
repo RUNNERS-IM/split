@@ -77,6 +77,7 @@
   "LayoutSaveDefaultName": "佈局 %lu",
   "LayoutSaveMessage": "以一個名稱儲存可見視窗的位置。在選單中按一下即可一次全部回復。",
   "LayoutSaveNamePlaceholder": "名稱",
+  "LayoutSaveOpenApps": "同時開啟已關閉的 App",
   "LayoutSaveTitle": "要儲存目前的視窗佈局嗎？",
   "LayoutSaved": "已儲存的佈局",
   "LayoutSavedEmpty": "尚無佈局。使用下方的「儲存目前佈局⋯」來建立。",

@@ -35,6 +35,7 @@ function useEscape(run: () => void): void {
 function Save({ payload }: { payload: LayoutSavePayload }) {
   const [name, setName] = useState(payload.defaultName)
   const [auto, setAuto] = useState(true)
+  const [openApps, setOpenApps] = useState(false)
   const field = useRef<HTMLInputElement>(null)
   useEffect(() => field.current?.select(), [])
   const cancel = () => void window.split.answerLayoutSave(null)
@@ -44,7 +45,7 @@ function Save({ payload }: { payload: LayoutSavePayload }) {
       className="update layout"
       onSubmit={(event) => {
         event.preventDefault()
-        void window.split.answerLayoutSave({ name, restoresForDisplays: auto })
+        void window.split.answerLayoutSave({ name, restoresForDisplays: auto, opensApps: openApps })
       }}
     >
       <img className="update-icon" src={SPLIT_ICON} alt="" draggable={false} />
@@ -68,6 +69,16 @@ function Save({ payload }: { payload: LayoutSavePayload }) {
             />
             <span>{payload.auto}</span>
           </label>
+          {payload.openApps && (
+            <label>
+              <input
+                type="checkbox"
+                checked={openApps}
+                onChange={(event) => setOpenApps(event.target.checked)}
+              />
+              <span>{payload.openApps}</span>
+            </label>
+          )}
         </div>
       </div>
       <div className="buttons">

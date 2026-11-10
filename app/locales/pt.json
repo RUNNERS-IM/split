@@ -80,6 +80,7 @@
   "LayoutSaveDefaultName": "Disposição %lu",
   "LayoutSaveMessage": "Salva com um nome onde estão as janelas visíveis. Um clique no menu traz todas de volta de uma vez.",
   "LayoutSaveNamePlaceholder": "Nome",
+  "LayoutSaveOpenApps": "Abrir também os apps fechados",
   "LayoutSaveTitle": "Salvar a disposição atual das janelas?",
   "LayoutSaved": "Disposições salvas",
   "LayoutSavedEmpty": "Nenhuma ainda. Crie uma com “Salvar disposição atual…” abaixo.",

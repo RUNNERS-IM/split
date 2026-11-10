@@ -80,6 +80,7 @@
   "LayoutSaveDefaultName": "Disposizione %lu",
   "LayoutSaveMessage": "Salva con un nome dove si trovano le finestre visibili. Un clic nel menu le riporta tutte insieme.",
   "LayoutSaveNamePlaceholder": "Nome",
+  "LayoutSaveOpenApps": "Apri anche le app chiuse",
   "LayoutSaveTitle": "Salvare la disposizione attuale delle finestre?",
   "LayoutSaved": "Disposizioni salvate",
   "LayoutSavedEmpty": "Nessuna per ora. Creane una con «Salva disposizione attuale…» qui sotto.",

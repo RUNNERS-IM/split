@@ -77,6 +77,7 @@
   "LayoutSaveDefaultName": "Yerleşim %lu",
   "LayoutSaveMessage": "Görünen pencerelerin yerlerini bir adla kaydeder. Hepsini bir kerede geri getirmek için menüde tıklayın.",
   "LayoutSaveNamePlaceholder": "Ad",
+  "LayoutSaveOpenApps": "Kapalı uygulamaları da aç",
   "LayoutSaveTitle": "Geçerli pencere yerleşimi kaydedilsin mi?",
   "LayoutSaved": "Kaydedilen yerleşimler",
   "LayoutSavedEmpty": "Henüz yok. Aşağıdaki “Geçerli Yerleşimi Kaydet…” ile oluşturun.",

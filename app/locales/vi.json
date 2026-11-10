@@ -77,6 +77,7 @@
   "LayoutSaveDefaultName": "Bố cục %lu",
   "LayoutSaveMessage": "Lưu vị trí các cửa sổ đang hiện dưới một tên. Bấm trong menu để đưa tất cả về cùng lúc.",
   "LayoutSaveNamePlaceholder": "Tên",
+  "LayoutSaveOpenApps": "Mở cả các ứng dụng đang đóng",
   "LayoutSaveTitle": "Lưu bố cục cửa sổ hiện tại?",
   "LayoutSaved": "Bố cục đã lưu",
   "LayoutSavedEmpty": "Chưa có. Tạo bằng “Lưu bố cục hiện tại…” bên dưới.",

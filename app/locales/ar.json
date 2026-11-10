@@ -85,6 +85,7 @@
   "LayoutSaveDefaultName": "تخطيط %lu",
   "LayoutSaveMessage": "يحفظ أماكن النوافذ الظاهرة باسم. نقرة واحدة في القائمة تعيدها كلها مرة واحدة.",
   "LayoutSaveNamePlaceholder": "الاسم",
+  "LayoutSaveOpenApps": "فتح التطبيقات المغلقة أيضًا",
   "LayoutSaveTitle": "هل تريد حفظ تخطيط النوافذ الحالي؟",
   "LayoutSaved": "التخطيطات المحفوظة",
   "LayoutSavedEmpty": "لا يوجد بعد. أنشئ واحدًا من «حفظ التخطيط الحالي…» أدناه.",

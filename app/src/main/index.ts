@@ -1196,7 +1196,8 @@ function start(): void {
     moved: (before) => {
       engine.rememberArrangement(before)
       recordSoon()
-    }
+    },
+    canOpenApps: process.platform === 'darwin' && !STORE
   })
   startDisplayWatcher({
     settings: () => settings,

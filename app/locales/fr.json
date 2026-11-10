@@ -80,6 +80,7 @@
   "LayoutSaveDefaultName": "Disposition %lu",
   "LayoutSaveMessage": "Enregistre sous un nom l’emplacement des fenêtres visibles. Un clic dans le menu les remet toutes en place.",
   "LayoutSaveNamePlaceholder": "Nom",
+  "LayoutSaveOpenApps": "Ouvrir aussi les apps fermées",
   "LayoutSaveTitle": "Enregistrer la disposition actuelle des fenêtres ?",
   "LayoutSaved": "Dispositions enregistrées",
   "LayoutSavedEmpty": "Aucune pour l’instant. Créez-en une avec « Enregistrer la disposition actuelle… » ci-dessous.",

@@ -80,6 +80,7 @@
   "LayoutSaveDefaultName": "Indeling %lu",
   "LayoutSaveMessage": "Bewaart onder een naam waar de zichtbare vensters staan. Eén klik in het menu zet ze allemaal terug.",
   "LayoutSaveNamePlaceholder": "Naam",
+  "LayoutSaveOpenApps": "Ook gesloten apps openen",
   "LayoutSaveTitle": "Huidige vensterindeling bewaren?",
   "LayoutSaved": "Bewaarde indelingen",
   "LayoutSavedEmpty": "Nog geen. Maak er een met ‘Huidige indeling bewaren…’ hieronder.",

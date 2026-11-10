@@ -77,6 +77,7 @@
   "LayoutSaveDefaultName": "布局 %lu",
   "LayoutSaveMessage": "以一个名称保存可见窗口的位置。在菜单中点按即可一次全部恢复。",
   "LayoutSaveNamePlaceholder": "名称",
+  "LayoutSaveOpenApps": "同时打开已关闭的应用",
   "LayoutSaveTitle": "要保存当前的窗口布局吗？",
   "LayoutSaved": "已保存的布局",
   "LayoutSavedEmpty": "还没有。用下方的“保存当前布局…”来创建。",

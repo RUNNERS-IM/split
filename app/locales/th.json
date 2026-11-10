@@ -77,6 +77,7 @@
   "LayoutSaveDefaultName": "เลย์เอาต์ %lu",
   "LayoutSaveMessage": "บันทึกตำแหน่งหน้าต่างที่มองเห็นไว้ด้วยชื่อ คลิกในเมนูเพื่อเรียกกลับทั้งหมดในครั้งเดียว",
   "LayoutSaveNamePlaceholder": "ชื่อ",
+  "LayoutSaveOpenApps": "เปิดแอปที่ปิดอยู่ด้วย",
   "LayoutSaveTitle": "บันทึกเลย์เอาต์หน้าต่างปัจจุบันไหม",
   "LayoutSaved": "เลย์เอาต์ที่บันทึกไว้",
   "LayoutSavedEmpty": "ยังไม่มี สร้างได้จาก “บันทึกเลย์เอาต์ปัจจุบัน…” ด้านล่าง",

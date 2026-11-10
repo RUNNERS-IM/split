@@ -83,6 +83,7 @@
   "LayoutSaveDefaultName": "Раскладка %lu",
   "LayoutSaveMessage": "Сохраняет под именем, где находятся видимые окна. Один щелчок в меню возвращает их все сразу.",
   "LayoutSaveNamePlaceholder": "Название",
+  "LayoutSaveOpenApps": "Также открывать закрытые приложения",
   "LayoutSaveTitle": "Сохранить текущую раскладку окон?",
   "LayoutSaved": "Сохранённые раскладки",
   "LayoutSavedEmpty": "Пока нет. Создайте через «Сохранить текущую раскладку…» ниже.",

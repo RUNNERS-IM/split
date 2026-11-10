@@ -80,6 +80,7 @@
   "LayoutSaveDefaultName": "Asettelu %lu",
   "LayoutSaveMessage": "Tallentaa näkyvien ikkunoiden paikat nimellä. Valikosta yksi klikkaus palauttaa ne kaikki kerralla.",
   "LayoutSaveNamePlaceholder": "Nimi",
+  "LayoutSaveOpenApps": "Avaa myös suljetut sovellukset",
   "LayoutSaveTitle": "Tallennetaanko nykyinen ikkuna-asettelu?",
   "LayoutSaved": "Tallennetut asettelut",
   "LayoutSavedEmpty": "Ei vielä yhtään. Luo sellainen alta kohdasta ”Tallenna nykyinen asettelu…”.",

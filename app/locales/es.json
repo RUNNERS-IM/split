@@ -80,6 +80,7 @@
   "LayoutSaveDefaultName": "Distribución %lu",
   "LayoutSaveMessage": "Guarda con un nombre dónde están las ventanas visibles. Al pulsarla en el menú vuelven todas a la vez.",
   "LayoutSaveNamePlaceholder": "Nombre",
+  "LayoutSaveOpenApps": "Abrir también las apps cerradas",
   "LayoutSaveTitle": "¿Guardar la distribución actual de ventanas?",
   "LayoutSaved": "Distribuciones guardadas",
   "LayoutSavedEmpty": "Aún no hay. Crea una con «Guardar distribución actual…» abajo.",

@@ -120,6 +120,8 @@ export type LayoutSavePayload = {
   placeholder: string
   /** "Restore automatically for these monitors", on at first. */
   auto: string
+  /** "Also open apps that are closed", off at first. Left out where Split cannot start other apps. */
+  openApps?: string
   save: string
   cancel: string
 }
@@ -143,7 +145,11 @@ export type ProPayload = {
 export type LayoutPagePayload = LayoutSavePayload | ProPayload
 
 /** The save window's answer; null is Cancel or closing the window. */
-export type LayoutSaveAnswer = { name: string; restoresForDisplays: boolean } | null
+export type LayoutSaveAnswer = {
+  name: string
+  restoresForDisplays: boolean
+  opensApps: boolean
+} | null
 
 /** Download progress in percent, or "ready" once the update can be installed. */
 export type UpdateProgress = number | 'ready'

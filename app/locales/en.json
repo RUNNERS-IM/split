@@ -80,6 +80,7 @@
   "LayoutSaveDefaultName": "Layout %lu",
   "LayoutSaveMessage": "Saves where the visible windows are under a name. Click it in the menu to bring them all back at once.",
   "LayoutSaveNamePlaceholder": "Name",
+  "LayoutSaveOpenApps": "Also open apps that are closed",
   "LayoutSaveTitle": "Save the current window layout?",
   "LayoutSaved": "Saved layouts",
   "LayoutSavedEmpty": "None yet. Make one with “Save Current Layout…” below.",

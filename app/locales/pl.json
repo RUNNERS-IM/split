@@ -83,6 +83,7 @@
   "LayoutSaveDefaultName": "Układ %lu",
   "LayoutSaveMessage": "Zapisuje pod nazwą, gdzie są widoczne okna. Kliknięcie w menu przywraca je wszystkie naraz.",
   "LayoutSaveNamePlaceholder": "Nazwa",
+  "LayoutSaveOpenApps": "Otwórz też zamknięte aplikacje",
   "LayoutSaveTitle": "Zapisać bieżący układ okien?",
   "LayoutSaved": "Zapisane układy",
   "LayoutSavedEmpty": "Jeszcze nie ma. Utwórz układ przez „Zapisz bieżący układ…” poniżej.",

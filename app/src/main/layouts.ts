@@ -5,6 +5,7 @@
 // (~/Library/Application Support/Split, %APPDATA%\Split, ~/.config/Split). On macOS that is the
 // very file the macOS app (2.6.1030 and earlier) wrote, in the same format, so its layouts are
 // here from the first launch with nothing to carry over, and both apps can read each other's.
+import { execFile } from 'node:child_process'
 import { randomUUID } from 'node:crypto'
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
@@ -18,6 +19,7 @@ import {
 } from 'electron'
 import type { Move } from '../core/engine.ts'
 import { layoutRects } from '../core/arrange.ts'
+import { closedApps } from '../core/layoutApps.ts'
 import { Rect, rectWithGap } from '../core/geometry.ts'
 import type { LayoutSaveAnswer, LayoutSavePayload } from '../shared/types'
 import { t } from './i18n.ts'
@@ -63,6 +65,8 @@ export type LayoutOptions = {
    * and how many moved.
    */
   moved: (before: Move[], count: number) => void
+  /** Whether this build may start other apps, for layouts saved with "open closed apps". */
+  canOpenApps: boolean
 }
 
 let options: LayoutOptions | null = null
@@ -142,8 +146,11 @@ function integral(rect: Rect): Rect {
   return new Rect(x, y, Math.ceil(rect.x + rect.width) - x, Math.ceil(rect.y + rect.height) - y)
 }
 
-/** Moves the windows and tells `moved` where they were, for one undo. Returns how many moved. */
-function move(windows: NativeWindow[], rects: Rect[]): number {
+/**
+ * Moves the windows and tells `moved` where they were, for one undo. Returns how many moved.
+ * `earlier` holds the moves of the same restore before this one, so the undo covers them all.
+ */
+function move(windows: NativeWindow[], rects: Rect[], earlier: Move[] = []): number {
   if (windows.length === 0) {
     return 0
   }
@@ -158,10 +165,8 @@ function move(windows: NativeWindow[], rects: Rect[]): number {
     console.error('split: layout:', error)
     return 0
   }
-  moved(
-    windows.map((w) => ({ id: w.id, rect: Rect.from(w.rect) })),
-    windows.length
-  )
+  earlier.push(...windows.map((w) => ({ id: w.id, rect: Rect.from(w.rect) })))
+  moved([...earlier], windows.length)
   return windows.length
 }
 
@@ -293,6 +298,8 @@ export type SavedLayout = {
   displays: string[]
   /** Put back by itself when exactly these monitors are connected again. */
   restoresForDisplays: boolean
+  /** Choosing it in the menu also starts the apps that have no window open. */
+  opensApps: boolean
   windows: SavedWindow[]
 }
 
@@ -337,6 +344,7 @@ function readLayout(input: unknown): SavedLayout | null {
       ? raw.displays.filter((d): d is string => typeof d === 'string')
       : [],
     restoresForDisplays: raw.restoresForDisplays === true || raw.restoresForDisplays === 1,
+    opensApps: raw.opensApps === true,
     windows
   }
 }
@@ -400,7 +408,11 @@ function appOf(window: NativeWindow): string {
  * restores for the same monitors stops doing so, so only one answers each combination.
  * Null when the windows could not be read.
  */
-export function saveCurrentLayout(name: string, restoresForDisplays: boolean): SavedLayout | null {
+export function saveCurrentLayout(
+  name: string,
+  restoresForDisplays: boolean,
+  opensApps = false
+): SavedLayout | null {
   const shot = snapshot(true)
   if (!shot) {
     return null
@@ -429,6 +441,7 @@ export function saveCurrentLayout(name: string, restoresForDisplays: boolean): S
     name,
     displays: shot.screens.map(displayIdOf).sort(),
     restoresForDisplays,
+    opensApps,
     windows
   }
   const list = load()
@@ -462,16 +475,26 @@ export function layoutRestoringForDisplays(displayIds: Iterable<string>): SavedL
   )
 }
 
-/**
- * Moves every window that is open now back to where `layout` had it, matching by app and title,
- * then by order within the app. Windows on monitors that are not connected stay.
- * Returns how many windows moved.
- */
-export function restoreLayout(layout: SavedLayout): number {
-  const shot = snapshot(true)
-  if (!shot) {
-    return 0
-  }
+/** What one restore has done so far; a restore that opens apps places their windows as they appear. */
+type Placement = {
+  /** Ids of the windows already moved. */
+  windows: Set<number>
+  /** Places in `layout.windows` already filled. */
+  saved: Set<number>
+  before: Move[]
+  /** When set, only windows of these apps are placed. */
+  apps?: Set<string>
+}
+
+function newPlacement(): Placement {
+  return { windows: new Set(), saved: new Set(), before: [] }
+}
+
+function placeWindows(
+  layout: SavedLayout,
+  shot: NonNullable<ReturnType<typeof snapshot>>,
+  placement: Placement
+): number {
   const connected = new Set(shot.screens.map(displayIdOf))
   const windows = shot.windows
   const countByApp = new Map<string, number>()
@@ -485,18 +508,19 @@ export function restoreLayout(layout: SavedLayout): number {
   // macOS app saved hold bundle ids, so either one counts as the same app.
   const sameApp = (window: NativeWindow, savedWindow: SavedWindow) =>
     savedWindow.bundle === appOf(window) || savedWindow.bundle === window.app
-  const used = new Set<number>()
-  const placed = new Set<number>()
   const moved: NativeWindow[] = []
   const rects: Rect[] = []
   // Two passes: same app and same title first, then same app and same place in its order.
   for (const pass of [0, 1]) {
     layout.windows.forEach((savedWindow, savedIndex) => {
-      if (placed.has(savedIndex) || !connected.has(savedWindow.display)) {
+      if (placement.saved.has(savedIndex) || !connected.has(savedWindow.display)) {
+        return
+      }
+      if (placement.apps && !placement.apps.has(savedWindow.bundle)) {
         return
       }
       const index = windows.findIndex((window, i) => {
-        if (used.has(i) || !sameApp(window, savedWindow)) {
+        if (placement.windows.has(window.id) || !sameApp(window, savedWindow)) {
           return false
         }
         return pass === 0
@@ -506,14 +530,91 @@ export function restoreLayout(layout: SavedLayout): number {
       if (index === -1) {
         return
       }
-      used.add(index)
-      placed.add(savedIndex)
+      placement.windows.add(windows[index].id)
+      placement.saved.add(savedIndex)
       moved.push(windows[index])
       const [x, y, width, height] = savedWindow.rect
       rects.push(new Rect(x, y, width, height))
     })
   }
-  return move(moved, rects)
+  return move(moved, rects, placement.before)
+}
+
+/**
+ * Moves every window that is open now back to where `layout` had it, matching by app and title,
+ * then by order within the app. Windows on monitors that are not connected stay.
+ * Returns how many windows moved.
+ */
+export function restoreLayout(layout: SavedLayout): number {
+  const shot = snapshot(true)
+  return shot ? placeWindows(layout, shot, newPlacement()) : 0
+}
+
+/** How long a started app gets to show its windows, and how often to look for them. */
+const OPEN_APPS_WAIT_MS = 15_000
+const OPEN_APPS_LOOK_MS = 500
+
+let waitingForApps: ReturnType<typeof setInterval> | null = null
+
+function openApp(bundle: string): void {
+  // Why: windows saved before the native module gave bundle ids hold the app's name instead.
+  const by = /^[\w-]+(\.[\w-]+)+$/.test(bundle) ? '-b' : '-a'
+  execFile('/usr/bin/open', [by, bundle], (error) => {
+    if (error) {
+      console.error('split: layout: could not open', bundle)
+    }
+  })
+}
+
+/**
+ * What choosing a layout in the menu does: `restoreLayout`, and with `opensApps` the apps that have
+ * no window open are started and their windows placed as they appear. Windows of apps already
+ * open are only moved, and no new ones are made for them.
+ */
+function openLayout(layout: SavedLayout): void {
+  if (waitingForApps) {
+    clearInterval(waitingForApps)
+  }
+  waitingForApps = null
+  const shot = snapshot(true)
+  if (!shot) {
+    return
+  }
+  const placement = newPlacement()
+  placeWindows(layout, shot, placement)
+  if (!layout.opensApps || !need().canOpenApps) {
+    return
+  }
+  const connected = shot.screens.map(displayIdOf)
+  const closed = closedApps(
+    layout.windows,
+    shot.windows.flatMap((w) => [appOf(w), w.app]),
+    connected
+  )
+  if (closed.length === 0) {
+    return
+  }
+  for (const bundle of closed) {
+    openApp(bundle)
+  }
+  placement.apps = new Set(closed)
+  const waiting = layout.windows.flatMap((w, i) =>
+    placement.apps?.has(w.bundle) && connected.includes(w.display) ? [i] : []
+  )
+  const deadline = Date.now() + OPEN_APPS_WAIT_MS
+  const timer = setInterval(() => {
+    const now = snapshot(true)
+    if (now) {
+      placeWindows(layout, now, placement)
+    }
+    if (waiting.every((i) => placement.saved.has(i)) || Date.now() > deadline) {
+      clearInterval(timer)
+      if (waitingForApps === timer) {
+        waitingForApps = null
+      }
+    }
+  }, OPEN_APPS_LOOK_MS)
+  waitingForApps = timer
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -694,7 +795,7 @@ export function layoutMenuItems(onChange: () => void, panel = false): MenuItemCo
           label: savedLabel(layout),
           icon: miniScreen(layoutFractions(layout, screens)),
           ...(layout.restoresForDisplays ? { toolTip: t('LayoutSaveAuto') } : {}),
-          click: () => afterMenuCloses(() => restoreLayout(layout))
+          click: () => afterMenuCloses(() => openLayout(layout))
         })
       }
     }
@@ -775,7 +876,7 @@ export function layoutPanel(): LayoutPanel {
     } else if (what.startsWith('saved:')) {
       const layout = layouts().find((l) => l.id === what.slice('saved:'.length))
       if (layout) {
-        afterMenuCloses(() => restoreLayout(layout))
+        afterMenuCloses(() => openLayout(layout))
       }
     }
   }
@@ -848,6 +949,7 @@ export function askToSaveLayout(): Promise<SavedLayout | null> {
     defaultName,
     placeholder: t('LayoutSaveNamePlaceholder'),
     auto: t('LayoutSaveAuto'),
+    ...(need().canOpenApps ? { openApps: t('LayoutSaveOpenApps') } : {}),
     save: t('LayoutSaveButton'),
     cancel: t('LayoutSaveCancel')
   }
@@ -873,7 +975,7 @@ export function askToSaveLayout(): Promise<SavedLayout | null> {
       let layout: SavedLayout | null = null
       if (answer) {
         const name = answer.name.trim() || defaultName
-        layout = saveCurrentLayout(name, answer.restoresForDisplays)
+        layout = saveCurrentLayout(name, answer.restoresForDisplays, answer.opensApps)
       }
       resolve(layout)
       if (!window.isDestroyed()) {
@@ -914,7 +1016,11 @@ export function askToSaveLayout(): Promise<SavedLayout | null> {
 ipcMain.handle('layout:answer', (_event, answer: LayoutSaveAnswer) => {
   const valid =
     answer && typeof answer === 'object' && typeof answer.name === 'string'
-      ? { name: answer.name, restoresForDisplays: answer.restoresForDisplays === true }
+      ? {
+          name: answer.name,
+          restoresForDisplays: answer.restoresForDisplays === true,
+          opensApps: answer.opensApps === true
+        }
       : null
   answerSave?.(valid)
 })

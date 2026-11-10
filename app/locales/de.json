@@ -78,6 +78,7 @@
   "LayoutSaveDefaultName": "Layout %lu",
   "LayoutSaveMessage": "Sichert die Positionen der sichtbaren Fenster unter einem Namen. Ein Klick im Menü stellt alle auf einmal wieder her.",
   "LayoutSaveNamePlaceholder": "Name",
+  "LayoutSaveOpenApps": "Geschlossene Apps ebenfalls öffnen",
   "LayoutSaveTitle": "Aktuelles Fensterlayout sichern?",
   "LayoutSaved": "Gespeicherte Layouts",
   "LayoutSavedEmpty": "Noch keine. Erstellen Sie eines mit „Aktuelles Layout sichern …“ unten.",

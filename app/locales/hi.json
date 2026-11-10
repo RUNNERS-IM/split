@@ -80,6 +80,7 @@
   "LayoutSaveDefaultName": "लेआउट %lu",
   "LayoutSaveMessage": "दिखने वाली विंडो की जगह एक नाम से सहेजता है। मेनू में क्लिक करने पर सब एक साथ वापस आ जाती हैं।",
   "LayoutSaveNamePlaceholder": "नाम",
+  "LayoutSaveOpenApps": "बंद ऐप्स भी खोलें",
   "LayoutSaveTitle": "मौजूदा विंडो लेआउट सहेजें?",
   "LayoutSaved": "सहेजे गए लेआउट",
   "LayoutSavedEmpty": "अभी कोई नहीं। नीचे “मौजूदा लेआउट सहेजें…” से बनाएँ।",
