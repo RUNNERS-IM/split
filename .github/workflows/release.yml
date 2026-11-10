@@ -45,7 +45,7 @@ jobs:
       sha: ${{ steps.bump.outputs.sha || github.sha }}
       build_number: ${{ steps.count.outputs.build_number }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           ref: ${{ env.PUBLISH == 'true' && 'release' || github.ref }}
           fetch-depth: 0  # 태그로 같은 날 낸 버전이 있는지 보고, 커밋 수로 빌드 번호를 정한다
@@ -109,20 +109,20 @@ jobs:
       SPLIT_BUILD_NUMBER: ${{ needs.version.outputs.build_number }}
       CARGO_TARGET_DIR: ${{ github.workspace }}/app/native/target.noindex
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           ref: ${{ needs.version.outputs.sha }}
 
       - uses: pnpm/action-setup@v4
         with:
-          version: 12
-      - uses: actions/setup-node@v4
+          package_json_file: app/package.json
+      - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
           cache: pnpm
           cache-dependency-path: app/pnpm-lock.yaml
 
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: dtolnay/rust-toolchain@1.99.1
         with:
           targets: ${{ matrix.os == 'macos' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
       - uses: Swatinem/rust-cache@v2
@@ -300,7 +300,7 @@ jobs:
       # 릴리스 본문은 저장소의 RELEASE_NOTES.md("## 한국어" · "## English" 두 칸의 "- " 목록)다. 앱의 업데이트 창이
       # 이 본문에서 자기 언어 칸의 목록만 읽어 "바뀐 점"으로 보여 준다. 설치 안내는 그 뒤 다른 칸에 붙여서 목록에
       # 섞이지 않게 한다.
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           ref: ${{ needs.version.outputs.sha }}
           path: repo

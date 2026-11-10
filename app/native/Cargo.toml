@@ -8,7 +8,6 @@ publish = false
 
 [lib]
 crate-type = ["cdylib"]
-path = "rs/lib.rs"
 
 [dependencies]
 napi = { version = "3", default-features = false, features = ["napi8"] }
@@ -21,7 +20,7 @@ objc2-foundation = "0.3"
 objc2-app-kit = "0.3"
 
 [target.'cfg(windows)'.dependencies]
-windows-sys = { version = "0.59", features = [
+windows-sys = { version = "0.61", features = [
     "Win32_Foundation",
     "Win32_Graphics_Dwm",
     "Win32_Graphics_Gdi",

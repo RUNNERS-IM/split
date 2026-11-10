@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { test } from "node:test";
+import { test } from "vitest";
 
 import { Action, cycleStep } from "../../src/core/actions.ts";
 import { Engine, type Screen, type Snapshot, screensInConsistentOrder } from "../../src/core/engine.ts";

@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { test } from "node:test";
+import { test } from "vitest";
 
 import { layoutRects, MAXIMUM_WINDOW_COUNT } from "../../src/core/arrange.ts";
 import { Rect } from "../../src/core/geometry.ts";

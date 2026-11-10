@@ -1,3 +1,7 @@
+# Why crt-static: a clean Windows has no Visual C++ runtime, and a module that needs it stops the app from starting.
+[target.'cfg(all(windows, target_env = "msvc"))']
+rustflags = ["-C", "target-feature=+crt-static"]
+
 [build]
 # Why: .noindex keeps Spotlight from indexing the Rust build folder; napi runs cargo from here.
 target-dir = "native/target.noindex"

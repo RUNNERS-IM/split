@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { test } from "node:test";
+import { test } from "vitest";
 
 import { ALL } from "../../src/core/actions.ts";
 import { DEFAULT_SHORTCUTS, KeyCombo } from "../../src/core/shortcuts.ts";
