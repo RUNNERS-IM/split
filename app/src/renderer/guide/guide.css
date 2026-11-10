@@ -57,11 +57,12 @@ h1 {
 .guide-list {
   align-self: stretch;
   margin-top: 18px;
-  text-align: left;
+  text-align: start;
 }
 
 .guide-list-title {
-  margin: 0 0 6px 4px;
+  margin: 0 0 6px;
+  margin-inline-start: 4px;
   font-size: var(--rw-font-small);
   color: var(--rw-text-secondary);
 }
@@ -101,7 +102,7 @@ h1 {
   content: "";
   position: absolute;
   top: 2px;
-  left: 2px;
+  inset-inline-start: 2px;
   width: 18px;
   height: 18px;
   border-radius: 50%;
@@ -156,7 +157,7 @@ h1 {
 
 .guide-halves i:first-child {
   border-radius: 4px;
-  background: var(--rw-accent);
+  background: var(--rw-primary);
 }
 
 .guide-keys {
@@ -220,7 +221,7 @@ h1 {
   padding: 0;
   border: 0;
   background: none;
-  color: var(--rw-accent);
+  color: var(--rw-primary);
   font: inherit;
   font-size: 12px;
   cursor: pointer;

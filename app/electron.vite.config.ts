@@ -27,7 +27,6 @@ export default defineConfig({
           settings: resolve("src/renderer/settings.html"),
           overlay: resolve("src/renderer/overlay.html"),
           sheet: resolve("src/renderer/sheet.html"),
-          about: resolve("src/renderer/about.html"),
           update: resolve("src/renderer/update.html"),
           layout: resolve("src/renderer/layout.html"),
           guide: resolve("src/renderer/guide.html"),

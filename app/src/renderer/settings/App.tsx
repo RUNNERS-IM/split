@@ -1,34 +1,36 @@
-// The settings window ("Split Settings"), a re-creation of SplitPreferencesController.m:
-// toolbar tabs General / Effects / Shortcuts over 600-point-wide content.
+// The settings window ("Split Settings"): toolbar tabs over 600-point-wide content, the one window of Split besides
+// the menu bar panel (shared decision 2026-11-07, Split 1A 2B). The most used screen comes first.
 // Everything goes through `window.split`; the main process owns the settings and sends back
 // the state after each change.
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Keyboard, Settings as SettingsIcon, Smartphone, Sparkles, type LucideIcon } from "lucide-react";
-import type { Settings, ViewState } from "../../shared/types.ts";
+import { Info, Keyboard, Settings as SettingsIcon, Sparkles, UserRound, type LucideIcon } from "lucide-react";
+import type { Settings, SettingsTab, ViewState } from "../../shared/types.ts";
 import { makeStrings, StringsContext } from "./strings.ts";
+import AboutTab from "./tabs/AboutTab.tsx";
+import AccountTab from "./tabs/AccountTab.tsx";
 import GeneralTab from "./tabs/GeneralTab.tsx";
 import EffectsTab from "./tabs/EffectsTab.tsx";
 import ShortcutsTab from "./tabs/ShortcutsTab.tsx";
-import PhoneTab, { PHONE_STATUS_KEYS } from "./tabs/PhoneTab.tsx";
-import { AccountButton, SignInSheet, type CodePurpose, type SignMode } from "../runners-account/runners-account";
+import { SignInSheet, type CodePurpose, type SignMode } from "../runners-account/runners-account";
 
-type Tab = "general" | "effects" | "shortcuts" | "phone";
-
-/** Same order and icons as the Mac toolbar, then the phone app's sign-in. */
-const TABS: { id: Tab; label: string; Icon: LucideIcon }[] = [
-  { id: "general", label: "TabGeneral", Icon: SettingsIcon },
-  { id: "effects", label: "TabEffects", Icon: Sparkles },
+const TABS: { id: SettingsTab; label: string; Icon: LucideIcon }[] = [
   { id: "shortcuts", label: "TabShortcuts", Icon: Keyboard },
-  { id: "phone", label: "TabPhone", Icon: Smartphone },
+  { id: "effects", label: "TabEffects", Icon: Sparkles },
+  { id: "general", label: "TabGeneral", Icon: SettingsIcon },
+  { id: "account", label: "TabAccount", Icon: UserRound },
+  { id: "about", label: "TabAbout", Icon: Info },
 ];
+
+/** The window is opened on a tab with `?tab=account&signIn=1`, from the panel's account line. */
+const OPENED_WITH = new URLSearchParams(location.search);
 
 /** Applies a settings change to the page right away, then saves it in the main process. */
 export type Update = (change: (settings: Settings) => Settings) => Promise<void>;
 
 export default function App() {
-  const [tab, setTab] = useState<Tab>("general");
+  const [tab, setTab] = useState<SettingsTab>(TABS.find((t) => t.id === OPENED_WITH.get("tab"))?.id ?? TABS[0].id);
   const [state, setState] = useState<ViewState | null>(null);
-  const [signingIn, setSigningIn] = useState(false);
+  const [signingIn, setSigningIn] = useState(OPENED_WITH.get("signIn") === "1");
   const stateRef = useRef<ViewState | null>(null);
   // Saves can overlap when switches are flipped quickly; only the answer to the newest one
   // is shown, so an older answer never undoes a newer click.
@@ -39,6 +41,15 @@ export default function App() {
     stateRef.current = next;
     setState(next);
   }, []);
+
+  useEffect(
+    () =>
+      window.split.onSettingsTab((next, signIn) => {
+        setTab(next);
+        if (signIn) setSigningIn(true);
+      }),
+    [],
+  );
 
   useEffect(() => {
     let alive = true;
@@ -129,7 +140,6 @@ export default function App() {
   if (!state) {
     return null;
   }
-  const { phone } = state;
 
   return (
     <StringsContext.Provider value={strings}>
@@ -149,22 +159,14 @@ export default function App() {
               <span>{strings.t(label)}</span>
             </button>
           ))}
-          {phone.status !== "signedOut" && phone.email && (
-            <div className="toolbar-account">
-              <AccountButton
-                lang={state.locale}
-                account={phone.email}
-                line={strings.t(PHONE_STATUS_KEYS[phone.status])}
-                items={[{ label: strings.t("TabPhone"), icon: <Smartphone size={16} strokeWidth={1.75} aria-hidden />, onSelect: () => setTab("phone") }]}
-                onSignOut={() => void window.split.phoneSignOut().then(show)}
-              />
-            </div>
-          )}
         </nav>
         {tab === "general" && <GeneralTab state={state} update={update} />}
         {tab === "effects" && <EffectsTab state={state} update={update} />}
         {tab === "shortcuts" && <ShortcutsTab state={state} update={update} show={show} />}
-        {tab === "phone" && <PhoneTab state={state} openSignIn={() => setSigningIn(true)} />}
+        {tab === "account" && (
+          <AccountTab state={state} openSignIn={() => setSigningIn(true)} signOut={() => void window.split.phoneSignOut().then(show)} />
+        )}
+        {tab === "about" && <AboutTab state={state} />}
         {signingIn && (
           <SignInSheet
             lang={state.locale}

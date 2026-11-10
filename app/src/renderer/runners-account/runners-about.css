@@ -27,6 +27,11 @@
   padding: calc(var(--rw-pad) + 12px) var(--rw-pad) var(--rw-pad);
 }
 
+/* Why: inside a Settings tab there are no traffic lights over the content. */
+.about-embedded {
+  padding-top: var(--rw-pad);
+}
+
 .about-header {
   display: flex;
   flex-direction: column;
@@ -79,7 +84,7 @@
 }
 
 .about-link:focus-visible {
-  outline: 2px solid var(--rw-accent);
+  outline: 2px solid var(--rw-primary);
   outline-offset: 1px;
 }
 
@@ -95,7 +100,7 @@
   padding: 0;
   border: 0;
   background: none;
-  color: var(--rw-accent);
+  color: var(--rw-primary);
   font: inherit;
   text-decoration: underline;
   cursor: default;
@@ -164,8 +169,8 @@
   padding: 0 16px;
   border: 0;
   border-radius: 6px;
-  background: var(--rw-accent);
-  color: #fff;
+  background: var(--rw-primary);
+  color: var(--rw-on-primary);
   font: inherit;
   font-size: 13px;
   cursor: default;

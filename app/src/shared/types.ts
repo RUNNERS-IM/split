@@ -68,7 +68,9 @@ export interface ViewState {
   locale: string;
 }
 
-export type LinkKind = "website" | "help" | "issues" | "accessibility" | "spaces" | "notices";
+export type LinkKind = "website" | "help" | "issues" | "accessibility" | "spaces";
+
+export type SettingsTab = "shortcuts" | "effects" | "general" | "account" | "about";
 
 /** Everything one move label or highlight needs. Rects are in the overlay window's own coordinates. */
 export interface OverlayPayload {
@@ -79,8 +81,6 @@ export interface OverlayPayload {
   shortcut: string;
   tip: string;
   feedback: FeedbackSettings;
-  /** CSS color for "accent", read from the system. */
-  accent: string;
   /** Milliseconds the label stays before fading. */
   duration: number;
 }
@@ -104,8 +104,6 @@ export interface UpdatePayload {
   /** "Downloading… %@%" and "Installing…". */
   downloadingText: string;
   installingText: string;
-  /** The system accent color as CSS, or "" to keep the page default. */
-  accent: string;
 }
 
 /** What the "Save Current Layout" window shows; it arrives in the page URL's hash as JSON. */
@@ -168,8 +166,8 @@ export type PanelItem =
 
 export interface PanelView {
   items: PanelItem[];
-  /** The system accent colour, for the switches and the chosen monitor. */
-  accent: string;
+  /** The line on top: who is signed in and how the phone connection stands, with its two words in the chosen language. */
+  account: ViewState["phone"] & { signInLine: string; connecting: string };
 }
 
 export interface SplitApi {
@@ -209,12 +207,18 @@ export interface SplitApi {
   onState(listener: (state: ViewState) => void): () => void;
   onOverlay(listener: (payload: OverlayPayload | null) => void): () => void;
   onSheet(listener: (payload: SheetPayload) => void): () => void;
+  /** Looks for a new version now and tells the result, like the update window does. */
+  checkForUpdates(): Promise<void>;
+  /** The main process asks the settings window to show a tab, and the sign-in sheet over it. */
+  onSettingsTab(listener: (tab: SettingsTab, signIn: boolean) => void): () => void;
   /** Tray panel (macOS): what it shows, and what happens on a click. */
   panelView(): Promise<PanelView>;
   /** Runs a line; a switch answers with the panel as it is now and the panel stays open. */
   panelRun(id: string): Promise<PanelView | null>;
   /** A monitor shape ("shape:<name>\t<display id>") or a saved layout ("saved:<id>") from the layout card. */
   panelChoose(chosen: string): Promise<void>;
+  /** Closes the panel and opens Settings: ⌘,, or the account line on the Account tab. */
+  panelSettings(tab?: "account", signIn?: boolean): Promise<void>;
   panelFit(height: number): void;
   panelClose(): void;
   /** The panel was opened again: fold everything and read the items anew. */

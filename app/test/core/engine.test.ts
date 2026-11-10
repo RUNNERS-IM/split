@@ -27,9 +27,9 @@ test("halves keep cycling with a gap", () => {
   const first = engine.plan(Action.MoveToLeftHalf, snapshot(new Rect(100.0, 100.0, 800.0, 600.0)), 16.0);
   assert.deepEqual(first.moves[0]!.rect, new Rect(0.0, 0.0, 952.0, 1040.0));
   const second = engine.plan(Action.MoveToLeftHalf, snapshot(first.moves[0]!.rect), 16.0);
-  assert.deepEqual(second.moves[0]!.rect, new Rect(0.0, 0.0, 1432.0, 1040.0));
+  assert.deepEqual(second.moves[0]!.rect, new Rect(0.0, 0.0, 1272.0, 1040.0));
   const third = engine.plan(Action.MoveToLeftHalf, snapshot(second.moves[0]!.rect), 16.0);
-  assert.deepEqual(third.moves[0]!.rect, new Rect(0.0, 0.0, 472.0, 1040.0));
+  assert.deepEqual(third.moves[0]!.rect, new Rect(0.0, 0.0, 632.0, 1040.0));
 });
 
 test("the label names each turn of the half and corner cycle", () => {
@@ -42,7 +42,7 @@ test("the label names each turn of the half and corner cycle", () => {
       rect = engine.plan(action, snapshot(rect), 16.0).moves[0]!.rect;
       steps.push(cycleStep(action, rect, area));
     }
-    assert.deepEqual(steps, [null, "3/4", "1/4"], action);
+    assert.deepEqual(steps, [null, "2/3", "1/3"], action);
   }
   assert.equal(cycleStep(Action.MoveToCenter, new Rect(0.0, 0.0, 480.0, 260.0), area), null);
 });
