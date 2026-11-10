@@ -122,14 +122,25 @@ type Sink = ThreadsafeFunction<WatchEvent, (), WatchEvent, Status, false, true>;
 #[napi(ts_args_type = "callback: (event: WatchEvent) => void")]
 pub fn watch(callback: Function<WatchEvent, ()>) -> Result<()> {
     // Why: weak, so an open watcher never keeps Node from exiting.
-    let sink: Sink = callback.build_threadsafe_function::<WatchEvent>().weak::<true>().callee_handled::<false>().build()?;
+    let sink: Sink = callback
+        .build_threadsafe_function::<WatchEvent>()
+        .weak::<true>()
+        .callee_handled::<false>()
+        .build()?;
     platform::watch(Box::new(move |event| {
         let value = match event {
-            Event::Modifiers(flags) => WatchEvent { kind: "modifiers".into(), flags: Some(flags), app: None },
-            Event::Activated(app) => WatchEvent { kind: "activated".into(), flags: None, app: Some(app) },
+            Event::Modifiers(flags) => WatchEvent {
+                kind: "modifiers".into(),
+                flags: Some(flags),
+                app: None,
+            },
+            Event::Activated(app) => WatchEvent {
+                kind: "activated".into(),
+                flags: None,
+                app: Some(app),
+            },
         };
         sink.call(value, ThreadsafeFunctionCallMode::NonBlocking);
     }));
     Ok(())
 }
-

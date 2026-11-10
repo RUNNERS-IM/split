@@ -591,7 +591,7 @@ p {
 }
 
 .swatch.chosen::after {
-  content: "";
+  content: '';
   position: absolute;
   inset: 1px;
   border-radius: 50%;
@@ -733,11 +733,11 @@ p {
 
 /* Why: in right-to-left pages Chromium draws a wide, always-visible scroll bar on the left instead of the thin macOS one.
    The scrolling box stays left-to-right, which keeps the thin bar, and everything inside it goes back to right-to-left. */
-:root[dir="rtl"] :is(.scroll, .settings-about) {
+:root[dir='rtl'] :is(.scroll, .settings-about) {
   direction: ltr;
 }
 
-:root[dir="rtl"] :is(.scroll, .settings-about) > * {
+:root[dir='rtl'] :is(.scroll, .settings-about) > * {
   direction: rtl;
 }
 

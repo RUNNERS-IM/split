@@ -27,7 +27,7 @@
   -webkit-app-region: no-drag;
 }
 
-.layout-fields input[type="text"] {
+.layout-fields input[type='text'] {
   height: 24px;
   padding: 0 7px;
   border: 0.5px solid var(--rw-separator);
@@ -39,7 +39,7 @@
   user-select: text;
 }
 
-.layout-fields input[type="text"]:focus {
+.layout-fields input[type='text']:focus {
   outline: 3px solid color-mix(in srgb, var(--rw-primary) 50%, transparent);
   outline-offset: 0;
 }
@@ -57,7 +57,7 @@
   gap: 6px;
 }
 
-.layout-auto input[type="checkbox"] {
+.layout-auto input[type='checkbox'] {
   margin: 0;
   accent-color: var(--rw-primary);
 }

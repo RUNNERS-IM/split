@@ -2,20 +2,20 @@
 // - "Save Current Layout": icon, title, text, a name field and the "restore for these monitors"
 //   box with its Pro mark, then Cancel / Save. Same order as the NSAlert in SplitLayoutMenu.m.
 // - Split Pro: what it adds and costs, with buying not open yet. Same order as SplitPro.m.
-import { StrictMode, useEffect, useRef, useState } from "react";
-import { createRoot } from "react-dom/client";
-import type { LayoutPagePayload, LayoutSavePayload, ProPayload } from "../../shared/types";
-import "../runners-account/runners-window.css";
-import "../update/update.css";
-import "./layout.css";
+import { StrictMode, useEffect, useRef, useState } from 'react'
+import { createRoot } from 'react-dom/client'
+import type { LayoutPagePayload, LayoutSavePayload, ProPayload } from '../../shared/types'
+import '../runners-account/runners-window.css'
+import '../update/update.css'
+import './layout.css'
 
-const SPLIT_ICON = new URL("../about/assets/split-icon.png", import.meta.url).href;
+const SPLIT_ICON = new URL('../about/assets/split-icon.png', import.meta.url).href
 
 function readPayload(): LayoutPagePayload | null {
   try {
-    return JSON.parse(decodeURIComponent(location.hash.slice(1))) as LayoutPagePayload;
+    return JSON.parse(decodeURIComponent(location.hash.slice(1))) as LayoutPagePayload
   } catch {
-    return null;
+    return null
   }
 }
 
@@ -23,26 +23,28 @@ function readPayload(): LayoutPagePayload | null {
 function useEscape(run: () => void): void {
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {run();}
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [run]);
+      if (event.key === 'Escape') {
+        run()
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [run])
 }
 
 function Save({ payload }: { payload: LayoutSavePayload }) {
-  const [name, setName] = useState(payload.defaultName);
-  const [auto, setAuto] = useState(true);
-  const field = useRef<HTMLInputElement>(null);
-  useEffect(() => field.current?.select(), []);
-  const cancel = () => void window.split.answerLayoutSave(null);
-  useEscape(cancel);
+  const [name, setName] = useState(payload.defaultName)
+  const [auto, setAuto] = useState(true)
+  const field = useRef<HTMLInputElement>(null)
+  useEffect(() => field.current?.select(), [])
+  const cancel = () => void window.split.answerLayoutSave(null)
+  useEscape(cancel)
   return (
     <form
       className="update layout"
       onSubmit={(event) => {
-        event.preventDefault();
-        void window.split.answerLayoutSave({ name, restoresForDisplays: auto });
+        event.preventDefault()
+        void window.split.answerLayoutSave({ name, restoresForDisplays: auto })
       }}
     >
       <img className="update-icon" src={SPLIT_ICON} alt="" draggable={false} />
@@ -59,7 +61,11 @@ function Save({ payload }: { payload: LayoutSavePayload }) {
         />
         <div className="layout-auto">
           <label>
-            <input type="checkbox" checked={auto} onChange={(event) => setAuto(event.target.checked)} />
+            <input
+              type="checkbox"
+              checked={auto}
+              onChange={(event) => setAuto(event.target.checked)}
+            />
             <span>{payload.auto}</span>
           </label>
         </div>
@@ -73,12 +79,12 @@ function Save({ payload }: { payload: LayoutSavePayload }) {
         </button>
       </div>
     </form>
-  );
+  )
 }
 
 function Pro({ payload }: { payload: ProPayload }) {
-  const close = () => window.close();
-  useEscape(close);
+  const close = () => window.close()
+  useEscape(close)
   return (
     <div className="update pro">
       <img className="update-icon" src={SPLIT_ICON} alt="" draggable={false} />
@@ -106,13 +112,15 @@ function Pro({ payload }: { payload: ProPayload }) {
       </div>
       <p className="pro-note">{payload.note}</p>
     </div>
-  );
+  )
 }
 
-const payload = readPayload();
+const payload = readPayload()
 if (payload) {
-  document.title = payload.title;
-  createRoot(document.getElementById("root")!).render(
-    <StrictMode>{payload.kind === "pro" ? <Pro payload={payload} /> : <Save payload={payload} />}</StrictMode>,
-  );
+  document.title = payload.title
+  createRoot(document.getElementById('root')!).render(
+    <StrictMode>
+      {payload.kind === 'pro' ? <Pro payload={payload} /> : <Save payload={payload} />}
+    </StrictMode>
+  )
 }

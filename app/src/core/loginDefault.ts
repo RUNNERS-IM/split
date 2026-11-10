@@ -10,16 +10,18 @@
  */
 export type LoginDefaultInput = {
   /** The one-time default was applied on this Mac before. */
-  applied: boolean;
+  applied: boolean
   /** App Store build. */
-  store: boolean;
+  store: boolean
   /** What the settings say the person wants. */
-  wanted: boolean;
+  wanted: boolean
   /** Whether the login item is registered right now. */
-  on: boolean;
+  on: boolean
 }
 
 export function shouldTurnOnAtLogin({ applied, store, wanted, on }: LoginDefaultInput): boolean {
-  if (applied || store) {return false;}
-  return wanted && !on;
+  if (applied || store) {
+    return false
+  }
+  return wanted && !on
 }
