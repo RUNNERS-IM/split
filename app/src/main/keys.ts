@@ -24,10 +24,10 @@ function keyName(key: string, names: Record<string, string>): string {
 /** The Electron accelerator, for example `Alt+Command+Left`. */
 export function accelerator(combo: KeyCombo): string {
   const parts: string[] = [];
-  if (combo.modifiers.ctrl) parts.push("Control");
-  if (combo.modifiers.alt) parts.push("Alt");
-  if (combo.modifiers.shift) parts.push("Shift");
-  if (combo.modifiers.logo) parts.push(process.platform === "darwin" ? "Command" : "Super");
+  if (combo.modifiers.ctrl) {parts.push("Control");}
+  if (combo.modifiers.alt) {parts.push("Alt");}
+  if (combo.modifiers.shift) {parts.push("Shift");}
+  if (combo.modifiers.logo) {parts.push(process.platform === "darwin" ? "Command" : "Super");}
   parts.push(keyName(combo.key, ACCELERATOR_KEYS));
   return parts.join("+");
 }
@@ -39,10 +39,10 @@ export function displayShortcut(combo: KeyCombo): string {
     return `${ctrl ? "⌃" : ""}${alt ? "⌥" : ""}${shift ? "⇧" : ""}${logo ? "⌘" : ""}${keyName(combo.key, MAC_GLYPHS)}`;
   }
   const parts: string[] = [];
-  if (combo.modifiers.ctrl) parts.push("Ctrl");
-  if (combo.modifiers.alt) parts.push("Alt");
-  if (combo.modifiers.shift) parts.push("Shift");
-  if (combo.modifiers.logo) parts.push(process.platform === "win32" ? "Win" : "Super");
+  if (combo.modifiers.ctrl) {parts.push("Ctrl");}
+  if (combo.modifiers.alt) {parts.push("Alt");}
+  if (combo.modifiers.shift) {parts.push("Shift");}
+  if (combo.modifiers.logo) {parts.push(process.platform === "win32" ? "Win" : "Super");}
   parts.push(keyName(combo.key, OTHER_NAMES));
   return parts.join("+");
 }

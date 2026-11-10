@@ -14,7 +14,7 @@ function App({ initial }: { initial: ViewState }) {
   useEffect(() => window.split.onState(setState), []);
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") void window.split.guideLater();
+      if (event.key === "Escape") {void window.split.guideLater();}
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);

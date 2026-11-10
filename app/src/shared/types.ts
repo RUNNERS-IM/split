@@ -6,7 +6,7 @@ export type FeedbackColor = "accent" | "blue" | "purple" | "pink" | "orange" | "
 export type FeedbackDuration = "short" | "normal" | "long";
 export type FeedbackPosition = "bottom" | "top" | "center";
 
-export interface FeedbackSettings {
+export type FeedbackSettings = {
   style: FeedbackStyle;
   color: FeedbackColor;
   showShortcut: boolean;
@@ -14,7 +14,7 @@ export interface FeedbackSettings {
   position: FeedbackPosition;
 }
 
-export interface Settings {
+export type Settings = {
   /** Space between windows in points: 0, 8, 16 or 24. */
   gap: number;
   launchAtLogin: boolean;
@@ -34,7 +34,7 @@ export interface Settings {
   keepSpectacle: boolean;
 }
 
-export interface ViewState {
+export type ViewState = {
   settings: Settings;
   /** Action name → default shortcut. */
   defaults: Record<string, string>;
@@ -73,7 +73,7 @@ export type LinkKind = "website" | "help" | "issues" | "accessibility" | "spaces
 export type SettingsTab = "shortcuts" | "effects" | "general" | "account" | "about";
 
 /** Everything one move label or highlight needs. Rects are in the overlay window's own coordinates. */
-export interface OverlayPayload {
+export type OverlayPayload = {
   /** "frame": highlight around moved windows; "label": text only; "preview": outline while hovering a menu row. */
   kind: "frame" | "label" | "preview";
   rects: { x: number; y: number; width: number; height: number }[];
@@ -85,13 +85,13 @@ export interface OverlayPayload {
   duration: number;
 }
 
-export interface SheetPayload {
+export type SheetPayload = {
   strings: Record<string, string>;
   sections: { title: string; rows: { name: string; keys: string }[] }[];
 }
 
 /** What the update window shows; it arrives in the page URL's hash as JSON. */
-export interface UpdatePayload {
+export type UpdatePayload = {
   title: string;
   body: string;
   /** "What's new" heading and its lines (already in Korean or English). */
@@ -107,7 +107,7 @@ export interface UpdatePayload {
 }
 
 /** What the "Save Current Layout" window shows; it arrives in the page URL's hash as JSON. */
-export interface LayoutSavePayload {
+export type LayoutSavePayload = {
   kind: "save";
   title: string;
   message: string;
@@ -121,7 +121,7 @@ export interface LayoutSavePayload {
 }
 
 /** What the Split Pro window shows; same page as LayoutSavePayload. */
-export interface ProPayload {
+export type ProPayload = {
   kind: "pro";
   title: string;
   features: string;
@@ -145,7 +145,7 @@ export type LayoutSaveAnswer = { name: string; restoresForDisplays: boolean } | 
 export type UpdateProgress = number | "ready";
 
 /** One line of the tray panel (macOS), made from the menu template by src/core/panelItems.ts. */
-interface PanelLine {
+type PanelLine = {
   label: string;
   /** The template item's id, for lines the page gives its own picture (the on/off lines). */
   name?: string;
@@ -164,13 +164,13 @@ export type PanelItem =
   | (PanelLine & { kind: "switch"; id: string; on: boolean })
   | (PanelLine & { kind: "group"; id: string; items: PanelItem[] });
 
-export interface PanelView {
+export type PanelView = {
   items: PanelItem[];
   /** The line on top: who is signed in and how the phone connection stands, with its two words in the chosen language. */
   account: ViewState["phone"] & { signInLine: string; connecting: string };
 }
 
-export interface SplitApi {
+export type SplitApi = {
   getState(): Promise<ViewState>;
   /** Signs in for the phone app (making the account takes the code `phoneSendCode` mailed); `error` is the code the
    *  shared sign-in sheet shows (`bad`, `none`, `format`, `exists`, `code`, `many`, `network`), or null. */
@@ -226,6 +226,7 @@ export interface SplitApi {
 }
 
 declare global {
+  // oxlint-disable-next-line typescript/consistent-type-definitions -- adding to the global Window needs an interface
   interface Window {
     split: SplitApi;
   }

@@ -101,15 +101,15 @@ function payload(info: UpdateInfo, downloading: boolean): UpdatePayload {
 /** Waits for the window's answer: install, or remember "Later" for the rest of the day. */
 async function ask(info: UpdateInfo, downloading: boolean, focus: boolean): Promise<void> {
   const install = await askToInstall(payload(info, downloading), focus);
-  if (install === null) return;
+  if (install === null) {return;}
   // Why silent and run after: Windows would otherwise walk through the installer's pages and not open Split again.
-  if (install) autoUpdater.quitAndInstall(true, true);
-  else if (!downloaded) reopenWhenReady = true;
-  else postpone();
+  if (install) {autoUpdater.quitAndInstall(true, true);}
+  else if (!downloaded) {reopenWhenReady = true;}
+  else {postpone();}
 }
 
 function wire(): void {
-  if (wired) return;
+  if (wired) {return;}
   wired = true;
   powerMonitor.on("resume", () => setTimeout(checkIfDue, AFTER_WAKE));
   autoUpdater.autoDownload = true;
@@ -118,14 +118,14 @@ function wire(): void {
   // stays quiet until the download is done.
   autoUpdater.on("update-available", (info) => {
     downloaded = false;
-    if (!manual) return;
+    if (!manual) {return;}
     manual = false;
     void ask(info, true, true);
   });
   autoUpdater.on("download-progress", (progress) => setUpdateProgress(progress.percent));
   autoUpdater.on("update-downloaded", (info) => {
     downloaded = true;
-    if (setUpdateProgress("ready")) return;
+    if (setUpdateProgress("ready")) {return;}
     if (reopenWhenReady) {
       reopenWhenReady = false;
       // Why no focus: the person closed the window and has moved on; a Return typed elsewhere must not land on it.
@@ -134,11 +134,11 @@ function wire(): void {
     }
     const asked = manual;
     manual = false;
-    if (!asked && postponedToday()) return;
+    if (!asked && postponedToday()) {return;}
     void ask(info, false, asked);
   });
   autoUpdater.on("update-not-available", () => {
-    if (manual) void dialog.showMessageBox({ type: "info", message: t("UpdateNone"), detail: app.getVersion().replace("+", ".") });
+    if (manual) {void dialog.showMessageBox({ type: "info", message: t("UpdateNone"), detail: app.getVersion().replace("+", ".") });}
     manual = false;
   });
   autoUpdater.on("error", (error) => {
@@ -146,7 +146,7 @@ function wire(): void {
     const wasDownloading = !downloaded && closeUpdateWindow();
     const closedByPerson = reopenWhenReady;
     reopenWhenReady = false;
-    if (manual || wasDownloading || closedByPerson) void dialog.showMessageBox({ type: "warning", message: t("UpdateFailed"), detail: String(error?.message ?? error) });
+    if (manual || wasDownloading || closedByPerson) {void dialog.showMessageBox({ type: "warning", message: t("UpdateFailed"), detail: String(error?.message ?? error) });}
     manual = false;
   });
 }
@@ -162,23 +162,23 @@ function check(): void {
 
 /** The daily check, when the last one that reached GitHub is a day old. */
 function checkIfDue(): void {
-  if (autoCheck && Date.now() - checkedAt >= DAY) check();
+  if (autoCheck && Date.now() - checkedAt >= DAY) {check();}
 }
 
 /** Turns the daily check on or off; also checks once right away when turned on. */
 export function startUpdater(enabled: boolean): void {
-  if (!app.isPackaged) return;
+  if (!app.isPackaged) {return;}
   wire();
-  if (timer) clearInterval(timer);
+  if (timer) {clearInterval(timer);}
   timer = null;
   autoCheck = enabled;
-  if (!enabled) return;
+  if (!enabled) {return;}
   check();
   timer = setInterval(checkIfDue, TICK);
 }
 
 export function checkForUpdatesNow(): void {
-  if (!app.isPackaged) return;
+  if (!app.isPackaged) {return;}
   wire();
   manual = true;
   check();

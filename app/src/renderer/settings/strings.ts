@@ -18,7 +18,7 @@ export function format(text: string, ...args: (string | number)[]): string {
   });
 }
 
-export interface Strings {
+export type Strings = {
   /** The text for `key`, or the key itself when the language file has no such line. */
   t(key: string): string;
   /** `t(key)` with its placeholders filled. */

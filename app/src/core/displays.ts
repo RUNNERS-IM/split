@@ -12,12 +12,12 @@ import type { Move, Screen, WindowInfo } from "./engine.ts";
 import { type Rect, rectWithGap } from "./geometry.ts";
 
 /** A monitor with something that names it again after it is unplugged and plugged back in. */
-export interface DisplayScreen extends Screen {
+export type DisplayScreen = {
   id: string;
-}
+} & Screen
 
 /** Where a window was last seen. */
-export interface WindowPlace {
+export type WindowPlace = {
   displayId: string;
   rect: Rect;
 }
@@ -73,7 +73,7 @@ function layoutOn(windows: readonly WindowInfo[], screen: DisplayScreen, gap: nu
   return layoutRects(windows.length, frame).map((rect, i) => ({ id: windows[i]!.id, rect: rectWithGap(rect, frame, pixels).rounded() }));
 }
 
-export interface DisplayChange {
+export type DisplayChange = {
   /** Monitor ids before the change. */
   oldIds: ReadonlySet<string>;
   /** Monitor ids now; must differ from `oldIds`. */
@@ -95,7 +95,7 @@ export interface DisplayChange {
   gap: number;
 }
 
-export interface DisplayChangePlan {
+export type DisplayChangePlan = {
   /** Where windows go. Can be empty when a new monitor came but there were no windows. */
   moves: Move[];
   /** Where those windows were before, so one undo puts all of them back. */
@@ -104,7 +104,7 @@ export interface DisplayChangePlan {
   restored: boolean;
 }
 
-export interface DisplayChangeResult {
+export type DisplayChangeResult = {
   /** Null when nothing has to move. */
   plan: DisplayChangePlan | null;
   seenIds: Set<string>;

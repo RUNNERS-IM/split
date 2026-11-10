@@ -8,7 +8,7 @@ import { calculate } from "./calc.ts";
 import { type Rect, rectWithGap, roughlyEqual } from "./geometry.ts";
 
 /** One monitor. Both rects are top-left based in the coordinates the platform moves windows in. */
-export interface Screen {
+export type Screen = {
   /** The whole monitor. */
   frame: Rect;
   /** The monitor without taskbars, panels and docks. */
@@ -19,7 +19,7 @@ export interface Screen {
   primary: boolean;
 }
 
-export interface WindowInfo {
+export type WindowInfo = {
   /** Whatever the platform uses to find the window again (HWND, X11 window id, …). */
   id: number;
   /** Where the visible frame of the window is, without invisible borders or shadows. */
@@ -29,7 +29,7 @@ export interface WindowInfo {
 }
 
 /** What is on screen when a shortcut is pressed. */
-export interface Snapshot {
+export type Snapshot = {
   /** The window that has the keyboard focus. */
   active: WindowInfo | null;
   screens: Screen[];
@@ -37,7 +37,7 @@ export interface Snapshot {
   windows: WindowInfo[];
 }
 
-export interface Move {
+export type Move = {
   readonly id: number;
   readonly rect: Rect;
 }
@@ -51,7 +51,7 @@ export type Feedback =
   | { kind: "NothingToArrange" }
   | { kind: "ArrangeUndone" };
 
-export interface Outcome {
+export type Outcome = {
   moves: Move[];
   feedback: Feedback;
 }
@@ -132,13 +132,13 @@ export function screensInConsistentOrder(screens: readonly Screen[]): Screen[] {
 export function screenContaining(rect: Rect, screens: readonly Screen[]): Screen | null {
   const main = screens.find((s) => s.primary) ?? screens[0] ?? null;
   let best = main;
-  let bestShare = 0.0;
+  let bestShare = 0;
   for (const screen of screens) {
     if (screen.frame.containsRect(rect)) {
       return screen;
     }
     const i = screen.frame.intersection(rect);
-    const share = i === null ? 0.0 : i.area() / Math.max(rect.area(), 1.0);
+    const share = i === null ? 0 : i.area() / Math.max(rect.area(), 1);
     if (share > bestShare) {
       bestShare = share;
       best = screen;
@@ -287,7 +287,7 @@ export class Engine {
       return failed();
     }
     const pixels = gap * destination.scale;
-    if (pixels > 0.0 && usesGap(action)) {
+    if (pixels > 0 && usesGap(action)) {
       const withoutGap = target;
       target = rectWithGap(target, destination.workArea, pixels);
       this.gapless.set(active.id, [target, withoutGap]);

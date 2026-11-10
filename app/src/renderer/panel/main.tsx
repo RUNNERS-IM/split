@@ -19,7 +19,7 @@ const LINE_ICONS: Record<string, LucideIcon> = { shortcuts: Command };
 
 type Cell = [x: number, y: number, width: number, height: number];
 
-interface LayoutCard {
+type LayoutCard = {
   titles: { displays: string; shapes: string; saved: string };
   empty: string;
   monitorImage: string;
@@ -32,10 +32,10 @@ interface LayoutCard {
 
 function Picture({ item }: { item: { name?: string; image?: string; template?: boolean } }) {
   const Glyph = item.name ? LINE_ICONS[item.name] : undefined;
-  if (Glyph) return <Glyph size={ICON_SIZE} strokeWidth={ICON_STROKE} aria-hidden />;
-  if (!item.image) return <span className="picture" aria-hidden />;
+  if (Glyph) {return <Glyph size={ICON_SIZE} strokeWidth={ICON_STROKE} aria-hidden />;}
+  if (!item.image) {return <span className="picture" aria-hidden />;}
   // Why: template pictures are black shapes; as a mask they take the text colour in light and dark mode.
-  if (item.template) return <span className="picture template" style={{ maskImage: `url(${item.image})`, WebkitMaskImage: `url(${item.image})` }} aria-hidden />;
+  if (item.template) {return <span className="picture template" style={{ maskImage: `url(${item.image})`, WebkitMaskImage: `url(${item.image})` }} aria-hidden />;}
   return <img className="picture" src={item.image} alt="" />;
 }
 
@@ -225,8 +225,8 @@ function Panel() {
       ref.current?.scrollTo(0, 0);
     });
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") window.split.panelClose();
-      else if (event.key === "," && event.metaKey) void window.split.panelSettings();
+      if (event.key === "Escape") {window.split.panelClose();}
+      else if (event.key === "," && event.metaKey) {void window.split.panelSettings();}
     };
     window.addEventListener("keydown", onKey);
     return () => {
@@ -238,7 +238,7 @@ function Panel() {
   // Why: the window follows the menu's height; the main process keeps it inside the screen, and the page scrolls when it is cut.
   useLayoutEffect(() => {
     const node = ref.current?.firstElementChild;
-    if (!node) return;
+    if (!node) {return;}
     const observer = new ResizeObserver(() => window.split.panelFit(Math.ceil(node.getBoundingClientRect().height)));
     observer.observe(node);
     return () => observer.disconnect();
@@ -247,13 +247,13 @@ function Panel() {
   const toggle = (id: string) =>
     setOpen((current) => {
       const next = new Set(current);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+      if (next.has(id)) {next.delete(id);}
+      else {next.add(id);}
       return next;
     });
   const run = (id: string) =>
     void window.split.panelRun(id).then((next) => {
-      if (next) setView(next);
+      if (next) {setView(next);}
     });
 
   return (

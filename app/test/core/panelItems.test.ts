@@ -25,7 +25,7 @@ test("a checkbox at the top is a switch, one in a submenu a checked line", () =>
   assert.equal(group.kind, "group");
   const inner = group.kind === "group" ? group.items[0] : null;
   assert.equal(inner?.kind === "item" && inner.checked, true);
-  for (const run of clicks.values()) run();
+  for (const run of clicks.values()) {run();}
   assert.equal(ran, 2);
 });
 

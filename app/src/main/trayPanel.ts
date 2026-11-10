@@ -16,7 +16,7 @@ const BLUR_GRACE_MS = 400;
 // lands this soon after is the same click and must not open it again.
 const REOPEN_GUARD_MS = 300;
 
-export interface PanelSource {
+export type PanelSource = {
   template(): TemplateItem[];
   layoutPanelId: string;
   /** The layout card (monitors, shapes, saved layouts) and what a chip on it runs. */
@@ -41,7 +41,7 @@ let anchor: { x: number; y: number; centered: boolean } = { x: 0, y: 0, centered
 let lastItems: PanelView["items"] = [];
 
 function view(): PanelView {
-  if (!source) return { items: [], account: { status: "signedOut", email: null, name: "", signInLine: "", connecting: "" } };
+  if (!source) {return { items: [], account: { status: "signedOut", email: null, name: "", signInLine: "", connecting: "" } };}
   const layouts = source.layouts();
   choose = layouts.choose;
   const converted = convertTemplate(source.template(), {
@@ -61,7 +61,7 @@ export function setupTrayPanel(from: PanelSource): void {
   ipcMain.handle("panel:view", () => view());
   ipcMain.handle("panel:run", (_event, id: string) => {
     const run = clicks.get(String(id));
-    if (!run) return null;
+    if (!run) {return null;}
     const line = findLine(String(id));
     if (line === "switch") {
       run();
@@ -80,7 +80,7 @@ export function setupTrayPanel(from: PanelSource): void {
     source?.openSettings(tab === "account" ? "account" : undefined, signIn === true);
   });
   ipcMain.on("panel:fit", (event, height: number) => {
-    if (!panel || BrowserWindow.fromWebContents(event.sender) !== panel || !Number.isFinite(height) || height <= 0) return;
+    if (!panel || BrowserWindow.fromWebContents(event.sender) !== panel || !Number.isFinite(height) || height <= 0) {return;}
     place(Math.ceil(height));
   });
   ipcMain.on("panel:close", () => hidePanel());
@@ -89,10 +89,10 @@ export function setupTrayPanel(from: PanelSource): void {
 function findLine(id: string): string | null {
   const search = (items: PanelView["items"]): string | null => {
     for (const item of items) {
-      if ((item.kind === "item" || item.kind === "switch") && item.id === id) return item.kind;
+      if ((item.kind === "item" || item.kind === "switch") && item.id === id) {return item.kind;}
       if (item.kind === "group") {
         const found = search(item.items);
-        if (found) return found;
+        if (found) {return found;}
       }
     }
     return null;
@@ -127,7 +127,7 @@ function create(): BrowserWindow {
   window.setAlwaysOnTop(true, "pop-up-menu");
   window.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true, skipTransformProcessType: true });
   window.on("blur", () => {
-    if (Date.now() - shownAt < BLUR_GRACE_MS) return;
+    if (Date.now() - shownAt < BLUR_GRACE_MS) {return;}
     hidePanel();
   });
   void window.loadURL(source!.url);
@@ -136,12 +136,12 @@ function create(): BrowserWindow {
 
 /** Builds the panel ahead of time so the first click opens it at once. */
 export function preparePanel(): void {
-  if (!panel || panel.isDestroyed()) panel = create();
+  if (!panel || panel.isDestroyed()) {panel = create();}
 }
 
 /** Fits the panel to `height` (its content) and keeps it on the screen it opens on; a taller menu scrolls. */
 function place(height: number): void {
-  if (!panel) return;
+  if (!panel) {return;}
   const display = screen.getDisplayNearestPoint({ x: anchor.x, y: anchor.y });
   const area = display.workArea;
   const fitted = Math.min(height, area.height - 2 * GAP);
@@ -157,7 +157,7 @@ export function isPanelOpen(): boolean {
 }
 
 export function hidePanel(): void {
-  if (!isPanelOpen()) return;
+  if (!isPanelOpen()) {return;}
   hiddenAt = Date.now();
   panel!.hide();
 }
@@ -168,7 +168,7 @@ export function togglePanelUnder(tray: Tray): void {
     hidePanel();
     return;
   }
-  if (Date.now() - hiddenAt < REOPEN_GUARD_MS) return;
+  if (Date.now() - hiddenAt < REOPEN_GUARD_MS) {return;}
   const bounds = tray.getBounds();
   showAt({ x: Math.round(bounds.x + bounds.width / 2), y: bounds.y + bounds.height, centered: true });
 }

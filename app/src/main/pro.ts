@@ -59,7 +59,7 @@ export function showProSheet(parent?: BrowserWindow | null): void {
     proWindow.focus();
     return;
   }
-  if (isMac) app.focus({ steal: true });
+  if (isMac) {app.focus({ steal: true });}
   const sheet = parent && !parent.isDestroyed() ? parent : null;
   const window = new BrowserWindow({
     width: SHEET_WIDTH,
@@ -79,19 +79,19 @@ export function showProSheet(parent?: BrowserWindow | null): void {
   });
   proWindow = window;
   window.on("closed", () => {
-    if (proWindow === window) proWindow = null;
+    if (proWindow === window) {proWindow = null;}
   });
   window.webContents.once("did-finish-load", () => {
     const measure = "Math.ceil(document.documentElement.scrollHeight)";
     void window.webContents
       .executeJavaScript(measure)
       .then((height: unknown) => {
-        if (!window.isDestroyed() && typeof height === "number" && height > 0) window.setContentSize(SHEET_WIDTH, height);
+        if (!window.isDestroyed() && typeof height === "number" && height > 0) {window.setContentSize(SHEET_WIDTH, height);}
       })
       .catch(() => undefined)
       .finally(() => {
-        if (window.isDestroyed()) return;
-        if (!sheet) window.center();
+        if (window.isDestroyed()) {return;}
+        if (!sheet) {window.center();}
         window.show();
         window.focus();
       });

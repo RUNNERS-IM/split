@@ -2,7 +2,7 @@
 // these calculations were first written for the macOS app, and returns a new one; calc.ts turns the screen's top-left
 // rectangles into these and back.
 
-export interface Frame {
+export type Frame = {
   x: number;
   y: number;
   width: number;
@@ -44,8 +44,8 @@ function moveToDisplay(window: Frame, _source: Frame, destination: Frame): Frame
 /** Pressing a half or corner again goes 1/2 → 2/3 → 1/3 of that side, while the window is still lined up with it. */
 function cycle(window: Frame, lined: boolean, half: Frame, twoThirds: Frame, oneThird: Frame): Frame {
   if (lined) {
-    if (centeredWithin(half, window)) return twoThirds;
-    if (centeredWithin(twoThirds, window)) return oneThird;
+    if (centeredWithin(half, window)) {return twoThirds;}
+    if (centeredWithin(twoThirds, window)) {return oneThird;}
   }
   return half;
 }
@@ -102,7 +102,7 @@ function thirds(s: Frame): Frame[] {
 function otherThird(window: Frame, s: Frame, step: 1 | -1): Frame {
   const all = thirds(s);
   const at = all.findIndex((third) => centeredWithin(third, window));
-  return at < 0 ? all[0]! : all[(at + step + all.length) % all.length]!;
+  return at === -1 ? all[0]! : all[(at + step + all.length) % all.length]!;
 }
 
 /** Grows or shrinks by `offset`, keeping the screen edges the window already touches. A window that would get too small stays as it is. */
@@ -115,17 +115,17 @@ function resize(window: Frame, s: Frame, offset: number): Frame {
   const out = { ...window, width: window.width + offset, x: window.x - step };
   if (touchesRight) {
     out.x = maxX(s) - out.width;
-    if (touchesLeft) out.width = s.width;
+    if (touchesLeft) {out.width = s.width;}
   }
-  if (touchesLeft) out.x = s.x;
-  if (out.width >= s.width) out.width = s.width;
+  if (touchesLeft) {out.x = s.x;}
+  if (out.width >= s.width) {out.width = s.width;}
   out.height += offset;
   out.y -= step;
   if (touchesTop) {
     out.y = maxY(s) - out.height;
-    if (touchesBottom) out.height = s.height;
+    if (touchesBottom) {out.height = s.height;}
   }
-  if (touchesBottom) out.y = s.y;
+  if (touchesBottom) {out.y = s.y;}
   if (out.height >= s.height) {
     out.height = s.height;
     out.y = window.y;

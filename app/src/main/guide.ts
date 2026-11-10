@@ -53,7 +53,7 @@ export function showGuide(options: { preload: string; url: string; register: () 
   // Stay above System Settings so the steps remain visible while the switch is flipped.
   window.setAlwaysOnTop(true, "floating");
   window.on("closed", () => {
-    if (guideWindow === window) guideWindow = null;
+    if (guideWindow === window) {guideWindow = null;}
   });
   window.webContents.once("did-finish-load", () => {
     void window.webContents
@@ -67,18 +67,18 @@ export function showGuide(options: { preload: string; url: string; register: () 
         measure();
       })`)
       .then((height: unknown) => {
-        if (!window.isDestroyed() && typeof height === "number" && height > 0) window.setContentSize(WIDTH, height);
+        if (!window.isDestroyed() && typeof height === "number" && height > 0) {window.setContentSize(WIDTH, height);}
       })
       .catch(() => undefined)
       .finally(() => {
-        if (window.isDestroyed()) return;
+        if (window.isDestroyed()) {return;}
         const area = screen.getDisplayNearestPoint(screen.getCursorScreenPoint()).workArea;
         const bounds = window.getBounds();
         // Sit on the left third of the screen; System Settings usually opens near the centre.
         const x = area.x + Math.max(24, Math.round((area.width / 3 - bounds.width) / 2));
         const y = area.y + Math.round((area.height - bounds.height) / 2);
         window.setPosition(x, y);
-        if (process.platform === "darwin") app.focus({ steal: true });
+        if (process.platform === "darwin") {app.focus({ steal: true });}
         window.show();
         window.focus();
       });
@@ -86,7 +86,7 @@ export function showGuide(options: { preload: string; url: string; register: () 
   void window.loadURL(options.url);
   options.register();
   setTimeout(() => {
-    if (!window.isDestroyed() && !options.trusted()) void openAccessibilitySettings();
+    if (!window.isDestroyed() && !options.trusted()) {void openAccessibilitySettings();}
   }, OPEN_SETTINGS_DELAY_MS);
 }
 
@@ -96,17 +96,17 @@ export function showGuide(options: { preload: string; url: string; register: () 
  */
 export function guideGranted(): void {
   const window = guideWindow;
-  if (!window || window.isDestroyed()) return;
+  if (!window || window.isDestroyed()) {return;}
   void window.webContents
     // Why: two frames, so React has drawn the new view before it is measured.
     .executeJavaScript(`new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(() =>
       done(Math.ceil(document.querySelector(".guide")?.getBoundingClientRect().height ?? 0)))))`)
     .then((height: unknown) => {
-      if (!window.isDestroyed() && typeof height === "number" && height > 0) window.setContentSize(WIDTH, height);
+      if (!window.isDestroyed() && typeof height === "number" && height > 0) {window.setContentSize(WIDTH, height);}
     })
     .catch(() => undefined)
     .finally(() => {
-      if (!window.isDestroyed()) window.show();
+      if (!window.isDestroyed()) {window.show();}
     });
 }
 

@@ -40,19 +40,19 @@ export class Rect {
   }
 
   midX(): number {
-    return this.x + this.width / 2.0;
+    return this.x + this.width / 2;
   }
 
   midY(): number {
-    return this.y + this.height / 2.0;
+    return this.y + this.height / 2;
   }
 
   area(): number {
-    return Math.max(this.width, 0.0) * Math.max(this.height, 0.0);
+    return Math.max(this.width, 0) * Math.max(this.height, 0);
   }
 
   isEmpty(): boolean {
-    return this.width <= 0.0 || this.height <= 0.0;
+    return this.width <= 0 || this.height <= 0;
   }
 
   containsPoint(x: number, y: number): boolean {
@@ -90,7 +90,7 @@ export class Rect {
  * Apps such as terminals round their size to whole characters, so a window counts as still
  * where Split put it when every edge is within this distance.
  */
-export const MATCH_TOLERANCE = 24.0;
+export const MATCH_TOLERANCE = 24;
 
 export function roughlyEqual(a: Rect, b: Rect): boolean {
   return (
@@ -102,8 +102,8 @@ export function roughlyEqual(a: Rect, b: Rect): boolean {
 }
 
 /** Space between windows in points, as on macOS: none, narrow, normal, wide. */
-export const GAP_CHOICES: readonly [number, number, number, number] = [0.0, 8.0, 16.0, 24.0];
-export const DEFAULT_GAP = 8.0;
+export const GAP_CHOICES: readonly [number, number, number, number] = [0, 8, 16, 24];
+export const DEFAULT_GAP = 8;
 
 /**
  * Shrinks `rect` by half of `gap` on every side that faces another window, so two neighbours
@@ -111,21 +111,21 @@ export const DEFAULT_GAP = 8.0;
  * Port of `SplitRectWithGap` in `SplitWindowArranger.m`.
  */
 export function rectWithGap(rect: Rect, visibleFrame: Rect, gap: number): Rect {
-  if (gap <= 0.0) {
+  if (gap <= 0) {
     return rect;
   }
-  const half = gap / 2.0;
-  const left = Math.abs(rect.x - visibleFrame.x) <= 1.0 ? 0.0 : half;
-  const right = Math.abs(rect.maxX() - visibleFrame.maxX()) <= 1.0 ? 0.0 : half;
-  const top = Math.abs(rect.y - visibleFrame.y) <= 1.0 ? 0.0 : half;
-  const bottom = Math.abs(rect.maxY() - visibleFrame.maxY()) <= 1.0 ? 0.0 : half;
+  const half = gap / 2;
+  const left = Math.abs(rect.x - visibleFrame.x) <= 1 ? 0 : half;
+  const right = Math.abs(rect.maxX() - visibleFrame.maxX()) <= 1 ? 0 : half;
+  const top = Math.abs(rect.y - visibleFrame.y) <= 1 ? 0 : half;
+  const bottom = Math.abs(rect.maxY() - visibleFrame.maxY()) <= 1 ? 0 : half;
   const result = new Rect(
     round(rect.x + left),
     round(rect.y + top),
     round(rect.width - left - right),
     round(rect.height - top - bottom),
   );
-  if (result.width > 0.0 && result.height > 0.0) {
+  if (result.width > 0 && result.height > 0) {
     return result;
   }
   return rect;

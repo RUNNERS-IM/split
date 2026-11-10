@@ -21,7 +21,7 @@ const RECORD_INTERVAL = 4000;
 const SETTLE_DELAY = 1000;
 const RECORD_SOON_DELAY = 500;
 
-export interface DisplayWatcherOptions {
+export type DisplayWatcherOptions = {
   /** The settings now; read on every record and change, since they can change at any time. */
   settings: () => Settings;
   /** What is on screen, with `windows` filled and each screen's lasting id. */
@@ -74,14 +74,14 @@ function takeSnapshot(): DisplaySnapshot | null {
 function record(): void {
   // Right after a change macOS has already moved windows around; those places are not the
   // user's, so nothing is recorded until the change has been handled.
-  if (!options || settling || !options.settings().rearrangeOnDisplayChange) return;
+  if (!options || settling || !options.settings().rearrangeOnDisplayChange) {return;}
   const snapshot = takeSnapshot();
-  if (!snapshot) return;
+  if (!snapshot) {return;}
   places = recordPlaces(snapshot.windows, snapshot.screens);
 }
 
 function screensChanged(): void {
-  if (settling) return;
+  if (settling) {return;}
   settling = true;
   settleTimer = setTimeout(() => {
     settleTimer = null;
@@ -92,12 +92,12 @@ function screensChanged(): void {
 }
 
 function handleChange(): void {
-  if (!options) return;
+  if (!options) {return;}
   const newIds = currentDisplayIds();
   const oldIds = displayIds;
   displayIds = newIds;
   // Same monitors (waking from sleep, a resolution change, the Dock showing): leave everything alone.
-  if (sameDisplayIds(newIds, oldIds)) return;
+  if (sameDisplayIds(newIds, oldIds)) {return;}
   const saved = options.restoreSavedLayout?.(newIds) ?? null;
   if (saved !== null) {
     seenDisplayIds = new Set([...seenDisplayIds, ...newIds]);
@@ -105,9 +105,9 @@ function handleChange(): void {
     options.onArranged(saved, true);
     return;
   }
-  if (!options.settings().rearrangeOnDisplayChange) return;
+  if (!options.settings().rearrangeOnDisplayChange) {return;}
   const snapshot = takeSnapshot();
-  if (!snapshot) return;
+  if (!snapshot) {return;}
   const result = planDisplayChange({
     oldIds,
     newIds,
@@ -121,9 +121,9 @@ function handleChange(): void {
   seenDisplayIds = result.seenIds;
   awayPlaces = result.awayPlaces;
   const plan = result.plan;
-  if (!plan) return;
+  if (!plan) {return;}
   try {
-    if (plan.moves.length > 0) options.apply(plan.moves);
+    if (plan.moves.length > 0) {options.apply(plan.moves);}
   } catch (error) {
     // Why: windows moved before the failing one stay moved, so undo is still offered for all of them.
     console.error("split: display change:", error);
@@ -151,7 +151,7 @@ export function stopDisplayWatcher(): void {
   screen.off("display-removed", screensChanged);
   screen.off("display-metrics-changed", screensChanged);
   for (const timer of [recordTimer, settleTimer, soonTimer]) {
-    if (timer) clearTimeout(timer);
+    if (timer) {clearTimeout(timer);}
   }
   recordTimer = settleTimer = soonTimer = null;
   settling = false;
@@ -160,7 +160,7 @@ export function stopDisplayWatcher(): void {
 
 /** Records the windows half a second from now, for example right after Split moved one. */
 export function recordSoon(): void {
-  if (soonTimer) clearTimeout(soonTimer);
+  if (soonTimer) {clearTimeout(soonTimer);}
   soonTimer = setTimeout(() => {
     soonTimer = null;
     record();
@@ -177,7 +177,7 @@ export function displayChangeLabel(
   restored: boolean,
   undoKeys: string,
 ): { title: string; tip: string } | null {
-  if (settings.feedback.style === "off" || movedCount === 0) return null;
+  if (settings.feedback.style === "off" || movedCount === 0) {return null;}
   return {
     title: t(restored ? "DisplayRestored" : "DisplayRearranged", movedCount),
     tip: t("DisplayUndoTip", undoKeys),

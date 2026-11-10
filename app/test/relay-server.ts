@@ -17,13 +17,13 @@ import { WebSocketServer, type WebSocket } from "ws";
 const PORT = Number(process.env.PORT || 8788);
 const TOKEN_SECONDS = Number(process.env.TOKEN_SECONDS || 3600);
 
-interface Peer {
+type Peer = {
   deviceId: string;
   name: string;
   role: "host" | "viewer";
 }
 
-interface Client {
+type Client = {
   socket: WebSocket;
   account: string;
   peer: Peer | null;
@@ -48,7 +48,7 @@ function issue(account: string) {
 
 async function body(req: IncomingMessage): Promise<Record<string, unknown>> {
   let text = "";
-  for await (const chunk of req) text += chunk;
+  for await (const chunk of req) {text += chunk;}
   try {
     return JSON.parse(text || "{}");
   } catch {
@@ -69,34 +69,34 @@ const http = createServer(async (req, res) => {
   const none = email.startsWith("none");
   if (req.method === "POST" && (req.url === "/api/mobile/auth/login" || req.url === "/api/mobile/auth/signup")) {
     const signup = req.url.endsWith("signup");
-    if (!email || !PASSWORD_RULE.test(String(data.password || ""))) return reply(res, 400, { message: "bad request" });
-    if (!signup && none) return reply(res, 401, { message: "User not found" });
-    if (!signup && data.password === "wrong1") return reply(res, 401, { message: "Invalid credentials" });
-    if (signup && email.startsWith("taken")) return reply(res, 409, { message: "exists" });
-    if (signup && data.code !== undefined && data.code !== "123456") return reply(res, 422, { message: "code" });
+    if (!email || !PASSWORD_RULE.test(String(data.password || ""))) {return reply(res, 400, { message: "bad request" });}
+    if (!signup && none) {return reply(res, 401, { message: "User not found" });}
+    if (!signup && data.password === "wrong1") {return reply(res, 401, { message: "Invalid credentials" });}
+    if (signup && email.startsWith("taken")) {return reply(res, 409, { message: "exists" });}
+    if (signup && data.code !== undefined && data.code !== "123456") {return reply(res, 422, { message: "code" });}
     return reply(res, 200, { user: { id: email, email }, tokens: issue(email) });
   }
   if (req.method === "POST" && req.url === "/api/mobile/auth/email-code") {
-    if (email.startsWith("taken")) return reply(res, 409, { message: "exists" });
+    if (email.startsWith("taken")) {return reply(res, 409, { message: "exists" });}
     res.writeHead(204).end();
     return;
   }
   if (req.method === "POST" && req.url === "/api/mobile/auth/password-reset") {
-    if (none) return reply(res, 404, { message: "User not found" });
+    if (none) {return reply(res, 404, { message: "User not found" });}
     res.writeHead(204).end();
     return;
   }
   if (req.method === "POST" && req.url === "/api/mobile/auth/password-reset/confirm") {
-    if (data.code !== "123456") return reply(res, 422, { message: "code" });
-    if (!PASSWORD_RULE.test(String(data.password || ""))) return reply(res, 400, { message: "bad request" });
+    if (data.code !== "123456") {return reply(res, 422, { message: "code" });}
+    if (!PASSWORD_RULE.test(String(data.password || ""))) {return reply(res, 400, { message: "bad request" });}
     return reply(res, 200, { user: { id: email, email }, tokens: issue(email) });
   }
   if (req.method === "POST" && req.url === "/api/mobile/auth/refresh") {
     const account = tokens.get(String(data.refreshToken || ""));
     return account ? reply(res, 200, issue(account)) : reply(res, 401, { message: "expired" });
   }
-  if (req.method === "POST" && req.url === "/api/mobile/auth/logout") return reply(res, 200, {});
-  if (req.method === "POST" && req.url === "/api/mobile/devices") return reply(res, 200, {});
+  if (req.method === "POST" && req.url === "/api/mobile/auth/logout") {return reply(res, 200, {});}
+  if (req.method === "POST" && req.url === "/api/mobile/devices") {return reply(res, 200, {});}
   reply(res, 404, { message: "not found" });
 });
 
@@ -108,7 +108,11 @@ function tokenExp(token: string): number {
 
 // Like the real relay: an open connection whose token ran out is closed.
 setInterval(() => {
-  for (const client of clients) if (client.exp * 1000 <= Date.now()) client.socket.close(4401, "token expired");
+  for (const client of clients) {
+    if (client.exp * 1000 <= Date.now()) {
+      client.socket.close(4401, "token expired");
+    }
+  }
 }, 1000);
 
 function sameAccount(client: Client): Client[] {
@@ -125,11 +129,11 @@ function send(client: Client, message: unknown): void {
 
 http.on("upgrade", (req, socket, head) => {
   const url = new URL(req.url || "/", "http://localhost");
-  if (url.pathname !== "/api/relay") return socket.destroy();
+  if (url.pathname !== "/api/relay") {return socket.destroy();}
   const token = (req.headers.authorization || "").replace(/^Bearer /, "") || url.searchParams.get("token") || "";
   const account = tokens.get(token);
   relay.handleUpgrade(req, socket, head, (ws) => {
-    if (!account || !token.startsWith("access-") || tokenExp(token) * 1000 <= Date.now()) return ws.close(4401, "token");
+    if (!account || !token.startsWith("access-") || tokenExp(token) * 1000 <= Date.now()) {return ws.close(4401, "token");}
     const client: Client = { socket: ws, account, peer: null, exp: tokenExp(token) };
     clients.add(client);
     ws.on("message", (raw) => {
@@ -141,7 +145,7 @@ http.on("upgrade", (req, socket, head) => {
       }
       if (message.type === "auth") {
         const next = String(message.token || "");
-        if (tokens.get(next) !== account || !next.startsWith("access-") || tokenExp(next) * 1000 <= Date.now()) return ws.close(4401, "token");
+        if (tokens.get(next) !== account || !next.startsWith("access-") || tokenExp(next) * 1000 <= Date.now()) {return ws.close(4401, "token");}
         client.exp = tokenExp(next);
         console.log(`auth ${account}`);
         return send(client, { type: "auth", ok: true, exp: client.exp });
@@ -152,35 +156,39 @@ http.on("upgrade", (req, socket, head) => {
         toDevice(account, peer.deviceId)?.socket.close(4409, "replaced");
         client.peer = peer;
         send(client, { type: "peers", peers: sameAccount(client).map((c) => c.peer) });
-        for (const other of sameAccount(client)) send(other, { type: "peer-joined", peer });
+        for (const other of sameAccount(client)) {send(other, { type: "peer-joined", peer });}
         if (peer.role === "viewer") {
           for (const other of sameAccount(client)) {
             const state = lastState.get(`${account}/${other.peer!.deviceId}`);
-            if (other.peer!.role === "host" && state !== undefined) send(client, { type: "state", from: other.peer!.deviceId, data: state });
+            if (other.peer!.role === "host" && state !== undefined) {send(client, { type: "state", from: other.peer!.deviceId, data: state });}
           }
         }
         console.log(`hello ${peer.role} ${peer.name} (${account})`);
         return;
       }
-      if (!client.peer) return send(client, { type: "error", error: "hello first" });
+      if (!client.peer) {return send(client, { type: "error", error: "hello first" });}
       const from = client.peer.deviceId;
       if (message.type === "state") {
         lastState.set(`${account}/${from}`, message.data);
-        for (const other of sameAccount(client)) if (other.peer!.role === "viewer") send(other, { type: "state", from, data: message.data });
+        for (const other of sameAccount(client)) {
+          if (other.peer!.role === "viewer") {
+            send(other, { type: "state", from, data: message.data });
+          }
+        }
         return;
       }
       if (message.type === "command" || message.type === "result" || message.type === "signal") {
         const target = toDevice(account, message.to);
-        if (target) return send(target, { ...message, from });
-        if (message.type === "command") send(client, { type: "result", id: message.id, ok: false, data: { error: "offline" } });
+        if (target) {return send(target, { ...message, from });}
+        if (message.type === "command") {send(client, { type: "result", id: message.id, ok: false, data: { error: "offline" } });}
         return;
       }
       send(client, { type: "error", error: `unknown type ${String(message.type)}` });
     });
     ws.on("close", () => {
       clients.delete(client);
-      if (!client.peer) return;
-      for (const other of sameAccount(client)) send(other, { type: "peer-left", deviceId: client.peer.deviceId });
+      if (!client.peer) {return;}
+      for (const other of sameAccount(client)) {send(other, { type: "peer-left", deviceId: client.peer.deviceId });}
     });
   });
 });

@@ -1,8 +1,8 @@
 // Glow and label measurements from SplitWindowFeedback.m, shared by the overlay page (drawing)
 // and the main process (when to hide the overlay window). No DOM or Node here.
-import type { FeedbackDuration, FeedbackSettings, FeedbackStyle, OverlayPayload } from "../../shared/types";
+import type { FeedbackDuration, FeedbackStyle, OverlayPayload } from "../../shared/types";
 
-export interface FeedbackMetrics {
+export type FeedbackMetrics = {
   borderWidth: number;
   shadowRadius: number;
   shadowOpacity: number;
@@ -66,13 +66,13 @@ export function glowMs(payload: Pick<OverlayPayload, "feedback" | "duration">): 
 
 /** Whether the page draws the text label for this payload. */
 export function showsLabel(payload: Pick<OverlayPayload, "kind" | "title" | "feedback">): boolean {
-  if (payload.kind === "label") return payload.title.length > 0;
+  if (payload.kind === "label") {return payload.title.length > 0;}
   return payload.kind === "frame" && payload.feedback.showShortcut && payload.title.length > 0;
 }
 
 /** Milliseconds until everything the page draws for this payload has faded out; null for a preview, which stays. */
 export function overlayLifetime(payload: OverlayPayload): number | null {
-  if (payload.kind === "preview") return null;
+  if (payload.kind === "preview") {return null;}
   const glow = payload.kind === "frame" && payload.rects.length > 0 ? glowMs(payload) : 0;
   const label = showsLabel(payload) ? LABEL_FADE_IN_MS + labelVisibleMs(payload) + LABEL_FADE_OUT_MS : 0;
   return Math.max(glow, label);

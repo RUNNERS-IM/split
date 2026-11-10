@@ -33,7 +33,7 @@ const darkQuery = window.matchMedia("(prefers-color-scheme: dark)");
 
 function feedbackColor(payload: OverlayPayload): string {
   const name = payload.feedback.color;
-  if (name === "accent") return "var(--rw-primary)";
+  if (name === "accent") {return "var(--rw-primary)";}
   return SYSTEM_COLORS[name][darkQuery.matches ? 1 : 0];
 }
 
@@ -97,7 +97,7 @@ function Ring({ rect, payload }: { rect: OverlayRect; payload: OverlayPayload })
   const glow = withAlpha(color, metrics.shadowOpacity);
   const blur = metrics.shadowRadius * 2;
   const shadows = [`0 0 ${blur}px ${glow}`, `inset 0 0 ${blur}px ${glow}`];
-  if (payload.feedback.color === "accent") shadows.push(DEFAULT_COLOR_EDGE);
+  if (payload.feedback.color === "accent") {shadows.push(DEFAULT_COLOR_EDGE);}
   return (
     <div
       ref={ref}
@@ -190,7 +190,7 @@ function Overlay() {
     };
   }, []);
 
-  if (!shown) return null;
+  if (!shown) {return null;}
   const { message, key } = shown;
   if (message.kind === "preview") {
     // One element for the whole hover, so moving between menu rows slides the outline.

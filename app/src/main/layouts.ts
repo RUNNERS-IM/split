@@ -21,8 +21,8 @@ const isMac = process.platform === "darwin";
 // ---------------------------------------------------------------------------------------------
 // Native module (the part of it this file uses; index.ts loads it)
 
-interface NativeRect { x: number; y: number; width: number; height: number }
-interface NativeWindow {
+type NativeRect = { x: number; y: number; width: number; height: number }
+type NativeWindow = {
   id: number;
   rect: NativeRect;
   /** The name people see. */
@@ -32,7 +32,7 @@ interface NativeWindow {
   /** Window title; windows match by app and title first, then by order within their app. */
   title?: string;
 }
-interface NativeScreen {
+type NativeScreen = {
   frame: NativeRect;
   workArea: NativeRect;
   scale: number;
@@ -40,12 +40,12 @@ interface NativeScreen {
   /** Display UUID (macOS), as the macOS app saved. Electron's display id stands in when it is missing. */
   id?: string;
 }
-export interface LayoutNative {
+export type LayoutNative = {
   snapshot(withWindows: boolean): { screens: NativeScreen[]; windows: NativeWindow[] };
   apply(moves: { id: number; rect: NativeRect }[]): void;
 }
 
-export interface LayoutOptions {
+export type LayoutOptions = {
   native: LayoutNative;
   preload: string;
   rendererUrl: (page: string) => string;
@@ -67,7 +67,7 @@ export function setupLayouts(given: LayoutOptions): void {
 }
 
 function need(): LayoutOptions {
-  if (!options) throw new Error("setupLayouts was not called");
+  if (!options) {throw new Error("setupLayouts was not called");}
   return options;
 }
 
@@ -79,7 +79,7 @@ export const SHAPES = ["Halves", "MainAndTwo", "Grid", "Auto"] as const;
 export type LayoutShape = (typeof SHAPES)[number];
 
 /** A cell as fractions of a screen (0…1, top-left based). */
-interface Fraction { x: number; y: number; width: number; height: number }
+type Fraction = { x: number; y: number; width: number; height: number }
 
 /**
  * Cells of `shape`, first cell first. "Auto" is the shortcut's arrange (core/arrange.ts), so its
@@ -119,7 +119,7 @@ function integral(rect: Rect): Rect {
 
 /** Moves the windows and tells `moved` where they were, for one undo. Returns how many moved. */
 function move(windows: NativeWindow[], rects: Rect[]): number {
-  if (windows.length === 0) return 0;
+  if (windows.length === 0) {return 0;}
   const { native, moved } = need();
   const moves = windows.map((w, i) => ({ id: w.id, rect: { x: rects[i].x, y: rects[i].y, width: rects[i].width, height: rects[i].height } }));
   try {
@@ -145,7 +145,7 @@ function snapshot(withWindows: boolean): { screens: NativeScreen[]; windows: Nat
 export function applyShape(shape: LayoutShape, displayId: string): number {
   const shot = snapshot(true);
   const target = shot?.screens.find((s) => displayIdOf(s) === displayId);
-  if (!shot || !target) return 0;
+  if (!shot || !target) {return 0;}
   const onScreen = shot.windows.filter((w) => middleOn(w, target.frame));
   const fractions = shapeFractions(shape, onScreen.length);
   const windows = onScreen.slice(0, fractions.length);
@@ -169,7 +169,7 @@ export function applyShape(shape: LayoutShape, displayId: string): number {
  * module gives it, Electron's display id (CGDirectDisplayID on macOS) is used, found by frame.
  */
 function displayIdOf(nativeScreen: NativeScreen): string {
-  if (nativeScreen.id) return nativeScreen.id;
+  if (nativeScreen.id) {return nativeScreen.id;}
   const f = nativeScreen.frame;
   const displays = screen.getAllDisplays();
   const same = displays.find((d) => d.bounds.x === Math.round(f.x) && d.bounds.y === Math.round(f.y) &&
@@ -187,7 +187,7 @@ function displayNameOf(nativeScreen: NativeScreen): string {
 /** The monitors connected now with the ids layouts and shapes use, the main one first. */
 export function currentDisplays(): { id: string; name: string; primary: boolean }[] {
   const shot = snapshot(false);
-  if (!shot) return [];
+  if (!shot) {return [];}
   const displays = shot.screens.map((s) => ({ id: displayIdOf(s), name: displayNameOf(s), primary: s.primary }));
   return displays.sort((a, b) => Number(b.primary) - Number(a.primary));
 }
@@ -208,7 +208,7 @@ function sameSet(a: readonly string[], b: Iterable<string>): boolean {
 // Saved layouts
 
 /** A window remembered in a saved layout. Field names are the macOS app's Layouts.json keys. */
-export interface SavedWindow {
+export type SavedWindow = {
   /** Bundle id of the app (macOS). */
   bundle: string;
   title: string;
@@ -220,7 +220,7 @@ export interface SavedWindow {
 }
 
 /** A named arrangement of every visible window, saved with the monitors it was made on. */
-export interface SavedLayout {
+export type SavedLayout = {
   id: string;
   name: string;
   displays: string[];
@@ -237,16 +237,16 @@ function layoutsFile(): string {
 
 /** Keeps what LayoutFromDictionary in SplitLayouts.m keeps; anything unreadable is left out. */
 function readLayout(input: unknown): SavedLayout | null {
-  if (!input || typeof input !== "object") return null;
+  if (!input || typeof input !== "object") {return null;}
   const raw = input as Record<string, unknown>;
-  if (typeof raw.name !== "string") return null;
+  if (typeof raw.name !== "string") {return null;}
   const text = (value: unknown) => (typeof value === "string" ? value : "");
   const windows: SavedWindow[] = [];
   for (const item of Array.isArray(raw.windows) ? raw.windows : []) {
-    if (!item || typeof item !== "object") continue;
+    if (!item || typeof item !== "object") {continue;}
     const w = item as Record<string, unknown>;
     const rect = w.rect;
-    if (!Array.isArray(rect) || rect.length !== 4 || !rect.every((n) => typeof n === "number")) continue;
+    if (!Array.isArray(rect) || rect.length !== 4 || !rect.every((n) => typeof n === "number")) {continue;}
     windows.push({
       bundle: text(w.bundle),
       title: text(w.title),
@@ -265,16 +265,16 @@ function readLayout(input: unknown): SavedLayout | null {
 }
 
 function load(): SavedLayout[] {
-  if (saved) return saved;
+  if (saved) {return saved;}
   saved = [];
   const file = layoutsFile();
-  if (!existsSync(file)) return saved;
+  if (!existsSync(file)) {return saved;}
   try {
     const items: unknown = JSON.parse(readFileSync(file, "utf8"));
     if (Array.isArray(items)) {
       for (const item of items) {
         const layout = readLayout(item);
-        if (layout) saved.push(layout);
+        if (layout) {saved.push(layout);}
       }
     }
   } catch {
@@ -290,7 +290,7 @@ function write(): void {
   const temp = `${file}.tmp`;
   writeFileSync(temp, `${JSON.stringify(load(), null, 2)}\n`);
   renameSync(temp, file);
-  for (const listener of listeners) listener();
+  for (const listener of listeners) {listener();}
 }
 
 const listeners: (() => void)[] = [];
@@ -317,12 +317,12 @@ function appOf(window: NativeWindow): string {
  */
 export function saveCurrentLayout(name: string, restoresForDisplays: boolean): SavedLayout | null {
   const shot = snapshot(true);
-  if (!shot) return null;
+  if (!shot) {return null;}
   const countByApp = new Map<string, number>();
   const windows: SavedWindow[] = [];
   for (const window of shot.windows) {
     const on = shot.screens.find((s) => middleOn(window, s.frame));
-    if (!on) continue;
+    if (!on) {continue;}
     const bundle = appOf(window);
     const index = countByApp.get(bundle) ?? 0;
     countByApp.set(bundle, index + 1);
@@ -339,7 +339,7 @@ export function saveCurrentLayout(name: string, restoresForDisplays: boolean): S
   const list = load();
   if (restoresForDisplays) {
     for (const other of list) {
-      if (sameSet(other.displays, layout.displays)) other.restoresForDisplays = false;
+      if (sameSet(other.displays, layout.displays)) {other.restoresForDisplays = false;}
     }
   }
   list.push(layout);
@@ -350,7 +350,7 @@ export function saveCurrentLayout(name: string, restoresForDisplays: boolean): S
 export function removeLayout(id: string): void {
   const list = load();
   const index = list.findIndex((layout) => layout.id === id);
-  if (index < 0) return;
+  if (index === -1) {return;}
   list.splice(index, 1);
   write();
 }
@@ -368,7 +368,7 @@ export function layoutRestoringForDisplays(displayIds: Iterable<string>): SavedL
  */
 export function restoreLayout(layout: SavedLayout): number {
   const shot = snapshot(true);
-  if (!shot) return 0;
+  if (!shot) {return 0;}
   const connected = new Set(shot.screens.map(displayIdOf));
   const windows = shot.windows;
   const countByApp = new Map<string, number>();
@@ -389,14 +389,14 @@ export function restoreLayout(layout: SavedLayout): number {
   // Two passes: same app and same title first, then same app and same place in its order.
   for (const pass of [0, 1]) {
     layout.windows.forEach((savedWindow, savedIndex) => {
-      if (placed.has(savedIndex) || !connected.has(savedWindow.display)) return;
+      if (placed.has(savedIndex) || !connected.has(savedWindow.display)) {return;}
       const index = windows.findIndex((window, i) => {
-        if (used.has(i) || !sameApp(window, savedWindow)) return false;
+        if (used.has(i) || !sameApp(window, savedWindow)) {return false;}
         return pass === 0
           ? savedWindow.title.length > 0 && (window.title ?? "") === savedWindow.title
           : indexes[i] === savedWindow.index;
       });
-      if (index < 0) return;
+      if (index === -1) {return;}
       used.add(index);
       placed.add(savedIndex);
       moved.push(windows[index]);
@@ -444,7 +444,7 @@ function miniScreen(fractions: Fraction[], outlined = false): Electron.NativeIma
         const y = inner.y + f.y * inner.height + inset;
         const w = f.width * inner.width - 2 * inset;
         const h = f.height * inner.height - 2 * inset;
-        if (w <= 0 || h <= 0) continue;
+        if (w <= 0 || h <= 0) {continue;}
         const cellEdge = distance(px, py, x, y, w, h, Math.min(1.2, w / 2, h / 2));
         alpha = Math.max(alpha, outlined ? clamp((1 / 2 - Math.abs(cellEdge)) * scale + 0.5) : clamp(0.5 - cellEdge * scale));
       }
@@ -460,23 +460,23 @@ function miniScreen(fractions: Fraction[], outlined = false): Electron.NativeIma
 /** The windows of a saved layout as cells of one small screen: the monitor holding most of them. */
 function layoutFractions(layout: SavedLayout, screens: NativeScreen[]): Fraction[] {
   const counts = new Map<string, number>();
-  for (const window of layout.windows) counts.set(window.display, (counts.get(window.display) ?? 0) + 1);
+  for (const window of layout.windows) {counts.set(window.display, (counts.get(window.display) ?? 0) + 1);}
   let busiest: string | null = null;
   for (const [id, count] of counts) {
-    if (busiest === null || count > (counts.get(busiest) ?? 0)) busiest = id;
+    if (busiest === null || count > (counts.get(busiest) ?? 0)) {busiest = id;}
   }
   const on = screens.find((s) => displayIdOf(s) === busiest);
   const fractions: Fraction[] = [];
   if (on && on.workArea.width > 0 && on.workArea.height > 0) {
     const frame = Rect.from(on.workArea);
     for (const window of layout.windows) {
-      if (window.display !== busiest) continue;
+      if (window.display !== busiest) {continue;}
       const [x, y, width, height] = window.rect;
       const left = Math.max(x, frame.x);
       const top = Math.max(y, frame.y);
       const right = Math.min(x + width, frame.maxX());
       const bottom = Math.min(y + height, frame.maxY());
-      if (right <= left || bottom <= top) continue;
+      if (right <= left || bottom <= top) {continue;}
       fractions.push({
         x: (left - frame.x) / frame.width,
         y: (top - frame.y) / frame.height,
@@ -506,7 +506,7 @@ function shapeItems(displayId: string, windowCount: number): MenuItemConstructor
 }
 
 /** What the macOS panel (native/mac/menu.m) draws: monitor rows, shape chips and saved layouts. */
-export interface LayoutPanel {
+export type LayoutPanel = {
   card: unknown;
   /** Runs what a chip stands for, given the id the panel returned. */
   choose: (chosen: string) => void;
@@ -628,10 +628,10 @@ export function layoutPanel(): LayoutPanel {
     const [what, displayId] = chosen.split("\t");
     if (what.startsWith("shape:")) {
       const shape = what.slice("shape:".length) as LayoutShape;
-      if (SHAPES.includes(shape) && displayId) afterMenuCloses(() => applyShape(shape, displayId));
+      if (SHAPES.includes(shape) && displayId) {afterMenuCloses(() => applyShape(shape, displayId));}
     } else if (what.startsWith("saved:")) {
       const layout = layouts().find((l) => l.id === what.slice("saved:".length));
-      if (layout) afterMenuCloses(() => restoreLayout(layout));
+      if (layout) {afterMenuCloses(() => restoreLayout(layout));}
     }
   };
   return { card, choose };
@@ -684,7 +684,7 @@ let answerSave: ((answer: LayoutSaveAnswer) => void) | null = null;
  * open only brings it forward. Same look and sizing as the update window (overlay.ts askToInstall).
  */
 export function askToSaveLayout(): Promise<SavedLayout | null> {
-  if (isMac) app.focus({ steal: true });
+  if (isMac) {app.focus({ steal: true });}
   if (saveWindow && !saveWindow.isDestroyed()) {
     saveWindow.show();
     saveWindow.focus();
@@ -727,10 +727,10 @@ export function askToSaveLayout(): Promise<SavedLayout | null> {
         layout = saveCurrentLayout(name, answer.restoresForDisplays);
       }
       resolve(layout);
-      if (!window.isDestroyed()) window.close();
+      if (!window.isDestroyed()) {window.close();}
     };
     window.on("closed", () => {
-      if (saveWindow === window) saveWindow = null;
+      if (saveWindow === window) {saveWindow = null;}
       answerSave?.(null);
     });
     window.webContents.once("did-finish-load", () => {
@@ -738,11 +738,11 @@ export function askToSaveLayout(): Promise<SavedLayout | null> {
       void window.webContents
         .executeJavaScript(measure)
         .then((height: unknown) => {
-          if (!window.isDestroyed() && typeof height === "number" && height > 0) window.setContentSize(width, height);
+          if (!window.isDestroyed() && typeof height === "number" && height > 0) {window.setContentSize(width, height);}
         })
         .catch(() => undefined)
         .finally(() => {
-          if (window.isDestroyed()) return;
+          if (window.isDestroyed()) {return;}
           window.center();
           window.show();
           window.focus();

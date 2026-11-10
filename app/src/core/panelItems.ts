@@ -10,7 +10,7 @@
 import type { PanelItem } from "../shared/types";
 
 /** The parts of an Electron menu item this needs (MenuItemConstructorOptions without Electron). */
-export interface TemplateItem {
+export type TemplateItem = {
   id?: string;
   type?: "normal" | "separator" | "submenu" | "checkbox" | "radio" | "header" | "palette";
   label?: string;
@@ -24,13 +24,13 @@ export interface TemplateItem {
   click?: (...args: never[]) => void;
 }
 
-export interface PanelConversion {
+export type PanelConversion = {
   items: PanelItem[];
   /** Item id → what it does. */
   clicks: Map<string, () => void>;
 }
 
-export interface ConvertOptions {
+export type ConvertOptions = {
   /** The picture of an item as a data URL, and whether it is a template (drawn in the text colour). */
   image(icon: unknown): { src: string; template: boolean } | null;
   /** The item id standing for the layout panel, and what it turns into. */
@@ -54,7 +54,7 @@ export function convertTemplate(template: TemplateItem[], options: ConvertOption
     for (const item of items) {
       if (item.type === "separator") {
         // Why: two separators in a row, or one at an edge, would draw an empty band.
-        if (out.length > 0 && out[out.length - 1].kind !== "separator") out.push({ kind: "separator" });
+        if (out.length > 0 && out.at(-1)?.kind !== "separator") {out.push({ kind: "separator" });}
         continue;
       }
       if (item.id === options.layoutPanelId) {
@@ -95,7 +95,7 @@ export function convertTemplate(template: TemplateItem[], options: ConvertOption
         ...(item.sublabel === options.proSublabel ? { pill: item.sublabel } : item.sublabel ? { sublabel: item.sublabel } : {}),
       });
     }
-    while (out.length > 0 && out[out.length - 1].kind === "separator") out.pop();
+    while (out.length > 0 && out.at(-1)?.kind === "separator") {out.pop();}
     return out;
   };
   return { items: convert(template, true), clicks };

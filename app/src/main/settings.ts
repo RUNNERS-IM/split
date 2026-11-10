@@ -50,7 +50,7 @@ export function bindings(settings: Settings): [Action, KeyCombo][] {
   for (const action of ALL) {
     const text = shortcutText(settings, action);
     const combo = text ? KeyCombo.parse(text) : null;
-    if (combo) result.push([action, combo]);
+    if (combo) {result.push([action, combo]);}
   }
   return result;
 }
@@ -66,9 +66,9 @@ export function sanitize(input: Partial<Settings> | null | undefined): Settings 
   const feedback = (raw.feedback ?? {}) as Partial<FeedbackSettings>;
   const shortcuts: Record<string, string | null> = {};
   for (const [name, value] of Object.entries(raw.shortcuts ?? {})) {
-    if (!(ALL as readonly string[]).includes(name)) continue;
-    if (value === null) shortcuts[name] = null;
-    else if (typeof value === "string" && KeyCombo.parse(value)) shortcuts[name] = KeyCombo.parse(value)!.toText();
+    if (!(ALL as readonly string[]).includes(name)) {continue;}
+    if (value === null) {shortcuts[name] = null;}
+    else if (typeof value === "string" && KeyCombo.parse(value)) {shortcuts[name] = KeyCombo.parse(value)!.toText();}
   }
   // Why: an action added in a newer version starts with its default keys, unless the person already gave those keys to another action.
   const taken = new Set(Object.values(shortcuts).filter((v): v is string => v !== null));
@@ -139,36 +139,36 @@ function fromMacApp(): Settings | null {
   // number or bool into "0" / "1", so an empty string means "never set".
   const has = (key: string) => get(key, "string") !== "";
   const ranBefore = existsSync(shortcutsFile) || get("LegacyPreferencesMigrated", "boolean") === true;
-  if (!ranBefore) return null;
+  if (!ranBefore) {return null;}
   const settings = defaultSettings();
   try {
     const saved = JSON.parse(readFileSync(shortcutsFile, "utf8")) as { shortcut_name?: string; shortcut_key_binding?: string | null }[];
     for (const item of saved) {
-      if (!item.shortcut_name) continue;
+      if (!item.shortcut_name) {continue;}
       settings.shortcuts[item.shortcut_name] = item.shortcut_key_binding ?? null;
     }
   } catch {
     // No saved shortcuts: the defaults stay.
   }
-  if (has("WindowGap")) settings.gap = get("WindowGap", "double") as number;
-  if (has("MoveFeedbackStyle")) settings.feedback.style = STYLES[get("MoveFeedbackStyle", "integer") as number] ?? "subtle";
-  else if (get("MoveFeedbackEnabled", "string") === "0") settings.feedback.style = "off";
+  if (has("WindowGap")) {settings.gap = get("WindowGap", "double") as number;}
+  if (has("MoveFeedbackStyle")) {settings.feedback.style = STYLES[get("MoveFeedbackStyle", "integer") as number] ?? "subtle";}
+  else if (get("MoveFeedbackEnabled", "string") === "0") {settings.feedback.style = "off";}
   const color = get("MoveFeedbackColor", "string");
-  if (typeof color === "string" && color) settings.feedback.color = color as FeedbackSettings["color"];
-  if (has("MoveFeedbackShowsShortcut")) settings.feedback.showShortcut = get("MoveFeedbackShowsShortcut", "boolean") as boolean;
-  if (has("MoveFeedbackDuration")) settings.feedback.duration = DURATIONS[get("MoveFeedbackDuration", "integer") as number] ?? "normal";
-  if (has("MoveFeedbackLabelPosition")) settings.feedback.position = POSITIONS[get("MoveFeedbackLabelPosition", "integer") as number] ?? "bottom";
+  if (typeof color === "string" && color) {settings.feedback.color = color as FeedbackSettings["color"];}
+  if (has("MoveFeedbackShowsShortcut")) {settings.feedback.showShortcut = get("MoveFeedbackShowsShortcut", "boolean") as boolean;}
+  if (has("MoveFeedbackDuration")) {settings.feedback.duration = DURATIONS[get("MoveFeedbackDuration", "integer") as number] ?? "normal";}
+  if (has("MoveFeedbackLabelPosition")) {settings.feedback.position = POSITIONS[get("MoveFeedbackLabelPosition", "integer") as number] ?? "bottom";}
   for (const [key, field] of [
     ["StatusItemEnabled", "showTrayIcon"],
     ["AutomaticUpdateCheckEnabled", "autoUpdate"],
     ["ShortcutSheetEnabled", "shortcutSheet"],
     ["RearrangeOnDisplayChange", "rearrangeOnDisplayChange"],
   ] as const) {
-    if (has(key)) settings[field] = get(key, "boolean") as boolean;
+    if (has(key)) {settings[field] = get(key, "boolean") as boolean;}
   }
   const disabled = get("DisabledApplications", "array");
-  if (Array.isArray(disabled)) settings.disabledApps = disabled.filter((v) => typeof v === "string");
+  if (Array.isArray(disabled)) {settings.disabledApps = disabled.filter((v) => typeof v === "string");}
   const tips = get("ShownTips", "array");
-  if (Array.isArray(tips)) settings.shownTips = tips.filter((v) => typeof v === "string");
+  if (Array.isArray(tips)) {settings.shownTips = tips.filter((v) => typeof v === "string");}
   return sanitize(settings);
 }

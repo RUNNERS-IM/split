@@ -10,7 +10,7 @@ import { ShortcutRecorder } from "../ShortcutRecorder.tsx";
 import { useStrings } from "../strings.ts";
 
 /** A shortcut that could not be used, shown under the row that tried it. */
-interface Conflict {
+type Conflict = {
   action: string;
   message: string;
   informative: string;

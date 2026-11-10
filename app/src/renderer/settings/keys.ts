@@ -129,10 +129,10 @@ export function modifierLabel(
     return `${modifiers.ctrl ? "⌃" : ""}${modifiers.alt ? "⌥" : ""}${modifiers.shift ? "⇧" : ""}${modifiers.logo ? "⌘" : ""}`;
   }
   const parts: string[] = [];
-  if (modifiers.ctrl) parts.push("Ctrl");
-  if (modifiers.alt) parts.push("Alt");
-  if (modifiers.shift) parts.push("Shift");
-  if (modifiers.logo) parts.push(platform === "win32" ? "Win" : "Super");
+  if (modifiers.ctrl) {parts.push("Ctrl");}
+  if (modifiers.alt) {parts.push("Alt");}
+  if (modifiers.shift) {parts.push("Shift");}
+  if (modifiers.logo) {parts.push(platform === "win32" ? "Win" : "Super");}
   return parts.length > 0 ? `${parts.join("+")}+` : "";
 }
 

@@ -77,10 +77,10 @@ const MENU_GROUPS: Action[][] = [
 // ---------------------------------------------------------------------------------------------
 // Native module
 
-interface NativeRect { x: number; y: number; width: number; height: number }
+type NativeRect = { x: number; y: number; width: number; height: number }
 /** `app` is the name people see; `bundle` is the bundle id (macOS) or executable name. */
-interface NativeWindow { id: number; rect: NativeRect; app: string; bundle: string; title: string }
-interface NativeSnapshot {
+type NativeWindow = { id: number; rect: NativeRect; app: string; bundle: string; title: string }
+type NativeSnapshot = {
   active?: NativeWindow | null;
   /** `id` stays the same when the same monitor comes back (the display UUID on macOS). */
   screens: { frame: NativeRect; workArea: NativeRect; scale: number; primary: boolean; id: string }[];
@@ -88,7 +88,7 @@ interface NativeSnapshot {
   refusingApp?: string | null;
 }
 type NativeEvent = { type: "modifiers"; flags: number } | { type: "activated"; app: { id: string; name: string } };
-interface Native {
+type Native = {
   snapshot(withWindows: boolean): NativeSnapshot;
   apply(moves: { id: number; rect: NativeRect }[]): void;
   isTrusted(prompt: boolean): boolean;
@@ -110,7 +110,7 @@ function loadNative(): Native {
   const file =
     names.find((name) => name.startsWith(`split-native.${process.platform}-${process.arch}`)) ??
     names.find((name) => name === `split-native.${process.platform}-universal.node`);
-  if (!file) throw new Error(`no split-native.${process.platform}-${process.arch}*.node in ${dir}; run pnpm native`);
+  if (!file) {throw new Error(`no split-native.${process.platform}-${process.arch}*.node in ${dir}; run pnpm native`);}
   return createRequire(import.meta.url)(join(dir, file)) as Native;
 }
 
@@ -158,7 +158,7 @@ function shortcutsBlockedByFrontApp(): boolean {
 function syncShortcuts(): void {
   globalShortcut.unregisterAll();
   failures = [];
-  if (recording || switchedOff || pausedUntil !== null || shortcutsBlockedByFrontApp()) return;
+  if (recording || switchedOff || pausedUntil !== null || shortcutsBlockedByFrontApp()) {return;}
   for (const [action, combo] of bindings(settings)) {
     let ok = false;
     try {
@@ -166,7 +166,7 @@ function syncShortcuts(): void {
     } catch {
       ok = false;
     }
-    if (!ok) failures.push(action);
+    if (!ok) {failures.push(action);}
   }
 }
 
@@ -174,7 +174,7 @@ function viewState(): ViewState {
   const defaults: Record<string, string> = {};
   for (const action of ALL) {
     const text = defaultShortcut(action);
-    if (text) defaults[action] = KeyCombo.parse(text)!.toText();
+    if (text) {defaults[action] = KeyCombo.parse(text)!.toText();}
   }
   return {
     settings: { ...settings, launchAtLogin: loginItemEnabled() },
@@ -215,7 +215,7 @@ function readDefault(domain: string, key: string): string | null {
 
 function pushState(): void {
   const state = viewState();
-  for (const window of BrowserWindow.getAllWindows()) window.webContents.send("state:changed", state);
+  for (const window of BrowserWindow.getAllWindows()) {window.webContents.send("state:changed", state);}
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -256,7 +256,7 @@ function perform(action: Action): void {
   } catch (error) {
     console.error(`split: ${action}:`, error);
     // Why: shown in settings so a shortcut that does nothing has a reason.
-    if (activeApp) setRefusingApp(activeApp);
+    if (activeApp) {setRefusingApp(activeApp);}
     return;
   }
   setRefusingApp(raw.refusingApp ?? (refusingApp === activeApp ? null : refusingApp));
@@ -265,7 +265,7 @@ function perform(action: Action): void {
 }
 
 function setRefusingApp(name: string | null): void {
-  if (refusingApp === name) return;
+  if (refusingApp === name) {return;}
   refusingApp = name;
   pushState();
 }
@@ -276,25 +276,25 @@ function showOutcome(action: Action, outcome: Outcome, snapshot: Snapshot): void
     shell.beep();
     return;
   }
-  if (settings.feedback.style === "off" && feedback.kind === "Moved") return;
+  if (settings.feedback.style === "off" && feedback.kind === "Moved") {return;}
   const keys = shortcutLabel(action);
   const areaOf = (rect: Rect) => screenContaining(rect, snapshot.screens)?.workArea ?? null;
   const base = overlayBase();
   if (feedback.kind === "Moved" || feedback.kind === "Arranged") {
     const rects = outcome.moves.map((m) => m.rect);
-    if (rects.length === 0) return;
+    if (rects.length === 0) {return;}
     const title = feedback.kind === "Arranged" ? t("ArrangedCount", feedback.count) : movedTitle(action, rects[0]!, areaOf(rects[0]!));
     showFeedback({ ...base, kind: "frame", rects, title, shortcut: keys, tip: nextTip(action) });
     return;
   }
-  if (settings.feedback.style === "off") return;
+  if (settings.feedback.style === "off") {return;}
   const area =
     (snapshot.active && areaOf(snapshot.active.rect)) ??
     (outcome.moves[0] && areaOf(outcome.moves[0].rect)) ??
     screensInConsistentOrder(snapshot.screens)[0]?.workArea;
-  if (!area) return;
+  if (!area) {return;}
   const title = feedback.kind === "NothingToArrange" ? t("NothingToArrange") : t("ArrangeUndone");
-  if (feedback.kind === "NothingToArrange") shell.beep();
+  if (feedback.kind === "NothingToArrange") {shell.beep();}
   showFeedback({ ...base, kind: "label", rects: [area], title, shortcut: keys, tip: "" });
 }
 
@@ -308,7 +308,7 @@ const SIDES: Partial<Record<Action, string>> = {
 /** "Left Half", then "Left 2/3" and "Left 1/3" as the same shortcut is pressed again; corners add the step to their name. */
 function movedTitle(action: Action, rect: Rect, area: Rect | null): string {
   const step = area ? cycleStep(action, rect, area) : null;
-  if (!step) return t(action);
+  if (!step) {return t(action);}
   const side = SIDES[action];
   return `${side ? t(side) : t(action)} ${step}`;
 }
@@ -318,7 +318,7 @@ function movedTitle(action: Action, rect: Rect, area: Rect | null): string {
  * used comes first. Empty once every tip has been shown. Same order as the macOS app.
  */
 function nextTip(action: Action): string {
-  if (settings.feedback.style === "off" || !settings.feedback.showShortcut) return "";
+  if (settings.feedback.style === "off" || !settings.feedback.showShortcut) {return "";}
   const shown = settings.shownTips;
   const half = ["MoveToLeftHalf", "MoveToRightHalf", "MoveToTopHalf", "MoveToBottomHalf"].includes(action);
   const tips: [string, boolean, string][] = [
@@ -331,10 +331,10 @@ function nextTip(action: Action): string {
   let chosen = tips.find(([name, fits]) => !shown.includes(name) && fits);
   // Tips tied to another action wait for that action.
   chosen ??= tips.find(([name]) => !shown.includes(name) && name !== "TipCycle" && name !== "TipFullscreenAgain");
-  if (!chosen) return "";
+  if (!chosen) {return "";}
   settings = { ...settings, shownTips: [...shown, chosen[0]] };
   saveSettings(settings);
-  if (chosen[0] === "TipSheet" && !settings.shortcutSheet) return "";
+  if (chosen[0] === "TipSheet" && !settings.shortcutSheet) {return "";}
   return chosen[2] ? t(chosen[0], chosen[2]) : t(chosen[0]);
 }
 
@@ -362,7 +362,7 @@ function openSheet(): void {
 }
 
 function onModifiers(flags: number): void {
-  if (sheetTimer) clearTimeout(sheetTimer);
+  if (sheetTimer) {clearTimeout(sheetTimer);}
   sheetTimer = null;
   if (flags === (ALT | LOGO) && settings.shortcutSheet && !recording) {
     sheetTimer = setTimeout(openSheet, 1000);
@@ -399,13 +399,13 @@ function dot(color: [number, number, number]): Electron.NativeImage {
 }
 
 function statusLine(): { label: string; on: boolean } {
-  if (!trusted) return { label: t("ShortcutsOffNoPermission"), on: false };
-  if (switchedOff) return { label: t("ShortcutsOff"), on: false };
+  if (!trusted) {return { label: t("ShortcutsOffNoPermission"), on: false };}
+  if (switchedOff) {return { label: t("ShortcutsOff"), on: false };}
   if (pausedUntil) {
     const time = pausedUntil.toLocaleTimeString(currentLanguage(), { hour: "numeric", minute: "2-digit" });
     return { label: t("ShortcutsOffForHour", time), on: false };
   }
-  if (shortcutsBlockedByFrontApp()) return { label: t("ShortcutsOffForApplication", frontApp?.name ?? ""), on: false };
+  if (shortcutsBlockedByFrontApp()) {return { label: t("ShortcutsOffForApplication", frontApp?.name ?? ""), on: false };}
   return { label: t("ShortcutsOn"), on: true };
 }
 
@@ -452,9 +452,9 @@ function menuTemplate(panel: boolean): MenuItemConstructorOptions[] {
           checked: status.on,
           enabled: trusted ? !(front && BLOCKED_APPS.has(front.id) && shortcutsBlockedByFrontApp()) : true,
           click: () => {
-            if (status.on) switchOff();
-            else if (trusted && shortcutsBlockedByFrontApp() && front) toggleApp(front);
-            else statusClick();
+            if (status.on) {switchOff();}
+            else if (trusted && shortcutsBlockedByFrontApp() && front) {toggleApp(front);}
+            else {statusClick();}
           },
         }
       : {
@@ -490,7 +490,7 @@ function menuTemplate(panel: boolean): MenuItemConstructorOptions[] {
   if (panel) {
     const folded: MenuItemConstructorOptions[] = [];
     for (const group of MENU_GROUPS.slice(2)) {
-      if (folded.length > 0) folded.push({ type: "separator" });
+      if (folded.length > 0) {folded.push({ type: "separator" });}
       folded.push(...group.map(actionItem));
     }
     template.push({ id: "more", label: t("MoreActions"), submenu: folded });
@@ -509,7 +509,7 @@ function trayFrames(): Electron.NativeImage[] {
   const frames: Electron.NativeImage[] = [];
   for (let i = 0; i < 70; i++) {
     const image = nativeImage.createFromPath(resourcePath("tray", `frame${String(i).padStart(2, "0")}Template.png`));
-    if (!MAC) image.setTemplateImage(false);
+    if (!MAC) {image.setTemplateImage(false);}
     frames.push(image);
   }
   return frames;
@@ -517,18 +517,18 @@ function trayFrames(): Electron.NativeImage[] {
 
 function updateTray(): void {
   if (!settings.showTrayIcon) {
-    if (trayTimer) clearInterval(trayTimer);
+    if (trayTimer) {clearInterval(trayTimer);}
     trayTimer = null;
     tray?.destroy();
     tray = null;
     return;
   }
-  if (tray) return;
+  if (tray) {return;}
   const frames = trayFrames();
   tray = new Tray(frames[0]);
   tray.setToolTip(`Split ${displayVersion()}`);
   const open = () => {
-    if (!tray) return;
+    if (!tray) {return;}
     if (MAC) {
       togglePanelUnder(tray);
     } else {
@@ -566,7 +566,7 @@ function pauseForAnHour(): void {
 }
 
 function resume(): void {
-  if (pauseTimer) clearTimeout(pauseTimer);
+  if (pauseTimer) {clearTimeout(pauseTimer);}
   pauseTimer = null;
   pausedUntil = null;
   switchedOff = false;
@@ -595,7 +595,7 @@ function preloadPath(): string {
 export function rendererUrl(name: string): string {
   const page = name.replace(/\.html$/, "");
   const devServer = process.env.ELECTRON_RENDERER_URL;
-  if (!app.isPackaged && devServer) return `${devServer}/${page}.html`;
+  if (!app.isPackaged && devServer) {return `${devServer}/${page}.html`;}
   return pathToFileURL(join(import.meta.dirname, "../renderer", `${page}.html`)).toString();
 }
 
@@ -621,10 +621,10 @@ function appMenu(): Menu {
 /** Opens the settings window, on `tab` when one is named; `signIn` also opens the sign-in sheet over the Account tab. */
 function showSettings(tab?: SettingsTab, signIn = false): void {
   if (settingsWindow && !settingsWindow.isDestroyed()) {
-    if (tab) settingsWindow.webContents.send("settings:tab", tab, signIn);
+    if (tab) {settingsWindow.webContents.send("settings:tab", tab, signIn);}
     settingsWindow.show();
     settingsWindow.focus();
-    if (MAC) app.focus({ steal: true });
+    if (MAC) {app.focus({ steal: true });}
     return;
   }
   settingsWindow = new BrowserWindow({
@@ -645,7 +645,7 @@ function showSettings(tab?: SettingsTab, signIn = false): void {
   settingsWindow.on("page-title-updated", (event) => event.preventDefault());
   settingsWindow.once("ready-to-show", () => {
     settingsWindow?.show();
-    if (MAC) app.focus({ steal: true });
+    if (MAC) {app.focus({ steal: true });}
   });
   settingsWindow.on("closed", () => {
     settingsWindow = null;
@@ -661,12 +661,12 @@ function showSettings(tab?: SettingsTab, signIn = false): void {
 // Login item
 
 function loginItemEnabled(): boolean {
-  if (!app.isPackaged) return settings.launchAtLogin;
+  if (!app.isPackaged) {return settings.launchAtLogin;}
   return app.getLoginItemSettings().openAtLogin;
 }
 
 function setLoginItem(enabled: boolean): void {
-  if (!app.isPackaged) return;
+  if (!app.isPackaged) {return;}
   app.setLoginItemSettings({ openAtLogin: enabled });
 }
 
@@ -675,13 +675,13 @@ const LOGIN_DEFAULT_MARKER = "open-at-login-default";
 
 /** Every RUNNERS app adds itself to the login items once; settings can turn it off and that sticks. */
 function applyLoginDefault(): void {
-  if (!app.isPackaged) return;
+  if (!app.isPackaged) {return;}
   const marker = join(app.getPath("userData"), LOGIN_DEFAULT_MARKER);
   const applied = existsSync(marker);
   if (shouldTurnOnAtLogin({ applied, store: STORE, wanted: settings.launchAtLogin, on: loginItemEnabled() })) {
     setLoginItem(true);
   }
-  if (applied || STORE) return;
+  if (applied || STORE) {return;}
   try {
     mkdirSync(app.getPath("userData"), { recursive: true });
     writeFileSync(marker, "");
@@ -705,8 +705,8 @@ function changeSettings(next: Settings): ViewState {
   if (previous.launchAtLogin !== settings.launchAtLogin || loginItemEnabled() !== settings.launchAtLogin) {
     setLoginItem(settings.launchAtLogin);
   }
-  if (previous.showTrayIcon !== settings.showTrayIcon) updateTray();
-  if (!STORE && previous.autoUpdate !== settings.autoUpdate) startUpdater(settings.autoUpdate);
+  if (previous.showTrayIcon !== settings.showTrayIcon) {updateTray();}
+  if (!STORE && previous.autoUpdate !== settings.autoUpdate) {startUpdater(settings.autoUpdate);}
   const state = viewState();
   pushState();
   return state;
@@ -729,7 +729,7 @@ function registerIpc(): void {
     syncShortcuts();
   });
   ipcMain.handle("feedback:preview", () => {
-    if (!settingsWindow) return;
+    if (!settingsWindow) {return;}
     const bounds = settingsWindow.getBounds();
     showFeedback({
       ...overlayBase(),
@@ -793,11 +793,11 @@ function openLink(kind: LinkKind): void {
 function watchTrust(): void {
   setInterval(() => {
     const now = native.isTrusted(false);
-    if (now === trusted) return;
+    if (now === trusted) {return;}
     trusted = now;
     syncShortcuts();
     pushState();
-    if (now) guideGranted();
+    if (now) {guideGranted();}
   }, 1000);
 }
 
@@ -816,7 +816,7 @@ function watchBundle(): void {
     }
   };
   const original = read();
-  if (original === null) return;
+  if (original === null) {return;}
   let seen: string | null = null;
   setInterval(() => {
     const now = read();
@@ -863,9 +863,9 @@ function watchConflictingApps(): void {
     let spectaclePids: number[] = [];
     for (const [id, name] of CONFLICTING_APPS) {
       const pids = await runningPids(id);
-      if (pids.length === 0) continue;
+      if (pids.length === 0) {continue;}
       running.push(name);
-      if (id === SPECTACLE) spectaclePids = pids;
+      if (id === SPECTACLE) {spectaclePids = pids;}
     }
     if (running.join() !== conflictingApps.join()) {
       conflictingApps = running;
@@ -929,7 +929,7 @@ function start(): void {
     }
     const wasBlocked = shortcutsBlockedByFrontApp();
     frontApp = event.app;
-    if (wasBlocked !== shortcutsBlockedByFrontApp()) syncShortcuts();
+    if (wasBlocked !== shortcutsBlockedByFrontApp()) {syncShortcuts();}
   });
   registerIpc();
   registerGuideIpc(() => void native.isTrusted(true));
@@ -970,7 +970,7 @@ function start(): void {
       layouts: layoutPanel,
       image: (icon) => {
         const image = icon as Electron.NativeImage;
-        if (typeof image?.toDataURL !== "function" || image.isEmpty()) return null;
+        if (typeof image?.toDataURL !== "function" || image.isEmpty()) {return null;}
         return { src: image.toDataURL({ scaleFactor: 2 }), template: image.isTemplateImage() };
       },
       proSublabel,
@@ -983,12 +983,12 @@ function start(): void {
   }
   updateTray();
   watchTrust();
-  if (MAC && app.isPackaged) watchBundle();
+  if (MAC && app.isPackaged) {watchBundle();}
   applyLoginDefault();
-  if (!STORE) startUpdater(settings.autoUpdate);
-  if (!trusted) askForTrust();
-  else if (loaded.firstLaunch || !settings.showTrayIcon) showSettings();
-  if (MAC) watchConflictingApps();
+  if (!STORE) {startUpdater(settings.autoUpdate);}
+  if (!trusted) {askForTrust();}
+  else if (loaded.firstLaunch || !settings.showTrayIcon) {showSettings();}
+  if (MAC) {watchConflictingApps();}
   // Shortcuts registered before sleep can stop firing on some systems; register them again on wake.
   powerMonitor.on("resume", syncShortcuts);
   screen.on("display-metrics-changed", () => hideFeedback());
@@ -1005,17 +1005,17 @@ function phoneState(): unknown {
 
 /** Runs a command from the phone app (src/main/phone.ts). Throwing answers it with ok: false. */
 function phoneCommand(name: string, args: Record<string, unknown>): unknown {
-  if (name === "layouts.list") return phoneState();
+  if (name === "layouts.list") {return phoneState();}
   trusted = native.isTrusted(false);
-  if (!trusted) throw new Error("untrusted");
+  if (!trusted) {throw new Error("untrusted");}
   if (name === "shape.apply") {
     const shape = args.shape as LayoutShape;
-    if (!SHAPES.includes(shape) || typeof args.displayId !== "string") throw new Error("bad-args");
+    if (!SHAPES.includes(shape) || typeof args.displayId !== "string") {throw new Error("bad-args");}
     return { moved: applyShape(shape, args.displayId) };
   }
   if (name === "layout.apply") {
     const layout = layouts().find((l) => l.id === args.id);
-    if (!layout) throw new Error("no-layout");
+    if (!layout) {throw new Error("no-layout");}
     return { moved: restoreLayout(layout) };
   }
   if (name === "layout.restore") {
@@ -1028,7 +1028,7 @@ function phoneCommand(name: string, args: Record<string, unknown>): unknown {
 /** "Monitors changed, so 3 windows were rearranged" (or "went back"), on the monitor under the pointer. */
 function showDisplayNotice(count: number, restored: boolean): void {
   const label = displayChangeLabel(settings, count, restored, shortcutLabel("UndoLastMove"));
-  if (!label) return;
+  if (!label) {return;}
   const area = screen.getDisplayNearestPoint(screen.getCursorScreenPoint()).workArea;
   showFeedback({ ...overlayBase(), kind: "label", rects: [Rect.from(fromDip(area))], title: label.title, shortcut: "", tip: label.tip });
 }
@@ -1043,14 +1043,14 @@ function openedAgain(argv: string[]): void {
   // always right after `--perform`; it is whichever argument names an action.
   const named = argv.find((arg) => arg.startsWith("--perform="))?.slice("--perform=".length);
   const action = ALL.find((a) => a === named || (argv.includes("--perform") && argv.includes(a)));
-  if (action) perform(action);
-  else if (argv.includes("--menu")) showMenuAtPointer();
+  if (action) {perform(action);}
+  else if (argv.includes("--menu")) {showMenuAtPointer();}
   // `--display-notice` (or `--display-notice=restored`) shows the notice a monitor change brings,
   // with 3 windows, so it can be seen and photographed without unplugging a monitor.
-  else if (argv.some((arg) => arg.startsWith("--display-notice"))) showDisplayNotice(3, argv.includes("--display-notice=restored"));
+  else if (argv.some((arg) => arg.startsWith("--display-notice"))) {showDisplayNotice(3, argv.includes("--display-notice=restored"));}
   // `--guide` shows the Accessibility guide even when permission is on, for support and screenshots.
-  else if (argv.includes("--guide") && MAC) showGuide({ preload: preloadPath(), url: rendererUrl("guide"), register: () => undefined, trusted: () => native.isTrusted(false) });
-  else showSettings();
+  else if (argv.includes("--guide") && MAC) {showGuide({ preload: preloadPath(), url: rendererUrl("guide"), register: () => undefined, trusted: () => native.isTrusted(false) });}
+  else {showSettings();}
 }
 
 if (!app.requestSingleInstanceLock()) {
@@ -1067,20 +1067,20 @@ if (!app.requestSingleInstanceLock()) {
   app.on("window-all-closed", () => {});
   // Why: quitting before start-up finished (another Split took over) would throw here.
   app.on("will-quit", () => {
-    if (app.isReady()) globalShortcut.unregisterAll();
+    if (app.isReady()) {globalShortcut.unregisterAll();}
   });
   app.on("web-contents-created", (_event, contents) => {
     // Links in pages open in the browser, never in a Split window.
     contents.setWindowOpenHandler(({ url }) => {
-      if (/^https?:/.test(url)) void shell.openExternal(url);
+      if (/^https?:/.test(url)) {void shell.openExternal(url);}
       return { action: "deny" };
     });
     // Why: Arabic reads right to left, so every Split page lays out mirrored, not only the title bar.
     contents.on("dom-ready", () => {
-      if (rightToLeft()) void contents.executeJavaScript(`document.documentElement.dir = "rtl"`).catch(() => undefined);
+      if (rightToLeft()) {void contents.executeJavaScript(`document.documentElement.dir = "rtl"`).catch(() => undefined);}
     });
   });
-  if (MAC) app.dock?.hide();
+  if (MAC) {app.dock?.hide();}
   void app.whenReady().then(start);
 }
 

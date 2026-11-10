@@ -11,7 +11,7 @@ const { versionParts } = require('./version-parts.cjs')
 const { shown: shownVersion, file: fileVersion } = versionParts(require('./package.json').version)
 // Why: the macOS app before this one updated through Sparkle, which compares CFBundleVersion. It used the commit
 // count (789 for 2.6.1030.10), so this build keeps counting commits; a smaller number would not be offered as an update.
-const bundleVersion = process.env.SPLIT_BUILD_NUMBER || require('child_process').execSync('git rev-list --count HEAD').toString().trim()
+const bundleVersion = process.env.SPLIT_BUILD_NUMBER || require('node:child_process').execSync('git rev-list --count HEAD').toString().trim()
 
 module.exports = {
   appId: 'im.runners.Split',

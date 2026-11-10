@@ -3,13 +3,13 @@
 // - the shortcut list card shown while ⌥⌘ is held,
 // - the About window.
 // The pages live in src/renderer/{overlay,sheet}; this file only places, shows and hides them.
-import { app, BrowserWindow, ipcMain, screen, shell, type Display } from "electron";
+import { app, BrowserWindow, ipcMain, screen, type Display } from "electron";
 import type { OverlayPayload, SheetPayload, UpdatePayload, UpdateProgress } from "../shared/types";
 import { durationMs, overlayLifetime, type OverlayMessage } from "../renderer/overlay/metrics";
 
 export { durationMs };
 
-export interface Rect {
+export type Rect = {
   x: number;
   y: number;
   width: number;
@@ -95,7 +95,7 @@ function ensureOverlayWindow(): BrowserWindow {
 }
 
 function unionOf(rects: Rect[]): Rect | null {
-  if (rects.length === 0) return null;
+  if (rects.length === 0) {return null;}
   let left = Infinity;
   let top = Infinity;
   let right = -Infinity;
@@ -128,8 +128,8 @@ function displayFor(rects: Rect[]): Display {
  * DIPs (pixels divided by the display scale). macOS gives points, which already are DIPs.
  */
 function toDip(rect: Rect): Rect {
-  if (isMac) return rect;
-  if (process.platform === "win32") return screen.screenToDipRect(null, rect);
+  if (isMac) {return rect;}
+  if (process.platform === "win32") {return screen.screenToDipRect(null, rect);}
   // Why: Electron on Linux uses one scale for every monitor, the primary display's.
   const scale = screen.getPrimaryDisplay().scaleFactor;
   return { x: rect.x / scale, y: rect.y / scale, width: rect.width / scale, height: rect.height / scale };
@@ -137,8 +137,8 @@ function toDip(rect: Rect): Rect {
 
 /** The other way: an Electron rect (a window's bounds, a display's work area) in native coordinates. */
 export function fromDip(rect: Rect): Rect {
-  if (isMac) return rect;
-  if (process.platform === "win32") return screen.dipToScreenRect(null, rect);
+  if (isMac) {return rect;}
+  if (process.platform === "win32") {return screen.dipToScreenRect(null, rect);}
   const scale = screen.getPrimaryDisplay().scaleFactor;
   return { x: rect.x * scale, y: rect.y * scale, width: rect.width * scale, height: rect.height * scale };
 }
@@ -162,7 +162,7 @@ function clearOverlayTimer(): void {
  * The window hides itself once the fade-out is over.
  */
 export function showFeedback(request: FeedbackRequest): void {
-  if (request.kind !== "preview" && request.feedback.style === "off") return;
+  if (request.kind !== "preview" && request.feedback.style === "off") {return;}
   if (request.kind === "preview" && request.rects.length === 0) {
     hideFeedback();
     return;
@@ -181,7 +181,7 @@ export function showFeedback(request: FeedbackRequest): void {
   clearOverlayTimer();
 
   void overlayLoaded.then(() => {
-    if (generation !== overlayGeneration || window.isDestroyed()) return;
+    if (generation !== overlayGeneration || window.isDestroyed()) {return;}
     const current = window.getBounds();
     if (
       current.x !== bounds.x ||
@@ -192,7 +192,7 @@ export function showFeedback(request: FeedbackRequest): void {
       window.setBounds(bounds);
     }
     window.webContents.send("overlay:show", message);
-    if (!window.isVisible()) window.showInactive();
+    if (!window.isVisible()) {window.showInactive();}
     // Some window managers drop the level while the window is hidden.
     window.setAlwaysOnTop(true, "screen-saver");
 
@@ -200,7 +200,7 @@ export function showFeedback(request: FeedbackRequest): void {
     if (lifetime !== null) {
       overlayHideTimer = setTimeout(() => {
         overlayHideTimer = null;
-        if (generation === overlayGeneration && !window.isDestroyed()) window.hide();
+        if (generation === overlayGeneration && !window.isDestroyed()) {window.hide();}
       }, lifetime + 50);
     }
   });
@@ -211,9 +211,9 @@ export function hideFeedback(): void {
   overlayGeneration++;
   clearOverlayTimer();
   const window = overlayWindow;
-  if (!window || window.isDestroyed()) return;
+  if (!window || window.isDestroyed()) {return;}
   window.webContents.send("overlay:show", null);
-  if (window.isVisible()) window.hide();
+  if (window.isVisible()) {window.hide();}
 }
 
 function ensureSheetWindow(): BrowserWindow {
@@ -246,14 +246,14 @@ export function showSheet(payload: SheetPayload): void {
   stopSheetFade();
   const area = screen.getDisplayNearestPoint(screen.getCursorScreenPoint()).workArea;
   void sheetLoaded.then(() => {
-    if (generation !== sheetGeneration || window.isDestroyed()) return;
+    if (generation !== sheetGeneration || window.isDestroyed()) {return;}
     window.setBounds(area);
     window.setOpacity(1);
     window.webContents.send("sheet:show", payload);
     // One frame for the page to swap in the new card before the window appears.
     setTimeout(() => {
-      if (generation !== sheetGeneration || window.isDestroyed()) return;
-      if (!window.isVisible()) window.showInactive();
+      if (generation !== sheetGeneration || window.isDestroyed()) {return;}
+      if (!window.isVisible()) {window.showInactive();}
       window.setAlwaysOnTop(true, "screen-saver");
     }, 16);
   });
@@ -264,7 +264,7 @@ export function hideSheet(): void {
   const generation = ++sheetGeneration;
   stopSheetFade();
   const window = sheetWindow;
-  if (!window || window.isDestroyed() || !window.isVisible()) return;
+  if (!window || window.isDestroyed() || !window.isVisible()) {return;}
   const steps = 6;
   let step = 0;
   sheetFade = setInterval(() => {
@@ -293,7 +293,7 @@ let answerUpdate: ((install: boolean | null) => void) | null = null;
  * the window without taking focus, so keys typed in another app never land on it.
  */
 export function askToInstall(payload: UpdatePayload, focus: boolean): Promise<boolean | null> {
-  if (focus && isMac) app.focus({ steal: true });
+  if (focus && isMac) {app.focus({ steal: true });}
   if (updateWindow && !updateWindow.isDestroyed()) {
     if (focus) {
       updateWindow.show();
@@ -322,10 +322,10 @@ export function askToInstall(payload: UpdatePayload, focus: boolean): Promise<bo
     answerUpdate = (install) => {
       answerUpdate = null;
       resolve(install);
-      if (!window.isDestroyed()) window.close();
+      if (!window.isDestroyed()) {window.close();}
     };
     window.on("closed", () => {
-      if (updateWindow === window) updateWindow = null;
+      if (updateWindow === window) {updateWindow = null;}
       answerUpdate?.(false);
     });
     window.webContents.once("did-finish-load", () => {
@@ -333,11 +333,11 @@ export function askToInstall(payload: UpdatePayload, focus: boolean): Promise<bo
       void window.webContents
         .executeJavaScript(measure)
         .then((height: unknown) => {
-          if (!window.isDestroyed() && typeof height === "number" && height > 0) window.setContentSize(400, height);
+          if (!window.isDestroyed() && typeof height === "number" && height > 0) {window.setContentSize(400, height);}
         })
         .catch(() => undefined)
         .finally(() => {
-          if (window.isDestroyed()) return;
+          if (window.isDestroyed()) {return;}
           window.center();
           if (focus) {
             window.show();
@@ -353,14 +353,14 @@ export function askToInstall(payload: UpdatePayload, focus: boolean): Promise<bo
 
 /** Passes download progress to the open update window; false when no window is open. */
 export function setUpdateProgress(progress: UpdateProgress): boolean {
-  if (!updateWindow || updateWindow.isDestroyed()) return false;
+  if (!updateWindow || updateWindow.isDestroyed()) {return false;}
   updateWindow.webContents.send("update:progress", progress);
   return true;
 }
 
 /** Closes the update window with no answer, when the download it shows has failed; false when none is open. */
 export function closeUpdateWindow(): boolean {
-  if (!updateWindow || updateWindow.isDestroyed()) return false;
+  if (!updateWindow || updateWindow.isDestroyed()) {return false;}
   answerUpdate?.(null);
   return true;
 }

@@ -46,7 +46,7 @@ export default function App() {
     () =>
       window.split.onSettingsTab((next, signIn) => {
         setTab(next);
-        if (signIn) setSigningIn(true);
+        if (signIn) {setSigningIn(true);}
       }),
     [],
   );
@@ -119,19 +119,19 @@ export default function App() {
     async (mode: SignMode, email: string, password: string, code?: string) => {
       const answer = await window.split.phoneSignIn(mode, email.trim(), password, code);
       show(answer.state);
-      if (answer.error) throw new Error(answer.error);
+      if (answer.error) {throw new Error(answer.error);}
     },
     [show],
   );
   const sendCode = useCallback(async (purpose: CodePurpose, email: string) => {
     const answer = await window.split.phoneSendCode(purpose, email.trim());
-    if (answer.error) throw new Error(answer.error);
+    if (answer.error) {throw new Error(answer.error);}
   }, []);
   const resetPassword = useCallback(
     async (email: string, code: string, password: string) => {
       const answer = await window.split.phoneResetPassword(email.trim(), code, password);
       show(answer.state);
-      if (answer.error) throw new Error(answer.error);
+      if (answer.error) {throw new Error(answer.error);}
     },
     [show],
   );

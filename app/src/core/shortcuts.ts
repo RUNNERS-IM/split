@@ -31,7 +31,7 @@ export function defaultShortcut(action: Action): string | null {
   return DEFAULT_SHORTCUTS.find(([a]) => a === action)?.[1] ?? null;
 }
 
-export interface Modifiers {
+export type Modifiers = {
   ctrl: boolean;
   alt: boolean;
   shift: boolean;

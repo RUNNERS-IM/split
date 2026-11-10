@@ -10,10 +10,10 @@ import { Rect, round } from "./geometry.ts";
 /** The most windows auto-arrange places. Windows after this stay where they are. */
 export const MAXIMUM_WINDOW_COUNT = 9;
 /** Windows narrower or shorter than this are not arranged (tool palettes, tiny popups). */
-export const MINIMUM_WINDOW_SIDE = 80.0;
+export const MINIMUM_WINDOW_SIDE = 80;
 
 const FLOATING_SCALE = 0.6;
-const STACK_OFFSET = 30.0;
+const STACK_OFFSET = 30;
 
 function gridCell(frame: Rect, columns: number, rows: number, column: number, row: number): Rect {
   let width = Math.floor(frame.width / columns);
@@ -33,8 +33,8 @@ function gridCell(frame: Rect, columns: number, rows: number, column: number, ro
 function floatingRect(frame: Rect, stackIndex: number): Rect {
   const width = round(frame.width * FLOATING_SCALE);
   const height = round(frame.height * FLOATING_SCALE);
-  const x = round(frame.midX() - width / 2.0) + STACK_OFFSET * stackIndex;
-  const y = round(frame.midY() - height / 2.0) + STACK_OFFSET * stackIndex;
+  const x = round(frame.midX() - width / 2) + STACK_OFFSET * stackIndex;
+  const y = round(frame.midY() - height / 2) + STACK_OFFSET * stackIndex;
   return new Rect(x, y, width, height);
 }
 

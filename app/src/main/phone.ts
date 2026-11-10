@@ -32,14 +32,14 @@ const REFRESH_RETRY_MS = 60_000;
 
 export type PhoneStatus = "signedOut" | "connecting" | "connected" | "offline";
 
-export interface PhoneView {
+export type PhoneView = {
   status: PhoneStatus;
   email: string | null;
   /** The name the phone shows for this computer. */
   name: string;
 }
 
-export interface PhoneHooks {
+export type PhoneHooks = {
   /** What the phone needs to draw this computer: monitors, shapes and saved layouts. */
   state(): unknown;
   /** Runs one command and returns what goes back in `data`; throws to answer ok: false. */
@@ -49,7 +49,7 @@ export interface PhoneHooks {
 }
 
 /** Account.json: this computer's id for the relay. A Split from before the kit account also kept the sign-in here. */
-interface DeviceFile {
+type DeviceFile = {
   deviceId?: string;
   email?: string | null;
   /** Both tokens, encrypted with the system keychain (safeStorage), base64. */
@@ -93,9 +93,9 @@ function saveDeviceFile(id: string): void {
 }
 
 function thisDeviceId(): string {
-  if (deviceId) return deviceId;
+  if (deviceId) {return deviceId;}
   deviceId = readDeviceFile().deviceId || randomUUID();
-  if (!existsSync(userFile("Account.json"))) saveDeviceFile(deviceId);
+  if (!existsSync(userFile("Account.json"))) {saveDeviceFile(deviceId);}
   return deviceId;
 }
 
@@ -106,9 +106,9 @@ function thisDeviceId(): string {
  */
 function moveOldSignIn(): void {
   // Why debug runs skip this: they stay off the keychain, as createAccount does with isPackaged false.
-  if (!app.isPackaged || !safeStorage.isEncryptionAvailable()) return;
+  if (!app.isPackaged || !safeStorage.isEncryptionAvailable()) {return;}
   const old = readDeviceFile();
-  if (!old.tokens) return;
+  if (!old.tokens) {return;}
   try {
     if (!existsSync(userFile("account.bin"))) {
       const tokens = JSON.parse(safeStorage.decryptString(Buffer.from(old.tokens, "base64"))) as unknown;
@@ -122,7 +122,7 @@ function moveOldSignIn(): void {
 
 /** Why not at load: on Linux the keychain answers only once the app is ready. */
 function runnersAccount(): Account {
-  if (account) return account;
+  if (account) {return account;}
   moveOldSignIn();
   account = createAccount({
     project: "SPLIT",
@@ -141,7 +141,7 @@ function deviceName(): string {
 }
 
 function setStatus(next: PhoneStatus): void {
-  if (status === next) return;
+  if (status === next) {return;}
   status = next;
   hooks?.changed();
 }
@@ -212,7 +212,7 @@ function refreshTokens(): Promise<boolean> {
 async function refreshOnce(): Promise<boolean> {
   const result = await runnersAccount().refresh();
   // A refused refresh token means the account was signed out elsewhere; a network error keeps it.
-  if (!result.ok && result.reason === "rejected") setStatus("signedOut");
+  if (!result.ok && result.reason === "rejected") {setStatus("signedOut");}
   return result.ok;
 }
 
@@ -227,7 +227,7 @@ function tokenExpiry(token: string | undefined): number | null {
 }
 
 function stopRefreshTimer(): void {
-  if (refreshTimer) clearTimeout(refreshTimer);
+  if (refreshTimer) {clearTimeout(refreshTimer);}
   refreshTimer = null;
 }
 
@@ -235,14 +235,14 @@ function stopRefreshTimer(): void {
 function scheduleRefresh(wait?: number): void {
   stopRefreshTimer();
   const expiry = tokenExpiry(phoneAccessToken() ?? undefined);
-  if (wait === undefined && expiry === null) return;
+  if (wait === undefined && expiry === null) {return;}
   // Why the floor: a token that is already short-lived must not start a refresh without a pause.
   const delay = wait ?? Math.max(REFRESH_RETRY_MS, expiry! - REFRESH_AHEAD_MS - Date.now());
   refreshTimer = setTimeout(() => {
     refreshTimer = null;
     const ws = socket;
     void refreshTokens().then((fresh) => {
-      if (!ws || socket !== ws) return;
+      if (!ws || socket !== ws) {return;}
       const token = phoneAccessToken();
       if (!token) {
         disconnect();
@@ -257,17 +257,17 @@ function scheduleRefresh(wait?: number): void {
 }
 
 function send(message: unknown): void {
-  if (socket?.readyState === WebSocket.OPEN) socket.send(JSON.stringify(message));
+  if (socket?.readyState === WebSocket.OPEN) {socket.send(JSON.stringify(message));}
 }
 
 /** Tells the phones what this computer looks like now. */
 export function announceState(): void {
-  if (status !== "connected" || !hooks) return;
+  if (status !== "connected" || !hooks) {return;}
   send({ type: "state", data: hooks.state() });
 }
 
 function answer(message: { from?: unknown; id?: unknown; name?: unknown; args?: unknown }): void {
-  if (!hooks || typeof message.id !== "string" || typeof message.name !== "string") return;
+  if (!hooks || typeof message.id !== "string" || typeof message.name !== "string") {return;}
   const to = message.from;
   const args = message.args && typeof message.args === "object" ? (message.args as Record<string, unknown>) : {};
   try {
@@ -278,7 +278,7 @@ function answer(message: { from?: unknown; id?: unknown; name?: unknown; args?: 
 }
 
 function disconnect(): void {
-  if (retryTimer) clearTimeout(retryTimer);
+  if (retryTimer) {clearTimeout(retryTimer);}
   retryTimer = null;
   stopRefreshTimer();
   const old = socket;
@@ -287,7 +287,7 @@ function disconnect(): void {
 }
 
 function retryLater(): void {
-  if (retryTimer || !phoneAccessToken()) return;
+  if (retryTimer || !phoneAccessToken()) {return;}
   setStatus("offline");
   retryTimer = setTimeout(() => {
     retryTimer = null;
@@ -308,7 +308,7 @@ function connect(): void {
   const ws = new WebSocket(RELAY_URL, { headers: { Authorization: `Bearer ${token}`, "User-Agent": USER_AGENT } } as unknown as string[]);
   socket = ws;
   ws.addEventListener("open", () => {
-    if (socket !== ws) return;
+    if (socket !== ws) {return;}
     send({ type: "hello", deviceId: thisDeviceId(), projectName: "SPLIT", name: deviceName(), role: "host" });
   });
   ws.addEventListener("message", (event) => {
@@ -328,10 +328,10 @@ function connect(): void {
       scheduleRefresh();
       return;
     }
-    if (message.type === "command") answer(message as Parameters<typeof answer>[0]);
+    if (message.type === "command") {answer(message as Parameters<typeof answer>[0]);}
   });
   ws.addEventListener("close", (event) => {
-    if (socket !== ws) return;
+    if (socket !== ws) {return;}
     socket = null;
     stopRefreshTimer();
     // Why: connecting again after "replaced" would push the other connection out in turn, forever.
@@ -344,8 +344,8 @@ function connect(): void {
     if (event.code === TOKEN_REFUSED && !refreshedOnce) {
       refreshedOnce = true;
       void refreshTokens().then((fresh) => {
-        if (socket || retryTimer) return;
-        if (fresh) return connect();
+        if (socket || retryTimer) {return;}
+        if (fresh) {return connect();}
         refreshedOnce = false;
         retryLater();
       });
@@ -361,5 +361,5 @@ function connect(): void {
 /** Call once when Split starts; connects at once when an account is already signed in. */
 export function setupPhone(given: PhoneHooks): void {
   hooks = given;
-  if (phoneAccessToken()) connect();
+  if (phoneAccessToken()) {connect();}
 }

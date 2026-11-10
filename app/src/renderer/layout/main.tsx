@@ -23,7 +23,7 @@ function readPayload(): LayoutPagePayload | null {
 function useEscape(run: () => void): void {
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") run();
+      if (event.key === "Escape") {run();}
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);

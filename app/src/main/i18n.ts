@@ -54,7 +54,7 @@ function pickLanguage(preferred: readonly string[]): string {
       const traditional = rest.includes("Hant") || rest.some((part) => ["TW", "HK", "MO"].includes(part));
       return traditional ? "zh-Hant" : "zh-Hans";
     }
-    if (TABLES[language]) return language;
+    if (TABLES[language]) {return language;}
   }
   return "en";
 }
@@ -97,7 +97,7 @@ export function format(text: string, ...args: (string | number)[]): string {
  */
 function pluralKey(key: string, args: (string | number)[]): string {
   const count = args.find((arg) => typeof arg === "number");
-  if (count === undefined) return key;
+  if (count === undefined) {return key;}
   const own: Record<string, string> | undefined = language === "en" ? en : TABLES[language];
   const tag = language.startsWith("zh") ? "zh" : language;
   const form = `${key}|${new Intl.PluralRules(tag).select(count)}`;
@@ -106,7 +106,7 @@ function pluralKey(key: string, args: (string | number)[]): string {
 
 export function t(key: string, ...args: (string | number)[]): string {
   const text = table[pluralKey(key, args)] ?? table[key] ?? key;
-  if (args.length === 0) return text;
+  if (args.length === 0) {return text;}
   // Why: in Arabic a filled-in shortcut such as "⌥⌘Z" or an app name keeps its own order when it
   // is set apart (Unicode isolates); otherwise the right-to-left sentence around it reverses it.
   return format(text, ...(rightToLeft() ? args.map((arg) => (typeof arg === "string" ? `\u2066${arg}\u2069` : arg)) : args));

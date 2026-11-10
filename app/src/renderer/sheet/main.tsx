@@ -68,7 +68,7 @@ function MiniScreen({ fractions }: { fractions: Fraction[] }) {
 
 function Picture({ name }: { name: string }) {
   const regions = SCREEN_REGIONS[name];
-  if (regions) return <MiniScreen fractions={regions} />;
+  if (regions) {return <MiniScreen fractions={regions} />;}
   const Icon = ICONS[name];
   if (Icon) {
     return (
@@ -87,7 +87,7 @@ function columnsOf(sections: SheetPayload["sections"]): SheetPayload["sections"]
   for (const section of sections) {
     let target = 0;
     for (let index = 1; index < 3; index++) {
-      if (heights[index] < heights[target]) target = index;
+      if (heights[index] < heights[target]) {target = index;}
     }
     columns[target].push(section);
     heights[target] += section.rows.length + 1;
@@ -103,7 +103,7 @@ function Sheet() {
     return window.split.onSheet((value) => setPayload({ value, key: ++key }));
   }, []);
 
-  if (!payload) return null;
+  if (!payload) {return null;}
   const { strings, sections } = payload.value;
   // Titles and names may come as string keys ("SectionHalves", "MoveToLeftHalf") or as ready text.
   const text = (key: string) => strings[key] ?? key;

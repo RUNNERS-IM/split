@@ -53,7 +53,7 @@ export default function GeneralTab({
   state: ViewState;
   update: Update;
 }) {
-  const { t, f } = useStrings();
+  const { t } = useStrings();
   const { settings } = state;
   const [confirmHide, setConfirmHide] = useState(false);
   const problems = useProblems(state);

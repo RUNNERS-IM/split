@@ -23,7 +23,7 @@ function App({ payload }: { payload: UpdatePayload }) {
   // Esc is "Later" once ready; while downloading it only closes, and the download goes on.
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && !installing) void window.split.answerUpdate(false);
+      if (event.key === "Escape" && !installing) {void window.split.answerUpdate(false);}
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -31,7 +31,7 @@ function App({ payload }: { payload: UpdatePayload }) {
   const ready = progress === "ready";
   const answer = (install: boolean) => {
     // Why: the app closes a moment after this, so the button says what is happening meanwhile.
-    if (install) setInstalling(true);
+    if (install) {setInstalling(true);}
     void window.split.answerUpdate(install);
   };
   return (

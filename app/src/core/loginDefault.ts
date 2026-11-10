@@ -8,7 +8,7 @@
  *
  * The App Store build never turns it on by itself: Apple asks for the person's consent first (guideline 2.4.5).
  */
-export interface LoginDefaultInput {
+export type LoginDefaultInput = {
   /** The one-time default was applied on this Mac before. */
   applied: boolean;
   /** App Store build. */
@@ -20,6 +20,6 @@ export interface LoginDefaultInput {
 }
 
 export function shouldTurnOnAtLogin({ applied, store, wanted, on }: LoginDefaultInput): boolean {
-  if (applied || store) return false;
+  if (applied || store) {return false;}
   return wanted && !on;
 }
