@@ -1,6 +1,6 @@
 // Two small windows of the Layouts feature, one page (the main process puts the text in the URL hash):
 // - "Save Current Layout": icon, title, text, a name field and the "restore for these monitors"
-//   box with its Pro mark, then Cancel / Save. Same order as the NSAlert in SplitLayoutMenu.m.
+//   box, the "open apps" box with its Pro mark, then Cancel / Save. Same order as the NSAlert in SplitLayoutMenu.m.
 // - Split Pro: what it adds and costs, with buying not open yet. Same order as SplitPro.m.
 import { StrictMode, useEffect, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
@@ -70,14 +70,26 @@ function Save({ payload }: { payload: LayoutSavePayload }) {
             <span>{payload.auto}</span>
           </label>
           {payload.openApps && (
-            <label>
-              <input
-                type="checkbox"
-                checked={openApps}
-                onChange={(event) => setOpenApps(event.target.checked)}
-              />
-              <span>{payload.openApps}</span>
-            </label>
+            <div className="layout-pro-row">
+              <label>
+                <input
+                  type="checkbox"
+                  checked={openApps}
+                  disabled={payload.openAppsLocked}
+                  onChange={(event) => setOpenApps(event.target.checked)}
+                />
+                <span>{payload.openApps}</span>
+              </label>
+              {/* Shows what Pro is; the box itself is locked only once buying opens and Pro is not bought. */}
+              <button
+                type="button"
+                className="pro-pill"
+                title="Split Pro"
+                onClick={() => void window.split.showPro()}
+              >
+                Pro
+              </button>
+            </div>
           )}
         </div>
       </div>

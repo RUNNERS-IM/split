@@ -122,6 +122,8 @@ export type LayoutSavePayload = {
   auto: string
   /** "Also open apps that are closed", off at first. Left out where Split cannot start other apps. */
   openApps?: string
+  /** The "open apps" box is a Pro feature and this Mac has not bought Pro: the box cannot be ticked. */
+  openAppsLocked?: boolean
   save: string
   cancel: string
 }

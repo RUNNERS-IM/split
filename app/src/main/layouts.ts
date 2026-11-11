@@ -23,7 +23,7 @@ import { closedApps } from '../core/layoutApps.ts'
 import { Rect, rectWithGap } from '../core/geometry.ts'
 import type { LayoutSaveAnswer, LayoutSavePayload } from '../shared/types'
 import { t } from './i18n.ts'
-import { setupPro } from './pro.ts'
+import { proUnlocked, setupPro } from './pro.ts'
 
 const isMac = process.platform === 'darwin'
 
@@ -582,7 +582,8 @@ function openLayout(layout: SavedLayout): void {
   }
   const placement = newPlacement()
   placeWindows(layout, shot, placement)
-  if (!layout.opensApps || !need().canOpenApps) {
+  // Why: opening apps is a Pro feature (decision 2026-11-11, 2B); until buying opens proUnlocked() is always true.
+  if (!layout.opensApps || !need().canOpenApps || !proUnlocked()) {
     return
   }
   const connected = shot.screens.map(displayIdOf)
@@ -949,7 +950,9 @@ export function askToSaveLayout(): Promise<SavedLayout | null> {
     defaultName,
     placeholder: t('LayoutSaveNamePlaceholder'),
     auto: t('LayoutSaveAuto'),
-    ...(need().canOpenApps ? { openApps: t('LayoutSaveOpenApps') } : {}),
+    ...(need().canOpenApps
+      ? { openApps: t('LayoutSaveOpenApps'), openAppsLocked: !proUnlocked() }
+      : {}),
     save: t('LayoutSaveButton'),
     cancel: t('LayoutSaveCancel')
   }
