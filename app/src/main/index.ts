@@ -1360,6 +1360,11 @@ function openedAgain(argv: string[]): void {
       register: () => undefined,
       trusted: () => native.isTrusted(false)
     })
+  }
+  // `--sheet` shows the shortcut list without holding the keys, so it can be photographed. Pressing
+  // any modifier hides it again.
+  else if (argv.includes('--sheet')) {
+    openSheet()
   } else {
     showSettings()
   }
