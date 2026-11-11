@@ -45,7 +45,7 @@ h1 {
   border: 0.5px solid var(--rw-separator);
   border-radius: 10px;
   background: var(--rw-box-bg);
-  text-align: left;
+  text-align: start;
   -webkit-app-region: no-drag;
 }
 
@@ -59,8 +59,10 @@ h1 {
 .changes ul {
   max-height: 96px;
   margin: 0;
-  padding-left: 16px;
+  padding-inline-start: 16px;
   overflow-y: auto;
+  /* Why: without it macOS draws a black scroll bar on the dark window. Only here, as the save-layout window shares this file and its checkbox would change. */
+  color-scheme: light dark;
   font-size: 13px;
   line-height: 1.6;
   user-select: text;
@@ -99,13 +101,13 @@ h1 {
 
 .progress-fill {
   height: 100%;
-  background: var(--rw-accent);
+  background: var(--rw-primary);
   transition: width 0.3s ease;
 }
 
 .progress span {
   flex: none;
   min-width: 96px;
-  text-align: right;
+  text-align: end;
   font-variant-numeric: tabular-nums;
 }

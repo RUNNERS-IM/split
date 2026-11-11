@@ -3,7 +3,6 @@
    main.tsx), shared by every RUNNERS app; only what is Split's own is defined here. */
 
 :root {
-  --accent: #007aff;
   --label: var(--rw-text);
   --secondary: var(--rw-text-secondary);
   --tertiary: rgba(0, 0, 0, 0.26);
@@ -28,10 +27,9 @@
   --purple: #af52de;
   --pink: #ff2d55;
   --gray: #8e8e93;
-  --yellow: #ffcc00;
 
   color-scheme: light dark;
-  font-family: -apple-system, BlinkMacSystemFont, system-ui, "Segoe UI", Ubuntu, Cantarell, "Noto Sans", "Malgun Gothic", sans-serif;
+  font-family: var(--rw-font-family);
   font-size: var(--rw-font);
   line-height: 1.3;
   color: var(--label);
@@ -40,16 +38,8 @@
   cursor: default;
 }
 
-/* Follow the accent color chosen in the system when the browser can read it. */
-@supports (color: AccentColor) {
-  :root {
-    --accent: AccentColor;
-  }
-}
-
 @media (prefers-color-scheme: dark) {
   :root {
-    --accent: #0a84ff;
     --tertiary: rgba(255, 255, 255, 0.25);
     --control-selected: rgba(255, 255, 255, 0.24);
     --button: rgba(255, 255, 255, 0.15);
@@ -68,13 +58,6 @@
     --purple: #bf5af2;
     --pink: #ff375f;
     --gray: #98989d;
-    --yellow: #ffd60a;
-  }
-
-  @supports (color: AccentColor) {
-    :root {
-      --accent: AccentColor;
-    }
   }
 }
 
@@ -103,7 +86,7 @@ button {
 }
 
 button:focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--accent) 50%, transparent);
+  outline: 3px solid color-mix(in srgb, var(--rw-primary) 50%, transparent);
   outline-offset: 1px;
 }
 
@@ -147,15 +130,6 @@ p {
   -webkit-app-region: no-drag;
 }
 
-/* The RUNNERS account badge at the window's top right, beside the centred tabs. */
-.toolbar-account {
-  position: absolute;
-  top: 50%;
-  inset-inline-end: 14px;
-  transform: translateY(-50%);
-  -webkit-app-region: no-drag;
-}
-
 .toolbar-item {
   display: flex;
   flex-direction: column;
@@ -180,7 +154,7 @@ p {
 
 .toolbar-item.selected {
   background: var(--control-track);
-  color: var(--accent);
+  color: var(--rw-primary);
 }
 
 /* Content */
@@ -319,63 +293,9 @@ p {
   white-space: pre-line;
 }
 
-/* About line */
-/* The app's own row inside the "About" card, padded like any other row. */
-.about-line {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: var(--rw-row-pad-y) var(--rw-row-pad-x);
-}
-
-.about-text {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
-
-.about-name {
-  font-weight: 600;
-}
-
-.about-version {
-  font-size: 11px;
-  color: var(--secondary);
-}
-
 .app-icon {
   flex: none;
   display: block;
-}
-
-/* RUNNERS apps */
-.runners-app {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-width: 0;
-}
-
-.runners-app img,
-.runners-app-blank {
-  flex: none;
-  width: 32px;
-  height: 32px;
-}
-
-.runners-app-text {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  min-width: 0;
-}
-
-.runners-app-desc {
-  overflow: hidden;
-  font-size: 11px;
-  color: var(--secondary);
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 /* The app rows' text takes all the room left of the button; the spacer gives way. */
@@ -497,8 +417,8 @@ p {
 }
 
 .recorder.recording .recorder-field {
-  background: color-mix(in srgb, var(--accent) 16%, transparent);
-  box-shadow: inset 0 0 0 1.5px var(--accent);
+  background: color-mix(in srgb, var(--rw-primary) 16%, transparent);
+  box-shadow: inset 0 0 0 1.5px var(--rw-primary);
 }
 
 .recorder-field:focus-visible {
@@ -546,7 +466,7 @@ p {
 }
 
 .switch.on {
-  background: var(--accent);
+  background: var(--rw-primary);
 }
 
 .switch-knob {
@@ -561,6 +481,7 @@ p {
 }
 
 .switch.on .switch-knob {
+  background: var(--rw-on-primary);
   transform: translateX(10px);
 }
 
@@ -633,8 +554,8 @@ p {
 }
 
 .button.primary {
-  background: var(--accent);
-  color: #fff;
+  background: var(--rw-primary);
+  color: var(--rw-on-primary);
   box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.2);
 }
 
@@ -705,16 +626,9 @@ p {
   --swatch: var(--gray);
 }
 
-/* Follows the system accent color, so it is drawn as a color wheel. */
+/* The default: black or white, like every other chosen thing in the app. */
 .swatch-accent {
-  --swatch: conic-gradient(
-    var(--purple) 0deg 60deg,
-    var(--blue) 60deg 120deg,
-    var(--green) 120deg 180deg,
-    var(--yellow) 180deg 240deg,
-    var(--orange) 240deg 300deg,
-    var(--red) 300deg 360deg
-  );
+  --swatch: var(--rw-primary);
 }
 
 /* In-page alert in place of NSAlert */
@@ -770,12 +684,6 @@ p {
 
 /* Phone tab: signed out, one Sign In button in the middle (the sheet is runners-account); signed in, the dot that says
    whether the relay is reached. */
-.phone-sign-in {
-  display: flex;
-  justify-content: center;
-  padding: 28px 0 8px;
-}
-
 .phone-dot {
   display: block;
   width: 8px;
@@ -790,4 +698,50 @@ p {
 
 .phone-dot.offline {
   background: var(--red);
+}
+
+/* Account tab: the badge or R mark next to the email */
+.account-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.account-line .ra-mark {
+  margin-bottom: 0;
+}
+
+.account-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.account-hint {
+  font-size: 11px;
+  color: var(--secondary);
+}
+
+/* About tab: the shared part scrolls inside the window */
+.settings-about {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* Why: in right-to-left pages Chromium draws a wide, always-visible scroll bar on the left instead of the thin macOS one.
+   The scrolling box stays left-to-right, which keeps the thin bar, and everything inside it goes back to right-to-left. */
+:root[dir="rtl"] :is(.scroll, .settings-about) {
+  direction: ltr;
+}
+
+:root[dir="rtl"] :is(.scroll, .settings-about) > * {
+  direction: rtl;
+}
+
+/* Why: the same side margins as the other tabs. */
+.settings-about .about {
+  padding-inline: max(var(--rw-pad), calc((100% - 544px) / 2));
 }

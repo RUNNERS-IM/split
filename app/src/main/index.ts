@@ -28,7 +28,7 @@ import { Engine, type Outcome, type Snapshot, screenContaining, screensInConsist
 import { Rect } from "../core/geometry.ts";
 import { shouldTurnOnAtLogin } from "../core/loginDefault.ts";
 import { defaultShortcut, KeyCombo } from "../core/shortcuts.ts";
-import type { LinkKind, OverlayPayload, Settings, SheetPayload, ViewState } from "../shared/types";
+import type { LinkKind, OverlayPayload, Settings, SettingsTab, SheetPayload, ViewState } from "../shared/types";
 import { removeLoginItem, runningPids } from "./apps.ts";
 import { displayChangeLabel, recordSoon, startDisplayWatcher } from "./displays.ts";
 import { applyShape, currentDisplays, LAYOUT_PANEL_ID, layoutMenuItems, layoutPanel, layoutRestoringForDisplays, layouts, onLayoutsChanged, restoreLayout, setupLayouts, SHAPES, type LayoutShape } from "./layouts.ts";
@@ -36,7 +36,7 @@ import { announceState, phoneView, resetPassword, sendCode, setupPhone, signIn, 
 import { guideGranted, openAccessibilitySettings, registerGuideIpc, showGuide } from "./guide.ts";
 import { currentLanguage, loadLanguage, rightToLeft, strings, t } from "./i18n.ts";
 import { accelerator, displayShortcut, displayText } from "./keys.ts";
-import { createOverlay, fromDip, hideFeedback, hideSheet, showAbout, showFeedback, showNotices, showSheet } from "./overlay.ts";
+import { createOverlay, fromDip, hideFeedback, hideSheet, showFeedback, showSheet } from "./overlay.ts";
 import { bindings, loadSettings, sanitize, saveSettings, shortcutText } from "./settings.ts";
 import { checkForUpdatesNow, startUpdater } from "./updater.ts";
 import { proSublabel } from "./pro.ts";
@@ -63,13 +63,13 @@ const SECTIONS: [string, Action[]][] = [
   ["SectionHistory", ["UndoLastMove", "RedoLastMove"]],
 ];
 
-/** Tray menu groups, in the order of the macOS status menu. */
+/** Tray menu groups, in the same order as the shortcut settings. */
 const MENU_GROUPS: Action[][] = [
   ["MoveToCenter", "MoveToFullscreen", "ArrangeWindows"],
   ["MoveToLeftHalf", "MoveToRightHalf", "MoveToTopHalf", "MoveToBottomHalf"],
-  ["MoveToUpperLeft", "MoveToLowerLeft", "MoveToUpperRight", "MoveToLowerRight"],
-  ["MoveToNextDisplay", "MoveToPreviousDisplay"],
-  ["MoveToNextThird", "MoveToPreviousThird"],
+  ["MoveToUpperLeft", "MoveToUpperRight", "MoveToLowerLeft", "MoveToLowerRight"],
+  ["MoveToPreviousThird", "MoveToNextThird"],
+  ["MoveToPreviousDisplay", "MoveToNextDisplay"],
   ["MakeLarger", "MakeSmaller"],
   ["UndoLastMove", "RedoLastMove"],
 ];
@@ -221,15 +221,10 @@ function pushState(): void {
 // ---------------------------------------------------------------------------------------------
 // Moving windows
 
-function accentColor(): string {
-  if (!MAC && process.platform !== "win32") return "#0a84ff";
-  return `#${systemPreferences.getAccentColor().slice(0, 6)}`;
-}
-
 const DURATION_SCALE = { short: 0.6, normal: 1, long: 1.6 } as const;
 
 function overlayBase(): Omit<OverlayPayload, "kind" | "rects" | "title" | "shortcut" | "tip"> {
-  return { feedback: settings.feedback, accent: accentColor(), duration: DURATION_SCALE[settings.feedback.duration] * 1000 };
+  return { feedback: settings.feedback, duration: DURATION_SCALE[settings.feedback.duration] * 1000 };
 }
 
 /** Every window action from the keyboard or the tray menu goes through here. */
@@ -443,7 +438,10 @@ function menuTemplate(panel: boolean): MenuItemConstructorOptions[] {
       resume();
     }
   };
+  // Why: the macOS panel draws its account line itself (trayPanel.ts); the plain menu has the same line as text.
+  const phone = phoneView();
   const template: MenuItemConstructorOptions[] = [
+    ...(panel ? [] : [{ label: phone.email ?? t("AccountSignInLine"), click: () => showSettings("account", !phone.email) }, { type: "separator" as const }]),
     panel
       ? {
           // Why: on/off lines are switches in the panel (decision 2026-11-05 "메뉴 통일" 1A); off here means off until
@@ -499,13 +497,6 @@ function menuTemplate(panel: boolean): MenuItemConstructorOptions[] {
   }
   template.push(
     { type: "separator" },
-    { id: "login", label: t("LaunchAtLogin"), type: "checkbox", checked: loginItemEnabled(), click: () => changeSettings({ ...settings, launchAtLogin: !loginItemEnabled() }) },
-    ...(STORE
-      ? []
-      : [{ id: "autoUpdate", label: t("AutoUpdate"), type: "checkbox" as const, checked: settings.autoUpdate, click: () => changeSettings({ ...settings, autoUpdate: !settings.autoUpdate }) }]),
-    { type: "separator" },
-    { label: t("AboutSplit"), icon: menuIcon("about"), click: () => showAbout() },
-    ...(STORE ? [] : [{ label: t("CheckForUpdates"), icon: menuIcon("updates"), click: () => checkForUpdatesNow() }]),
     { label: t("Settings"), icon: menuIcon("settings"), accelerator: "Command+,", registerAccelerator: false, click: () => showSettings() },
     { label: t("HelpFeedback"), icon: menuIcon("help"), click: () => void shell.openExternal(ISSUES_URL) },
     { type: "separator" },
@@ -611,14 +602,26 @@ export function rendererUrl(name: string): string {
 /** Split shows no menu bar of its own, but text fields still need copy and paste, and ⌘W closes windows. */
 function appMenu(): Menu {
   return Menu.buildFromTemplate([
-    { role: "appMenu", submenu: [{ role: "about" }, { type: "separator" }, { role: "quit" }] },
+    {
+      role: "appMenu",
+      submenu: [
+        { label: t("AboutSplit"), click: () => showSettings("about") },
+        { type: "separator" },
+        // Why: ⌘, opens Settings from any Split window (shared decision 2026-11-07).
+        { label: t("Settings"), accelerator: "CommandOrControl+,", click: () => showSettings() },
+        { type: "separator" },
+        { role: "quit" },
+      ],
+    },
     { role: "editMenu" },
     { role: "windowMenu" },
   ]);
 }
 
-function showSettings(): void {
+/** Opens the settings window, on `tab` when one is named; `signIn` also opens the sign-in sheet over the Account tab. */
+function showSettings(tab?: SettingsTab, signIn = false): void {
   if (settingsWindow && !settingsWindow.isDestroyed()) {
+    if (tab) settingsWindow.webContents.send("settings:tab", tab, signIn);
     settingsWindow.show();
     settingsWindow.focus();
     if (MAC) app.focus({ steal: true });
@@ -651,7 +654,7 @@ function showSettings(): void {
       syncShortcuts();
     }
   });
-  void settingsWindow.loadURL(rendererUrl("settings"));
+  void settingsWindow.loadURL(`${rendererUrl("settings")}${tab ? `?tab=${tab}${signIn ? "&signIn=1" : ""}` : ""}`);
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -759,6 +762,7 @@ function registerIpc(): void {
     signOut();
     return viewState();
   });
+  ipcMain.handle("update:check", () => checkForUpdatesNow());
   ipcMain.handle("trust:request", () => {
     trusted = native.isTrusted(true);
     return trusted;
@@ -772,9 +776,6 @@ function openLink(kind: LinkKind): void {
       break;
     case "spaces":
       void shell.openExternal("x-apple.systempreferences:com.apple.Desktop-Settings.extension");
-      break;
-    case "notices":
-      showNotices();
       break;
     case "help":
     case "issues":
@@ -973,7 +974,8 @@ function start(): void {
         return { src: image.toDataURL({ scaleFactor: 2 }), template: image.isTemplateImage() };
       },
       proSublabel,
-      accent: accentColor,
+      account: () => ({ ...phoneView(), signInLine: t("AccountSignInLine"), connecting: t("AccountConnecting") }),
+      openSettings: showSettings,
       preload: preloadPath(),
       url: rendererUrl("panel"),
     });

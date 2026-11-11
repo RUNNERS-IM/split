@@ -16,6 +16,7 @@ import {
   type OverlayMessage,
   type OverlayRect,
 } from "./metrics";
+import "../runners-account/runners-window.css";
 import "./overlay.css";
 
 /** macOS system colors, light then dark appearance. */
@@ -32,14 +33,19 @@ const darkQuery = window.matchMedia("(prefers-color-scheme: dark)");
 
 function feedbackColor(payload: OverlayPayload): string {
   const name = payload.feedback.color;
-  if (name === "accent") return payload.accent || SYSTEM_COLORS.blue[darkQuery.matches ? 1 : 0];
+  if (name === "accent") return "var(--rw-primary)";
   return SYSTEM_COLORS[name][darkQuery.matches ? 1 : 0];
 }
 
-/** `color` at `alpha` (0…1), for any CSS color including the accent the system hands over. */
+/** `color` at `alpha` (0…1), for any CSS color including the primary variable. */
 function withAlpha(color: string, alpha: number): string {
   return `color-mix(in srgb, ${color} ${Math.round(alpha * 100)}%, transparent)`;
 }
+
+/** The default black or white would vanish over a window of the same color; a thin opposite edge keeps it seen. */
+const DEFAULT_COLOR_EDGE = ["", "inset "]
+  .map((where) => `${where}0 0 0 1px color-mix(in srgb, var(--rw-on-primary) 55%, transparent)`)
+  .join(", ");
 
 function inset(rect: OverlayRect, by: number): OverlayRect {
   return { x: rect.x + by, y: rect.y + by, width: Math.max(0, rect.width - 2 * by), height: Math.max(0, rect.height - 2 * by) };
@@ -64,6 +70,7 @@ function Preview({ payload }: { payload: OverlayPayload }) {
             borderRadius: PREVIEW_CORNER_RADIUS,
             borderColor: withAlpha(color, 0.95),
             background: withAlpha(color, tiles ? 0.18 : 0.22),
+            boxShadow: payload.feedback.color === "accent" ? DEFAULT_COLOR_EDGE : undefined,
           }}
         />
       ))}
@@ -89,6 +96,8 @@ function Ring({ rect, payload }: { rect: OverlayRect; payload: OverlayPayload })
   const ringColor = `color-mix(in srgb, ${color} 60%, white)`;
   const glow = withAlpha(color, metrics.shadowOpacity);
   const blur = metrics.shadowRadius * 2;
+  const shadows = [`0 0 ${blur}px ${glow}`, `inset 0 0 ${blur}px ${glow}`];
+  if (payload.feedback.color === "accent") shadows.push(DEFAULT_COLOR_EDGE);
   return (
     <div
       ref={ref}
@@ -98,7 +107,7 @@ function Ring({ rect, payload }: { rect: OverlayRect; payload: OverlayPayload })
         borderRadius: PREVIEW_CORNER_RADIUS,
         borderWidth: metrics.borderWidth,
         borderColor: ringColor,
-        boxShadow: `0 0 ${blur}px ${glow}, inset 0 0 ${blur}px ${glow}`,
+        boxShadow: shadows.join(", "),
         opacity: metrics.startOpacity,
       }}
     />

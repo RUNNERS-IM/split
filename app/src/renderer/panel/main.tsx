@@ -1,18 +1,21 @@
-// The tray panel on macOS (src/main/trayPanel.ts): the menu lines the main process sends, drawn with the shared menu
-// look (runners-menu.css) like Monitor's and Prompt's panels. On/off lines are switches, a line with more under it
+// The tray panel on macOS (src/main/trayPanel.ts): the account line, then the menu lines the main process sends, drawn
+// with the shared menu look (runners-menu.css) like Monitor's and Prompt's panels. On/off lines are switches, a line with more under it
 // ("Turn Off Shortcuts", "More") opens in place, and the layout card shows monitors, shapes and saved layouts.
 import { StrictMode, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { createRoot } from "react-dom/client";
-import { Check, ChevronDown, ChevronRight, Command, Power, RefreshCw, type LucideIcon } from "lucide-react";
+import { Check, ChevronDown, ChevronRight, Command, type LucideIcon } from "lucide-react";
 import type { PanelItem, PanelView } from "../../shared/types";
-import "../runners-menu.css";
+import { RunnersMark } from "../runners-account/runners-account";
+import panda from "../runners-account/assets/panda/face.webp";
+import "../runners-account/runners-account.css";
+import "../runners-account/runners-menu.css";
 import "./panel.css";
 
 const ICON_SIZE = 16;
 const ICON_STROKE = 1.5;
 
-/** Pictures for the lines the main process sends without one: the three switches. */
-const LINE_ICONS: Record<string, LucideIcon> = { shortcuts: Command, login: Power, autoUpdate: RefreshCw };
+/** Pictures for the lines the main process sends without one: the shortcuts switch. */
+const LINE_ICONS: Record<string, LucideIcon> = { shortcuts: Command };
 
 type Cell = [x: number, y: number, width: number, height: number];
 
@@ -114,6 +117,29 @@ function Layouts({ card }: { card: LayoutCard }) {
   );
 }
 
+/** The top line, the same in Monitor's panel: the RUNNERS account. It opens Settings' Account tab, with the sign-in sheet when signed out. */
+function AccountLine({ account }: { account: PanelView["account"] }) {
+  const { email } = account;
+  return (
+    <button type="button" className="rm-item account-line" onClick={() => void window.split.panelSettings("account", !email)}>
+      {email ? (
+        <span className="ra-badge account-badge" aria-hidden>
+          <img src={panda} alt="" draggable={false} />
+        </span>
+      ) : (
+        <span className="account-mark" aria-hidden>
+          <RunnersMark size={16} />
+        </span>
+      )}
+      <span className="rm-label">{email ?? account.signInLine}</span>
+      <span className="rm-trailing">
+        {email && account.status !== "connected" ? <span className="account-status">{account.connecting}</span> : null}
+        <ChevronRight size={14} strokeWidth={ICON_STROKE} className="chevron" aria-hidden />
+      </span>
+    </button>
+  );
+}
+
 function Lines({ items, open, toggle, run }: { items: PanelItem[]; open: Set<string>; toggle: (id: string) => void; run: (id: string) => void }) {
   const out: ReactNode[] = [];
   items.forEach((item, index) => {
@@ -173,7 +199,8 @@ function Lines({ items, open, toggle, run }: { items: PanelItem[]; open: Set<str
             {item.checked || item.shortcut ? (
               <span className="rm-trailing">
                 {item.checked ? <Check size={16} strokeWidth={2} className="accent" aria-hidden /> : null}
-                {item.shortcut ? <span className="shortcut">{item.shortcut}</span> : null}
+                {/* Why: on an Arabic line the keys would otherwise read backwards (A⇧⌘). */}
+                {item.shortcut ? <span className="shortcut"><bdi>{item.shortcut}</bdi></span> : null}
               </span>
             ) : null}
           </button>,
@@ -199,6 +226,7 @@ function Panel() {
     });
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") window.split.panelClose();
+      else if (event.key === "," && event.metaKey) void window.split.panelSettings();
     };
     window.addEventListener("keydown", onKey);
     return () => {
@@ -206,10 +234,6 @@ function Panel() {
       window.removeEventListener("keydown", onKey);
     };
   }, []);
-
-  useEffect(() => {
-    if (view) document.documentElement.style.setProperty("--rm-accent", view.accent);
-  }, [view]);
 
   // Why: the window follows the menu's height; the main process keeps it inside the screen, and the page scrolls when it is cut.
   useLayoutEffect(() => {
@@ -234,7 +258,14 @@ function Panel() {
 
   return (
     <main ref={ref} className="scroller">
-      <div className="panel">{view ? <Lines items={view.items} open={open} toggle={toggle} run={run} /> : null}</div>
+      <div className="panel">
+        {view ? (
+          <>
+            <AccountLine account={view.account} />
+            <Lines items={view.items} open={open} toggle={toggle} run={run} />
+          </>
+        ) : null}
+      </div>
     </main>
   );
 }

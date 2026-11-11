@@ -2,6 +2,11 @@
 // project does not load vite/client types.
 declare module "*.css";
 
+declare module "*.webp" {
+  const url: string;
+  export default url;
+}
+
 /** Vite's `?raw` import gives a file's text. */
 declare module "*.md?raw" {
   const text: string;

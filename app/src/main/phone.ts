@@ -12,10 +12,13 @@ import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "
 import { hostname } from "node:os";
 import { dirname, join } from "node:path";
 import { app, safeStorage } from "electron";
+import { createAccount, type Account } from "./runners/account";
 
 /** Set SPLIT_API_URL to try a local relay (test/relay-server.ts). Why not when packaged: the password and tokens go to this address. */
 const API_URL = ((!app.isPackaged && process.env.SPLIT_API_URL) || "https://server.system.runners.im").replace(/\/$/, "");
 const RELAY_URL = `${API_URL.replace(/^http/, "ws")}/api/relay`;
+/** The name the system server sees for Split's requests; without it they say node. */
+const USER_AGENT = `Split/${app.getVersion()}`;
 /** The relay closes with this code when the access token is wrong or ran out. */
 const TOKEN_REFUSED = 4401;
 /** Closes after which connecting again would not help: another connection took this device's place, or the app name was refused. */
@@ -45,20 +48,17 @@ export interface PhoneHooks {
   changed(): void;
 }
 
-interface Tokens {
-  accessToken: string;
-  refreshToken: string;
-}
-
-interface Account {
-  deviceId: string;
-  email: string | null;
+/** Account.json: this computer's id for the relay. A Split from before the kit account also kept the sign-in here. */
+interface DeviceFile {
+  deviceId?: string;
+  email?: string | null;
   /** Both tokens, encrypted with the system keychain (safeStorage), base64. */
-  tokens: string | null;
+  tokens?: string | null;
 }
 
 let hooks: PhoneHooks | null = null;
 let account: Account | null = null;
+let deviceId: string | null = null;
 let socket: WebSocket | null = null;
 let status: PhoneStatus = "signedOut";
 let retryMs = FIRST_RETRY_MS;
@@ -68,51 +68,71 @@ let refreshTimer: NodeJS.Timeout | null = null;
 let refreshedOnce = false;
 /** The refresh under way. Why one: the timer and a 4401 can ask at the same moment, and the refresh token is only good once. */
 let refreshing: Promise<boolean> | null = null;
-/** Why: where the system has no keychain (Linux without a secret store) encrypting throws. The tokens then stay only until Split quits, never on disk as plain text. */
-let unsealedTokens: Tokens | null = null;
 
-function accountFile(): string {
-  return join(app.getPath("userData"), "Account.json");
+function userFile(name: string): string {
+  return join(app.getPath("userData"), name);
 }
 
-function loadAccount(): Account {
-  if (account) return account;
+function readDeviceFile(): DeviceFile {
   try {
-    const raw = JSON.parse(readFileSync(accountFile(), "utf8")) as Partial<Account>;
-    account = { deviceId: raw.deviceId || randomUUID(), email: raw.email ?? null, tokens: raw.tokens ?? null };
+    return JSON.parse(readFileSync(userFile("Account.json"), "utf8")) as DeviceFile;
   } catch {
-    account = { deviceId: randomUUID(), email: null, tokens: null };
+    return {};
   }
-  if (!existsSync(accountFile())) saveAccount();
-  return account;
 }
 
-function saveAccount(): void {
-  const file = accountFile();
+function replaceFile(file: string, data: string | Buffer, mode?: number): void {
   mkdirSync(dirname(file), { recursive: true });
   const temp = `${file}.tmp`;
-  writeFileSync(temp, `${JSON.stringify(account, null, 2)}\n`);
+  writeFileSync(temp, data, { mode });
   renameSync(temp, file);
 }
 
-function readTokens(): Tokens | null {
-  if (unsealedTokens) return unsealedTokens;
-  const sealed = loadAccount().tokens;
-  if (!sealed) return null;
+function saveDeviceFile(id: string): void {
+  replaceFile(userFile("Account.json"), `${JSON.stringify({ deviceId: id }, null, 2)}\n`);
+}
+
+function thisDeviceId(): string {
+  if (deviceId) return deviceId;
+  deviceId = readDeviceFile().deviceId || randomUUID();
+  if (!existsSync(userFile("Account.json"))) saveDeviceFile(deviceId);
+  return deviceId;
+}
+
+/**
+ * Moves the sign-in of a Split from before the kit account into account.bin, so an update keeps people signed in and
+ * the device id keeps the phone from listing this computer twice. Remove a few releases on.
+ * Why it writes the file itself: the kit has no import, and handing it plain text would put the tokens on disk unencrypted.
+ */
+function moveOldSignIn(): void {
+  // Why debug runs skip this: they stay off the keychain, as createAccount does with isPackaged false.
+  if (!app.isPackaged || !safeStorage.isEncryptionAvailable()) return;
+  const old = readDeviceFile();
+  if (!old.tokens) return;
   try {
-    return JSON.parse(safeStorage.decryptString(Buffer.from(sealed, "base64"))) as Tokens;
+    if (!existsSync(userFile("account.bin"))) {
+      const tokens = JSON.parse(safeStorage.decryptString(Buffer.from(old.tokens, "base64"))) as unknown;
+      replaceFile(userFile("account.bin"), safeStorage.encryptString(JSON.stringify({ email: old.email ?? "", tokens })), 0o600);
+    }
+    saveDeviceFile(old.deviceId || randomUUID());
   } catch {
-    return null;
+    // The keychain said no this time. The old file stays, so the next start tries again.
   }
 }
 
-function writeTokens(tokens: Tokens | null, email?: string | null): void {
-  const current = loadAccount();
-  const seal = tokens !== null && safeStorage.isEncryptionAvailable();
-  unsealedTokens = tokens && !seal ? tokens : null;
-  current.tokens = seal ? safeStorage.encryptString(JSON.stringify(tokens)).toString("base64") : null;
-  if (email !== undefined) current.email = email;
-  saveAccount();
+/** Why not at load: on Linux the keychain answers only once the app is ready. */
+function runnersAccount(): Account {
+  if (account) return account;
+  moveOldSignIn();
+  account = createAccount({
+    project: "SPLIT",
+    filePath: userFile("account.bin"),
+    apiUrl: API_URL,
+    safeStorage,
+    isPackaged: app.isPackaged,
+    userAgent: USER_AGENT,
+  });
+  return account;
 }
 
 /** The computer name without ".local", as Finder shows it. */
@@ -126,77 +146,45 @@ function setStatus(next: PhoneStatus): void {
   hooks?.changed();
 }
 
+function phoneAccessToken(): string | null {
+  return runnersAccount().accessToken();
+}
+
 export function phoneView(): PhoneView {
-  return { status, email: status === "signedOut" ? null : loadAccount().email, name: deviceName() };
+  return { status, email: status === "signedOut" ? null : runnersAccount().current(), name: deviceName() };
 }
 
-async function post<T>(path: string, body: unknown): Promise<T> {
-  const response = await fetch(`${API_URL}${path}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-  if (!response.ok) {
-    const said = await response.text().catch(() => "");
-    throw Object.assign(new Error(`${path} ${response.status}`), { status: response.status, said });
-  }
-  // Why: mailing a code answers 204 with no body; the system server wraps every other answer as { code, data }.
-  const text = await response.text();
-  const answer = (text ? JSON.parse(text) : null) as { code?: unknown; data?: T } | T;
-  return (answer && typeof answer === "object" && "code" in answer && "data" in answer ? answer.data : answer) as T;
-}
-
-/**
- * What the shared sign-in sheet (src/renderer/runners-account, SignInProblem) shows for a failed request, as
- * runners-app-kit desktop/main/account.ts makes it. A 401 that says "User not found" is an email with no account.
- */
-type Problem = "bad" | "none" | "format" | "exists" | "code" | "many" | "network";
+/** The codes the shared sign-in sheet (src/renderer/runners-account, SignInProblem) shows. The kit throws them as messages. */
+const PROBLEMS = ["bad", "none", "format", "exists", "code", "many", "network"] as const;
+type Problem = (typeof PROBLEMS)[number];
 
 function problem(error: unknown): Problem {
-  const { status, said } = error as { status?: number; said?: string };
-  if (status === 404 || (status === 401 && said?.includes("User not found"))) return "none";
-  const codes: Partial<Record<number, Problem>> = { 400: "format", 401: "bad", 409: "exists", 422: "code", 429: "many" };
-  return (status && codes[status]) || "network";
+  return PROBLEMS.find((code) => code === (error as Error).message) ?? "network";
 }
 
-type SignedIn = { user: { email: string }; tokens: Tokens };
-
-function startSignedIn(answer: SignedIn, email: string): void {
-  writeTokens(answer.tokens, answer.user?.email ?? email);
-  retryMs = FIRST_RETRY_MS;
-  refreshedOnce = false;
-  connect();
-}
-
-/**
- * Signs in (or makes the account with the code `sendCode` mailed) and connects. Returns null when it worked,
- * otherwise a `Problem`.
- */
-export async function signIn(mode: "login" | "signup", email: string, password: string, code?: string): Promise<Problem | null> {
+/** Runs a kit call that signs in, then connects. Returns null when it worked, otherwise a `Problem`. */
+async function startSignedIn(call: (account: Account) => Promise<void>): Promise<Problem | null> {
   try {
-    // The system server takes the password as typed (letters and numbers, 6 to 20), as runners-app-kit sends it.
-    const answer = await post<SignedIn>(`/api/mobile/auth/${mode}`, {
-      email,
-      password,
-      projectName: "SPLIT",
-      ...(code ? { code } : {}),
-    });
-    startSignedIn(answer, email);
-    return null;
+    await call(runnersAccount());
   } catch (error) {
     return problem(error);
   }
+  retryMs = FIRST_RETRY_MS;
+  refreshedOnce = false;
+  connect();
+  return null;
+}
+
+/** Signs in (or makes the account with the code `sendCode` mailed) and connects. */
+export function signIn(mode: "login" | "signup", email: string, password: string, code?: string): Promise<Problem | null> {
+  return startSignedIn((account) => account.signIn(mode, email, password, code));
 }
 
 /** Mails a six-digit code: `signup` to make the account ("exists" when there is one), `reset` for a new password
  *  ("none" when there is no account). The mail is written in `locale`. */
 export async function sendCode(purpose: "signup" | "reset", email: string, locale: string): Promise<Problem | null> {
   try {
-    await post(purpose === "signup" ? "/api/mobile/auth/email-code" : "/api/mobile/auth/password-reset", {
-      email,
-      projectName: "SPLIT",
-      locale,
-    });
+    await runnersAccount().sendCode(purpose, email, locale);
     return null;
   } catch (error) {
     return problem(error);
@@ -204,25 +192,12 @@ export async function sendCode(purpose: "signup" | "reset", email: string, local
 }
 
 /** Sets a new password with the mailed code, then signs in with it. The RUNNERS apps share the password. */
-export async function resetPassword(email: string, code: string, password: string): Promise<Problem | null> {
-  try {
-    const answer = await post<SignedIn>("/api/mobile/auth/password-reset/confirm", {
-      email,
-      code,
-      password,
-      projectName: "SPLIT",
-    });
-    startSignedIn(answer, email);
-    return null;
-  } catch (error) {
-    return problem(error);
-  }
+export function resetPassword(email: string, code: string, password: string): Promise<Problem | null> {
+  return startSignedIn((account) => account.resetPassword(email, code, password));
 }
 
 export function signOut(): void {
-  const tokens = readTokens();
-  if (tokens) void post("/api/mobile/auth/logout", { refreshToken: tokens.refreshToken }).catch(() => {});
-  writeTokens(null, null);
+  void runnersAccount().signOut();
   disconnect();
   setStatus("signedOut");
 }
@@ -235,23 +210,10 @@ function refreshTokens(): Promise<boolean> {
 }
 
 async function refreshOnce(): Promise<boolean> {
-  const tokens = readTokens();
-  if (!tokens) return false;
-  // Why: signing out or in while the answer is on its way must not bring the old sign-in back or end the new one.
-  const sameSignIn = () => readTokens()?.refreshToken === tokens.refreshToken;
-  try {
-    const next = await post<Tokens>("/api/mobile/auth/refresh", { refreshToken: tokens.refreshToken });
-    if (!sameSignIn()) return false;
-    writeTokens(next);
-    return true;
-  } catch (error) {
-    // A refused refresh token means the account was signed out elsewhere; a network error keeps it.
-    if ((error as { status?: number }).status === 401 && sameSignIn()) {
-      writeTokens(null, null);
-      setStatus("signedOut");
-    }
-    return false;
-  }
+  const result = await runnersAccount().refresh();
+  // A refused refresh token means the account was signed out elsewhere; a network error keeps it.
+  if (!result.ok && result.reason === "rejected") setStatus("signedOut");
+  return result.ok;
 }
 
 /** When the access token runs out, read from the token itself; null when it cannot be read. */
@@ -272,7 +234,7 @@ function stopRefreshTimer(): void {
 /** Fetches a fresh token before this one runs out and hands it to the open connection. */
 function scheduleRefresh(wait?: number): void {
   stopRefreshTimer();
-  const expiry = tokenExpiry(readTokens()?.accessToken);
+  const expiry = tokenExpiry(phoneAccessToken() ?? undefined);
   if (wait === undefined && expiry === null) return;
   // Why the floor: a token that is already short-lived must not start a refresh without a pause.
   const delay = wait ?? Math.max(REFRESH_RETRY_MS, expiry! - REFRESH_AHEAD_MS - Date.now());
@@ -281,11 +243,11 @@ function scheduleRefresh(wait?: number): void {
     const ws = socket;
     void refreshTokens().then((fresh) => {
       if (!ws || socket !== ws) return;
-      const tokens = readTokens();
-      if (!tokens) {
+      const token = phoneAccessToken();
+      if (!token) {
         disconnect();
       } else if (fresh) {
-        send({ type: "auth", token: tokens.accessToken });
+        send({ type: "auth", token });
         scheduleRefresh();
       } else {
         scheduleRefresh(REFRESH_RETRY_MS);
@@ -325,7 +287,7 @@ function disconnect(): void {
 }
 
 function retryLater(): void {
-  if (retryTimer || !readTokens()) return;
+  if (retryTimer || !phoneAccessToken()) return;
   setStatus("offline");
   retryTimer = setTimeout(() => {
     retryTimer = null;
@@ -336,18 +298,18 @@ function retryLater(): void {
 
 function connect(): void {
   disconnect();
-  const tokens = readTokens();
-  if (!tokens) {
+  const token = phoneAccessToken();
+  if (!token) {
     setStatus("signedOut");
     return;
   }
   setStatus("connecting");
   // Node's WebSocket (undici) takes headers, which the browser one does not.
-  const ws = new WebSocket(RELAY_URL, { headers: { Authorization: `Bearer ${tokens.accessToken}` } } as unknown as string[]);
+  const ws = new WebSocket(RELAY_URL, { headers: { Authorization: `Bearer ${token}`, "User-Agent": USER_AGENT } } as unknown as string[]);
   socket = ws;
   ws.addEventListener("open", () => {
     if (socket !== ws) return;
-    send({ type: "hello", deviceId: loadAccount().deviceId, projectName: "SPLIT", name: deviceName(), role: "host" });
+    send({ type: "hello", deviceId: thisDeviceId(), projectName: "SPLIT", name: deviceName(), role: "host" });
   });
   ws.addEventListener("message", (event) => {
     let message: { type?: unknown };
@@ -399,5 +361,5 @@ function connect(): void {
 /** Call once when Split starts; connects at once when an account is already signed in. */
 export function setupPhone(given: PhoneHooks): void {
   hooks = given;
-  if (readTokens()) connect();
+  if (phoneAccessToken()) connect();
 }
