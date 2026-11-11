@@ -250,7 +250,7 @@ function syncShortcuts(): void {
 function viewState(): ViewState {
   const defaults: Record<string, string> = {}
   for (const action of ALL) {
-    const text = defaultShortcut(action)
+    const text = defaultShortcut(action, textPlatform())
     if (text) {
       defaults[action] = KeyCombo.parse(text)!.toText()
     }

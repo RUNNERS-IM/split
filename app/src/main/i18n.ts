@@ -66,8 +66,8 @@ let language = 'en'
 let table: Record<string, string> = en
 
 /**
- * The system whose words the screens use. Run from source (not packaged), SPLIT_TEST_PLATFORM
- * (win32 or linux) shows another system's words on a Mac, for screenshots.
+ * The system whose words and default shortcuts the screens use. Run from source (not packaged),
+ * SPLIT_TEST_PLATFORM (win32 or linux) shows another system's on a Mac, for screenshots.
  */
 export function textPlatform(): 'darwin' | 'win32' | 'linux' {
   const test = app.isPackaged ? undefined : process.env.SPLIT_TEST_PLATFORM

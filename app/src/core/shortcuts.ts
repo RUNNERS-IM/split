@@ -27,8 +27,35 @@ export const DEFAULT_SHORTCUTS: readonly (readonly [Action, string])[] = [
   [Action.ArrangeWindows, 'alt+super+a']
 ]
 
-export function defaultShortcut(action: Action): string | null {
-  return DEFAULT_SHORTCUTS.find(([a]) => a === action)?.[1] ?? null
+/**
+ * Windows and Linux defaults where the macOS keys belong to the system there (checked 2026-11-12
+ * against Microsoft's Windows shortcut list, GNOME's wm keybindings and KWin): Ctrl+Win/Super+←/→
+ * switch desktops on Windows and KDE, Win+Alt+↑/↓ snap halves on Windows 11, Alt+Super+arrows
+ * switch workspaces on GNOME and focus on KDE, Ctrl+Alt+←/→ and Ctrl+Alt+Shift+←/→ switch and move
+ * workspaces on GNOME, Ctrl+Shift+Super+←/→ move windows between desktops on KDE.
+ * Why: none of those use Ctrl+Alt+Super, so every arrow action moves there; corners take U I J K,
+ * thirds , and . (previous, next), size - and = .
+ */
+export const OTHER_SHORTCUTS: Readonly<Partial<Record<Action, string>>> = {
+  [Action.MoveToLeftHalf]: 'ctrl+alt+super+left',
+  [Action.MoveToRightHalf]: 'ctrl+alt+super+right',
+  [Action.MoveToTopHalf]: 'ctrl+alt+super+up',
+  [Action.MoveToBottomHalf]: 'ctrl+alt+super+down',
+  [Action.MoveToUpperLeft]: 'ctrl+alt+super+u',
+  [Action.MoveToUpperRight]: 'ctrl+alt+super+i',
+  [Action.MoveToLowerLeft]: 'ctrl+alt+super+j',
+  [Action.MoveToLowerRight]: 'ctrl+alt+super+k',
+  [Action.MoveToPreviousDisplay]: 'ctrl+alt+shift+super+left',
+  [Action.MoveToNextDisplay]: 'ctrl+alt+shift+super+right',
+  [Action.MoveToPreviousThird]: 'ctrl+alt+super+comma',
+  [Action.MoveToNextThird]: 'ctrl+alt+super+period',
+  [Action.MakeSmaller]: 'ctrl+alt+super+minus',
+  [Action.MakeLarger]: 'ctrl+alt+super+equal'
+}
+
+export function defaultShortcut(action: Action, platform: string): string | null {
+  const other = platform === 'darwin' ? undefined : OTHER_SHORTCUTS[action]
+  return other ?? DEFAULT_SHORTCUTS.find(([a]) => a === action)?.[1] ?? null
 }
 
 export type Modifiers = {

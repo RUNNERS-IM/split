@@ -10,6 +10,7 @@ import { ALL, type Action } from '../core/actions.ts'
 import { DEFAULT_GAP, GAP_CHOICES } from '../core/geometry.ts'
 import { defaultShortcut, KeyCombo } from '../core/shortcuts.ts'
 import type { FeedbackSettings, Settings } from '../shared/types'
+import { textPlatform } from './i18n.ts'
 
 export const DEFAULT_FEEDBACK: FeedbackSettings = {
   style: 'subtle',
@@ -42,7 +43,7 @@ function settingsFile(): string {
 /** The shortcut text in effect for `action`, after defaults. */
 export function shortcutText(settings: Settings, action: Action): string | null {
   const value = settings.shortcuts[action]
-  return value === undefined ? defaultShortcut(action) : value
+  return value === undefined ? defaultShortcut(action, textPlatform()) : value
 }
 
 export function bindings(settings: Settings): [Action, KeyCombo][] {
@@ -80,7 +81,7 @@ export function sanitize(input: Partial<Settings> | null | undefined): Settings 
   // Why: an action added in a newer version starts with its default keys, unless the person already gave those keys to another action.
   const taken = new Set(Object.values(shortcuts).filter((v): v is string => v !== null))
   for (const action of ALL) {
-    const fallback = defaultShortcut(action)
+    const fallback = defaultShortcut(action, textPlatform())
     if (
       shortcuts[action] === undefined &&
       fallback &&
