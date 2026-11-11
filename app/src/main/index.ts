@@ -68,7 +68,7 @@ import {
   signOut
 } from './phone.ts'
 import { guideGranted, openAccessibilitySettings, registerGuideIpc, showGuide } from './guide.ts'
-import { currentLanguage, loadLanguage, rightToLeft, strings, t } from './i18n.ts'
+import { currentLanguage, loadLanguage, rightToLeft, strings, t, textPlatform } from './i18n.ts'
 import { accelerator, displayShortcut, displayText } from './keys.ts'
 import {
   createOverlay,
@@ -265,7 +265,7 @@ function viewState(): ViewState {
     refusingApp,
     conflictingApps,
     version: displayVersion(),
-    platform: process.platform as ViewState['platform'],
+    platform: textPlatform(),
     store: STORE,
     spaces: MAC && !STORE ? spacesSettings() : null,
     strings: strings(),

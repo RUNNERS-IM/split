@@ -65,9 +65,31 @@ function pickLanguage(preferred: readonly string[]): string {
 let language = 'en'
 let table: Record<string, string> = en
 
+/**
+ * The system whose words the screens use. Run from source (not packaged), SPLIT_TEST_PLATFORM
+ * (win32 or linux) shows another system's words on a Mac, for screenshots.
+ */
+export function textPlatform(): 'darwin' | 'win32' | 'linux' {
+  const test = app.isPackaged ? undefined : process.env.SPLIT_TEST_PLATFORM
+  const platform = test ?? process.platform
+  return platform === 'win32' || platform === 'linux' ? platform : 'darwin'
+}
+
 export function loadLanguage(): void {
   language = pickLanguage(app.getPreferredSystemLanguages())
   table = { ...en, ...TABLES[language] }
+  // Why: "menu bar", "Applications folder", "Mac" and ⌥⌘ are macOS words. `<key>Win` and
+  // `<key>Linux` hold the same line in Windows words (notification area, Start menu, Alt+Win) and
+  // Linux words (system tray, app list, Alt+Super), the way Draw does it.
+  const suffix = { darwin: '', win32: 'Win', linux: 'Linux' }[textPlatform()]
+  if (suffix) {
+    for (const key of Object.keys(table)) {
+      const own = table[`${key}${suffix}`]
+      if (own !== undefined) {
+        table[key] = own
+      }
+    }
+  }
 }
 
 export function currentLanguage(): string {

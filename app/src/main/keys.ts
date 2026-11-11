@@ -1,5 +1,6 @@
 // Shortcut text ("alt+super+left") turned into what Electron registers and what people read.
 import { KeyCombo } from '../core/shortcuts.ts'
+import { textPlatform } from './i18n.ts'
 
 const ACCELERATOR_KEYS: Record<string, string> = {
   left: 'Left',
@@ -88,7 +89,7 @@ export function accelerator(combo: KeyCombo): string {
 
 /** How the shortcut is written on screen: `⌥⌘←` on macOS, `Alt+Super+Left` elsewhere. */
 export function displayShortcut(combo: KeyCombo): string {
-  if (process.platform === 'darwin') {
+  if (textPlatform() === 'darwin') {
     const { ctrl, alt, shift, logo } = combo.modifiers
     return `${ctrl ? '⌃' : ''}${alt ? '⌥' : ''}${shift ? '⇧' : ''}${logo ? '⌘' : ''}${keyName(combo.key, MAC_GLYPHS)}`
   }
@@ -103,7 +104,7 @@ export function displayShortcut(combo: KeyCombo): string {
     parts.push('Shift')
   }
   if (combo.modifiers.logo) {
-    parts.push(process.platform === 'win32' ? 'Win' : 'Super')
+    parts.push(textPlatform() === 'win32' ? 'Win' : 'Super')
   }
   parts.push(keyName(combo.key, OTHER_NAMES))
   return parts.join('+')
