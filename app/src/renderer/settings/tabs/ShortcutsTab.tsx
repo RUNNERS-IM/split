@@ -116,7 +116,10 @@ export default function ShortcutsTab({
         <div className="shortcuts-hints">
           <span className="footnote">{t('ShortcutsHint')}</span>
           {state.platform === 'darwin' && (
-            <span className="footnote tertiary">{t('ModifierLegend')}</span>
+            // Why: right to left, each symbol would land beside the wrong key name ("⌘" after "Shift").
+            <span className="footnote tertiary" dir="ltr">
+              {t('ModifierLegend')}
+            </span>
           )}
         </div>
         <div className="row-space" />

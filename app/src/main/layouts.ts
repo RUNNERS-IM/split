@@ -898,7 +898,8 @@ function windowCount(windows: NativeWindow[], nativeScreen: NativeScreen): numbe
 
 /** "5120 × 2880 · 3 windows": pixels, as the monitor's own spec says, then the windows on it. */
 function screenDetail(nativeScreen: NativeScreen, count: number): string {
-  const pixels = `${Math.round(nativeScreen.frame.width * nativeScreen.scale)} × ${Math.round(nativeScreen.frame.height * nativeScreen.scale)}`
+  // Why: on an Arabic screen the two numbers would swap places ("2160 × 3840"); the isolate keeps them left to right.
+  const pixels = `⁦${Math.round(nativeScreen.frame.width * nativeScreen.scale)} × ${Math.round(nativeScreen.frame.height * nativeScreen.scale)}⁩`
   return `${pixels} · ${t('LayoutWindowCount', count)}`
 }
 
