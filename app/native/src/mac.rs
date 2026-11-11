@@ -515,11 +515,19 @@ pub fn apply(moves: &[Move]) -> Result<(), String> {
         let target = m.rect;
         let error = set_rect(element, &target);
         if error != AX_SUCCESS {
-            return Err(format!("could not move window ({error})"));
+            // Why: a window of fixed size refuses the new size but still takes the new place. That
+            // counts as moved, so the windows after it are moved too and the undo remembers it
+            // (decision 2026-11-11, 4A).
+            let placed = rect_of(element)
+                .is_some_and(|r| (r.x - target.x).abs() <= 1.0 && (r.y - target.y).abs() <= 1.0);
+            if !placed {
+                return Err(format!("could not move window ({error})"));
+            }
         }
         // Why: terminals and similar apps only take sizes in whole character cells, so they end up
         // larger than asked. Shrink a little at a time and centre what is left, as Spectacle did.
-        if let Some(mut moved) = rect_of(element)
+        if error == AX_SUCCESS
+            && let Some(mut moved) = rect_of(element)
             && (moved.width > target.width || moved.height > target.height)
         {
             let mut adjusted = target;
