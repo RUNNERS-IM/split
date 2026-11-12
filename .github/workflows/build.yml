@@ -137,15 +137,25 @@ jobs:
           mkdir -p "$SECRETS" && chmod 700 "$SECRETS"
           KEYCHAIN="$RUNNER_TEMP/split-signing.keychain-db"
           KEYCHAIN_PASSWORD="$(uuidgen)"
-          # The search list is put back as it was when the run ends.
-          security list-keychains -d user | tr -d '" ' > "$SECRETS/keychains-before"
+          # Why: other apps' release jobs on the Mac Studio edit the same user search list. Saving the whole list and
+          # putting it back drops a keychain another job added meanwhile, and its codesign stops with "no identity
+          # found" (2026-11-12 Remote run 43197215234, Split run 43195273439). Only this keychain goes in and out,
+          # and it goes in again right before each signing.
+          cat > "$RUNNER_TEMP/split-keychain-on.sh" <<'SH'
+          #!/bin/bash
+          set -euo pipefail
+          K="$RUNNER_TEMP/split-signing.keychain-db"
+          OTHERS=$(security list-keychains -d user | tr -d '" ' | grep -vxF "$K" || true)
+          security list-keychains -d user -s "$K" $OTHERS
+          SH
+          chmod 700 "$RUNNER_TEMP/split-keychain-on.sh"
           security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
           security set-keychain-settings -lut 3600 "$KEYCHAIN"
           security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
           echo "$DEVELOPER_ID_P12_BASE64" | base64 --decode > "$SECRETS/developer-id.p12"
           security import "$SECRETS/developer-id.p12" -k "$KEYCHAIN" -P "$DEVELOPER_ID_P12_PASSWORD" -T /usr/bin/codesign -T /usr/bin/security
           security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN" >/dev/null
-          security list-keychains -d user -s "$KEYCHAIN" $(cat "$SECRETS/keychains-before")
+          "$RUNNER_TEMP/split-keychain-on.sh"
           rm "$SECRETS/developer-id.p12"
           security find-identity -v -p codesigning "$KEYCHAIN"
           printf '%s' "$ASC_API_KEY_P8" > "$SECRETS/AuthKey_${ASC_API_KEY_ID}.p8"
@@ -176,7 +186,8 @@ jobs:
           # Why: stapling inside electron-builder fails now and then when Apple's ticket server drops the
           # connection (NSURLErrorDomain -1005, stapler error 68); a second try a little later goes through.
           for TRY in 1 2 3; do
-            ${HEAVY:-} pnpm exec electron-builder --config builder.config.cjs ${{ inputs.builder }} --publish never && break
+            # Why: another job may change the search list while this one waits for its heavy-run turn.
+            ${HEAVY:-} bash -c '[ "${{ inputs.os }}" != macos ] || "$RUNNER_TEMP/split-keychain-on.sh"; exec pnpm exec electron-builder --config builder.config.cjs ${{ inputs.builder }} --publish never' && break
             [ "$TRY" = 3 ] && exit 1
             echo "::warning::electron-builder failed (try $TRY), trying again in 30 seconds"
             sleep 30
@@ -191,6 +202,7 @@ jobs:
         run: |
           set -euo pipefail
           for DMG in dist.noindex/*.dmg; do
+            "$RUNNER_TEMP/split-keychain-on.sh"
             # electron-builder signs the app inside but not the DMG; Gatekeeper wants the DMG signed too.
             codesign --sign "$DEVELOPER_ID_SHA1" --keychain "$CSC_KEYCHAIN" --timestamp "$DMG"
             xcrun notarytool submit "$DMG" --key "$APPLE_API_KEY_PATH" --key-id "$ASC_API_KEY_ID" --issuer "$ASC_API_ISSUER_ID" --wait
@@ -264,9 +276,11 @@ jobs:
         if: always() && inputs.os == 'macos'
         run: |
           SECRETS="$RUNNER_TEMP/split-secrets"
-          if [ -f "$SECRETS/keychains-before" ]; then
-            security list-keychains -d user -s $(cat "$SECRETS/keychains-before")
-          fi
+          K="$RUNNER_TEMP/split-signing.keychain-db"
+          # Only this keychain leaves the current list; keychains other jobs added stay.
+          OTHERS=$(security list-keychains -d user | tr -d '" ' | grep -vxF "$K" || true)
+          security list-keychains -d user -s $OTHERS
+          rm -f "$RUNNER_TEMP/split-keychain-on.sh"
           security delete-keychain "$RUNNER_TEMP/split-signing.keychain-db" 2>/dev/null || true
           rm -rf "$SECRETS"
           # Why: on an office Mac the machine stays after the job. Fail the run when the signing key is still
