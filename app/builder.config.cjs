@@ -44,7 +44,8 @@ module.exports = {
     ],
     // Why: pnpm native:mac-universal joins both CPUs into one file, so both halves of the universal app carry the same one.
     extraResources: [
-      { from: 'native', to: 'native', filter: ['split-native.darwin-universal.node'] }
+      { from: 'native', to: 'native', filter: ['split-native.darwin-universal.node'] },
+      { from: 'resources/build/Assets.car', to: 'Assets.car' }
     ],
     x64ArchFiles: 'Contents/Resources/native/*.node',
     hardenedRuntime: true,
@@ -56,6 +57,9 @@ module.exports = {
     extendInfo: {
       // Split lives in the menu bar and has no Dock icon, like the macOS app before it.
       LSUIElement: true,
+      // Why: macOS 26 reads the Icon Composer icon in Assets.car (resources/icon-source/generate.py), which has the
+      // black plate for dark icons; icon.icns stays for older macOS.
+      CFBundleIconName: 'icon',
       NSHumanReadableCopyright: '© 2026 RUNNERS. All rights reserved.',
       CFBundleShortVersionString: shownVersion,
       // Shown when Split asks System Events to take Spectacle out of the login items.
@@ -78,11 +82,13 @@ module.exports = {
     entitlementsInherit: 'resources/build/entitlements.mas.inherit.plist',
     provisioningProfile: process.env.SPLIT_MAS_PROFILE,
     extraResources: [
-      { from: 'native', to: 'native', filter: ['split-native.darwin-universal.node'] }
+      { from: 'native', to: 'native', filter: ['split-native.darwin-universal.node'] },
+      { from: 'resources/build/Assets.car', to: 'Assets.car' }
     ],
     x64ArchFiles: 'Contents/Resources/native/*.node',
     extendInfo: {
       LSUIElement: true,
+      CFBundleIconName: 'icon',
       NSHumanReadableCopyright: '© 2026 RUNNERS. All rights reserved.',
       // Why: App Store Connect takes at most three numbers here, so the same-day "+5" is left out (2.6.1101);
       // scripts/release-app-store.sh passes the version it uploads in SPLIT_MAS_VERSION.
