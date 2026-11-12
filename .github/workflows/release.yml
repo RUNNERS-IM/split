@@ -36,7 +36,8 @@ permissions:
   contents: write
 
 concurrency:
-  group: split-release
+  # 시험 실행(손으로 돌리고 publish 끔)은 아무것도 올리지 않아 출시 줄에 세우지 않는다. 서명 잠금 시험처럼 겹쳐 돌릴 수 있다.
+  group: ${{ github.event_name == 'workflow_dispatch' && !inputs.publish && format('split-test-{0}', github.run_id) || 'split-release' }}
   cancel-in-progress: false
 
 env:
