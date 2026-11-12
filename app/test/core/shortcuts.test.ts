@@ -2,7 +2,12 @@ import assert from 'node:assert/strict'
 import { test } from 'vitest'
 
 import { ALL } from '../../src/core/actions.ts'
-import { DEFAULT_SHORTCUTS, defaultShortcut, KeyCombo, OTHER_SHORTCUTS } from '../../src/core/shortcuts.ts'
+import {
+  DEFAULT_SHORTCUTS,
+  defaultShortcut,
+  KeyCombo,
+  OTHER_SHORTCUTS
+} from '../../src/core/shortcuts.ts'
 
 test('every default parses and round trips', () => {
   for (const [action, text] of DEFAULT_SHORTCUTS) {
