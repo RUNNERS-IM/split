@@ -1,5 +1,5 @@
 // Account tab: the RUNNERS account, and what it does here: the Split phone app arranges this computer's windows
-// (src/main/phone.ts). Signed out it offers the shared sign-in sheet; signed in, the account, Log Out, whether the
+// (src/main/phone.ts). Signed out it offers the shared sign-in sheet; signed in, the account, Sign Out, whether the
 // relay is reached and the name the phone lists.
 import type { ViewState } from '../../../shared/types.ts'
 import { accountText, RunnersMark } from '../../runners-account/runners-account'
