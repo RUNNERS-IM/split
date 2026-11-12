@@ -120,6 +120,9 @@ jobs:
           # Why: an office Mac may hold another copy of the same certificate; signing from this keychain only
           # keeps codesign from finding two identities with one name.
           echo "CSC_KEYCHAIN=$KEYCHAIN" >> "$GITHUB_ENV"
+          # Why: codesign looks a name up in every keychain, and the Mac Studio's login keychain holds a Developer ID
+          # of the same name (2026-11-12: "ambiguous"). The certificate's SHA-1 picks the one in this keychain.
+          echo "DEVELOPER_ID_SHA1=$(security find-identity -v -p codesigning "$KEYCHAIN" | awk '/Developer ID Application/ {print $2; exit}')" >> "$GITHUB_ENV"
 
       # macOS 에서는 위 키체인의 Developer ID 로 서명하고(CSC_NAME), APPLE_API_* 로 앱을 공증한다.
       # 올리기는 publish 작업이 한꺼번에 하므로 여기서는 --publish never.
@@ -153,7 +156,7 @@ jobs:
           set -euo pipefail
           for DMG in dist.noindex/*.dmg; do
             # electron-builder signs the app inside but not the DMG; Gatekeeper wants the DMG signed too.
-            codesign --sign "Runners Co., Ltd (RGWVXJ8URP)" --keychain "$CSC_KEYCHAIN" --timestamp "$DMG"
+            codesign --sign "$DEVELOPER_ID_SHA1" --keychain "$CSC_KEYCHAIN" --timestamp "$DMG"
             xcrun notarytool submit "$DMG" --key "$APPLE_API_KEY_PATH" --key-id "$ASC_API_KEY_ID" --issuer "$ASC_API_ISSUER_ID" --wait
             for TRY in 1 2 3; do
               xcrun stapler staple "$DMG" && break
