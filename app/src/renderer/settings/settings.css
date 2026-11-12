@@ -18,6 +18,7 @@
   --recorder-pressed: #e6e6e6;
   --recorder-border: rgba(0, 0, 0, 0.14);
   --switch-off: rgba(0, 0, 0, 0.08);
+  --switch-on: #34c759;
   --alert: #f0f0f0;
   --backdrop: rgba(0, 0, 0, 0.12);
   --green: #28cd41;
@@ -49,6 +50,7 @@
     --recorder-pressed: rgba(255, 255, 255, 0.14);
     --recorder-border: rgba(255, 255, 255, 0.12);
     --switch-off: rgba(255, 255, 255, 0.12);
+    --switch-on: #30d158;
     --alert: #2c2c2e;
     --backdrop: rgba(0, 0, 0, 0.3);
     --green: #32d74b;
@@ -452,7 +454,9 @@ p {
 }
 
 /* On/off switch, the same values as every RUNNERS app (공통.md 「켬/끔 줄」, model: Remote's .switch .knob):
-   26 × 16 track, 12 pt white knob that moves 10 pt, 0.15 s. */
+   26 × 16 track, 12 pt white knob that moves 10 pt, 0.15 s.
+   Why green: the user picked a green on-track with a knob that stays white for every RUNNERS app (2026-11-12);
+   the black/white primary read as a white track with a black knob in dark mode. */
 .switch {
   position: relative;
   flex: none;
@@ -466,7 +470,7 @@ p {
 }
 
 .switch.on {
-  background: var(--rw-primary);
+  background: var(--switch-on);
 }
 
 .switch-knob {
@@ -481,7 +485,6 @@ p {
 }
 
 .switch.on .switch-knob {
-  background: var(--rw-on-primary);
   transform: translateX(10px);
 }
 
