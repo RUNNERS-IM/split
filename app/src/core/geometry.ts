@@ -140,3 +140,28 @@ export function rectWithGap(rect: Rect, visibleFrame: Rect, gap: number): Rect {
   }
   return rect
 }
+
+/** Where the macOS Dock sits and whether it hides itself until the pointer reaches that edge. */
+export type Dock = {
+  hides: boolean
+  edge: 'bottom' | 'left' | 'right'
+}
+
+/**
+ * `workArea` with the Dock's edge given back to the windows when the Dock hides itself.
+ * Why: macOS 27 sometimes leaves the room of a hidden Dock out of the visible frame (2026-11-12 on
+ * m3-pro-1: 76 pt off the bottom, then none a moment later), and a window laid out at that moment
+ * stopped that far above the bottom of the screen. Only the Dock's edge moves; the menu bar stays out.
+ */
+export function withoutHiddenDock(frame: Rect, workArea: Rect, dock: Dock): Rect {
+  if (!dock.hides) {
+    return workArea
+  }
+  if (dock.edge === 'left') {
+    return new Rect(frame.x, workArea.y, workArea.maxX() - frame.x, workArea.height)
+  }
+  if (dock.edge === 'right') {
+    return new Rect(workArea.x, workArea.y, frame.maxX() - workArea.x, workArea.height)
+  }
+  return new Rect(workArea.x, workArea.y, workArea.width, frame.maxY() - workArea.y)
+}

@@ -31,7 +31,7 @@ import {
   screenContaining,
   screensInConsistentOrder
 } from '../core/engine.ts'
-import { Rect } from '../core/geometry.ts'
+import { type Dock, Rect, withoutHiddenDock } from '../core/geometry.ts'
 import { shouldTurnOnAtLogin } from '../core/loginDefault.ts'
 import { defaultShortcut, KeyCombo } from '../core/shortcuts.ts'
 import type {
@@ -179,7 +179,39 @@ function loadNative(): Native {
   return createRequire(import.meta.url)(join(dir, file)) as Native
 }
 
-const native = loadNative()
+/** The Dock settings, read again after the screens change (turning hiding on or off changes them too). */
+let dock: Dock | null = null
+
+function currentDock(): Dock {
+  if (!dock) {
+    const edge = readDefault('com.apple.dock', 'orientation')
+    dock = {
+      hides: readDefault('com.apple.dock', 'autohide') === '1',
+      edge: edge === 'left' || edge === 'right' ? edge : 'bottom'
+    }
+  }
+  return dock
+}
+
+/** The native module, with a hidden Dock's edge given back to the work areas on macOS (see withoutHiddenDock). */
+function withDockFix(raw: Native): Native {
+  if (!MAC) {
+    return raw
+  }
+  return {
+    ...raw,
+    snapshot(withWindows) {
+      const shot = raw.snapshot(withWindows)
+      const screens = shot.screens.map((s) => ({
+        ...s,
+        workArea: withoutHiddenDock(Rect.from(s.frame), Rect.from(s.workArea), currentDock())
+      }))
+      return { ...shot, screens }
+    }
+  }
+}
+
+const native = withDockFix(loadNative())
 
 function toSnapshot(raw: NativeSnapshot): Snapshot {
   const window = (w: NativeWindow) => ({ id: w.id, rect: Rect.from(w.rect), app: w.app })
@@ -1269,7 +1301,10 @@ function start(): void {
   }
   // Shortcuts registered before sleep can stop firing on some systems; register them again on wake.
   powerMonitor.on('resume', syncShortcuts)
-  screen.on('display-metrics-changed', () => hideFeedback())
+  screen.on('display-metrics-changed', () => {
+    dock = null
+    hideFeedback()
+  })
   setupPhone({ state: phoneState, run: phoneCommand, changed: pushState })
   onLayoutsChanged(announceState)
   screen.on('display-added', announceState)
