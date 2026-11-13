@@ -6,14 +6,17 @@ use std::ffi::c_void;
 use std::ptr::{self, NonNull};
 
 use block2::RcBlock;
+use objc2::MainThreadMarker;
 use objc2::rc::Retained;
 use objc2::runtime::{AnyObject, ProtocolObject};
-use objc2::MainThreadMarker;
 use objc2_app_kit::{
-    NSEvent, NSEventMask, NSEventModifierFlags, NSRunningApplication, NSScreen, NSWorkspace, NSWorkspaceApplicationKey,
-    NSWorkspaceDidActivateApplicationNotification,
+    NSEvent, NSEventMask, NSEventModifierFlags, NSRunningApplication, NSScreen, NSWorkspace,
+    NSWorkspaceApplicationKey, NSWorkspaceDidActivateApplicationNotification,
 };
-use objc2_foundation::{NSArray, NSDictionary, NSNotification, NSNumber, NSObjectProtocol, NSOperationQueue, NSRect, NSString};
+use objc2_foundation::{
+    NSArray, NSDictionary, NSNotification, NSNumber, NSObjectProtocol, NSOperationQueue, NSRect,
+    NSString,
+};
 
 use crate::{AppInfo, Event, Move, Rect, Screen, Snapshot, Window};
 
@@ -54,7 +57,11 @@ struct CGRect {
 #[link(name = "ApplicationServices", kind = "framework")]
 unsafe extern "C" {
     fn AXUIElementCreateApplication(pid: i32) -> AXUIElementRef;
-    fn AXUIElementCopyAttributeValue(element: AXUIElementRef, attribute: CFTypeRef, value: *mut CFTypeRef) -> AXError;
+    fn AXUIElementCopyAttributeValue(
+        element: AXUIElementRef,
+        attribute: CFTypeRef,
+        value: *mut CFTypeRef,
+    ) -> AXError;
     fn AXUIElementCopyAttributeValues(
         element: AXUIElementRef,
         attribute: CFTypeRef,
@@ -62,7 +69,11 @@ unsafe extern "C" {
         max: isize,
         values: *mut CFTypeRef,
     ) -> AXError;
-    fn AXUIElementSetAttributeValue(element: AXUIElementRef, attribute: CFTypeRef, value: CFTypeRef) -> AXError;
+    fn AXUIElementSetAttributeValue(
+        element: AXUIElementRef,
+        attribute: CFTypeRef,
+        value: CFTypeRef,
+    ) -> AXError;
     fn AXValueCreate(kind: u32, value: *const c_void) -> CFTypeRef;
     fn AXValueGetValue(value: CFTypeRef, kind: u32, out: *mut c_void) -> u8;
     fn AXIsProcessTrusted() -> u8;
@@ -98,7 +109,10 @@ unsafe fn owned(value: CFTypeRef) -> Option<Retained<AnyObject>> {
 }
 
 /// An attribute value, or the Accessibility error that kept it back.
-fn copy_attribute(element: AXUIElementRef, name: &str) -> Result<Option<Retained<AnyObject>>, AXError> {
+fn copy_attribute(
+    element: AXUIElementRef,
+    name: &str,
+) -> Result<Option<Retained<AnyObject>>, AXError> {
     let name = attr(name);
     let mut value: CFTypeRef = ptr::null();
     let error = unsafe { AXUIElementCopyAttributeValue(element, cf(&name), &mut value) };
@@ -117,8 +131,13 @@ fn string_attribute(element: AXUIElementRef, name: &str) -> Option<String> {
 }
 
 fn bool_attribute(element: AXUIElementRef, name: &str) -> bool {
-    let Ok(Some(value)) = copy_attribute(element, name) else { return false };
-    value.downcast::<NSNumber>().map(|n| n.boolValue()).unwrap_or(false)
+    let Ok(Some(value)) = copy_attribute(element, name) else {
+        return false;
+    };
+    value
+        .downcast::<NSNumber>()
+        .map(|n| n.boolValue())
+        .unwrap_or(false)
 }
 
 fn rect_of(element: AXUIElementRef) -> Option<Rect> {
@@ -127,15 +146,31 @@ fn rect_of(element: AXUIElementRef) -> Option<Rect> {
     let mut p = CGPoint::default();
     let mut s = CGSize::default();
     let ok = unsafe {
-        AXValueGetValue(Retained::as_ptr(&position) as CFTypeRef, AX_VALUE_POINT, &mut p as *mut _ as *mut c_void) != 0
-            && AXValueGetValue(Retained::as_ptr(&size) as CFTypeRef, AX_VALUE_SIZE, &mut s as *mut _ as *mut c_void) != 0
+        AXValueGetValue(
+            Retained::as_ptr(&position) as CFTypeRef,
+            AX_VALUE_POINT,
+            &mut p as *mut _ as *mut c_void,
+        ) != 0
+            && AXValueGetValue(
+                Retained::as_ptr(&size) as CFTypeRef,
+                AX_VALUE_SIZE,
+                &mut s as *mut _ as *mut c_void,
+            ) != 0
     };
-    ok.then_some(Rect { x: p.x, y: p.y, width: s.width, height: s.height })
+    ok.then_some(Rect {
+        x: p.x,
+        y: p.y,
+        width: s.width,
+        height: s.height,
+    })
 }
 
 fn set_rect(element: AXUIElementRef, r: &Rect) -> AXError {
     let p = CGPoint { x: r.x, y: r.y };
-    let s = CGSize { width: r.width, height: r.height };
+    let s = CGSize {
+        width: r.width,
+        height: r.height,
+    };
     let (position_name, size_name) = (attr("AXPosition"), attr("AXSize"));
     unsafe {
         let position = AXValueCreate(AX_VALUE_POINT, &p as *const _ as *const c_void);
@@ -147,7 +182,11 @@ fn set_rect(element: AXUIElementRef, r: &Rect) -> AXError {
         let size_error = AXUIElementSetAttributeValue(element, cf(&size_name), size);
         CFRelease(position);
         CFRelease(size);
-        if position_error != AX_SUCCESS { position_error } else { size_error }
+        if position_error != AX_SUCCESS {
+            position_error
+        } else {
+            size_error
+        }
     }
 }
 
@@ -177,7 +216,10 @@ fn gone(element: AXUIElementRef) -> bool {
 
 fn id_for(element: AXUIElementRef) -> u32 {
     KNOWN.with_borrow_mut(|known| {
-        if let Some(k) = known.iter().find(|k| unsafe { CFEqual(k.element, element) } != 0) {
+        if let Some(k) = known
+            .iter()
+            .find(|k| unsafe { CFEqual(k.element, element) } != 0)
+        {
             return k.id;
         }
         if known.len() >= PRUNE_AT {
@@ -194,7 +236,10 @@ fn id_for(element: AXUIElementRef) -> u32 {
             *next += 1;
             id
         });
-        known.push(Known { id, element: unsafe { CFRetain(element) } });
+        known.push(Known {
+            id,
+            element: unsafe { CFRetain(element) },
+        });
         id
     })
 }
@@ -207,15 +252,24 @@ fn element_for(id: u32) -> Option<AXUIElementRef> {
 // Screens
 
 fn main_thread() -> Result<MainThreadMarker, String> {
-    MainThreadMarker::new().ok_or_else(|| "the native module must be called on the main thread".to_string())
+    MainThreadMarker::new()
+        .ok_or_else(|| "the native module must be called on the main thread".to_string())
 }
 
 fn primary_height(mtm: MainThreadMarker) -> f64 {
-    NSScreen::screens(mtm).firstObject().map(|s| s.frame().size.height).unwrap_or(0.0)
+    NSScreen::screens(mtm)
+        .firstObject()
+        .map(|s| s.frame().size.height)
+        .unwrap_or(0.0)
 }
 
 fn top_left(r: NSRect, primary_height: f64) -> Rect {
-    Rect { x: r.origin.x, y: primary_height - (r.origin.y + r.size.height), width: r.size.width, height: r.size.height }
+    Rect {
+        x: r.origin.x,
+        y: primary_height - (r.origin.y + r.size.height),
+        width: r.size.width,
+        height: r.size.height,
+    }
 }
 
 fn contains(r: &Rect, x: f64, y: f64) -> bool {
@@ -229,7 +283,9 @@ fn display_uuid(screen: &NSScreen) -> String {
         .objectForKey(&NSString::from_str("NSScreenNumber"))
         .and_then(|n| n.downcast::<NSNumber>().ok())
         .map(|n| n.unsignedIntValue());
-    let Some(number) = number else { return String::new() };
+    let Some(number) = number else {
+        return String::new();
+    };
     unsafe {
         let uuid = CGDisplayCreateUUIDFromDisplayID(number);
         if uuid.is_null() {
@@ -237,7 +293,10 @@ fn display_uuid(screen: &NSScreen) -> String {
         }
         let text = CFUUIDCreateString(ptr::null(), uuid);
         CFRelease(uuid);
-        owned(text).and_then(|t| t.downcast::<NSString>().ok()).map(|t| t.to_string()).unwrap_or_default()
+        owned(text)
+            .and_then(|t| t.downcast::<NSString>().ok())
+            .map(|t| t.to_string())
+            .unwrap_or_default()
     }
 }
 
@@ -261,8 +320,16 @@ fn screens(mtm: MainThreadMarker) -> Vec<Screen> {
 
 fn app_of(pid: i32) -> (String, String) {
     let app = NSRunningApplication::runningApplicationWithProcessIdentifier(pid);
-    let name = app.as_ref().and_then(|a| a.localizedName()).map(|n| n.to_string()).unwrap_or_default();
-    let bundle = app.as_ref().and_then(|a| a.bundleIdentifier()).map(|b| b.to_string()).unwrap_or_default();
+    let name = app
+        .as_ref()
+        .and_then(|a| a.localizedName())
+        .map(|n| n.to_string())
+        .unwrap_or_default();
+    let bundle = app
+        .as_ref()
+        .and_then(|a| a.bundleIdentifier())
+        .map(|b| b.to_string())
+        .unwrap_or_default();
     (name, bundle)
 }
 
@@ -273,7 +340,10 @@ fn standard_windows_of(pid: i32) -> Vec<AXUIElementRef> {
     unsafe {
         let application = AXUIElementCreateApplication(pid);
         let mut windows: CFTypeRef = ptr::null();
-        if AXUIElementCopyAttributeValues(application, cf(&windows_name), 0, 100, &mut windows) == AX_SUCCESS && !windows.is_null() {
+        if AXUIElementCopyAttributeValues(application, cf(&windows_name), 0, 100, &mut windows)
+            == AX_SUCCESS
+            && !windows.is_null()
+        {
             for i in 0..CFArrayGetCount(windows) {
                 let window = CFArrayGetValueAtIndex(windows, i);
                 if string_attribute(window, "AXSubrole").as_deref() != Some("AXStandardWindow") {
@@ -295,40 +365,60 @@ const MINIMUM_WINDOW_SIDE: f64 = 80.0;
 const SAME_WINDOW_TOLERANCE: f64 = 2.0;
 
 fn number(info: &NSDictionary<NSString, AnyObject>, key: &str) -> Option<Retained<NSNumber>> {
-    info.objectForKey(&NSString::from_str(key)).and_then(|v| v.downcast::<NSNumber>().ok())
+    info.objectForKey(&NSString::from_str(key))
+        .and_then(|v| v.downcast::<NSNumber>().ok())
 }
 
 /// The window server lists windows in the order they were last used; the Accessibility window
 /// that sits exactly at a listed frame is taken as that window, since only public API is used.
 fn visible_windows(screens: &[Screen]) -> Vec<Window> {
     let own_pid = std::process::id() as i32;
-    let Some(infos) = (unsafe { owned(CGWindowListCopyWindowInfo(CG_ON_SCREEN_ONLY | CG_EXCLUDE_DESKTOP, CG_NULL_WINDOW)) })
-    else {
+    let Some(infos) = (unsafe {
+        owned(CGWindowListCopyWindowInfo(
+            CG_ON_SCREEN_ONLY | CG_EXCLUDE_DESKTOP,
+            CG_NULL_WINDOW,
+        ))
+    }) else {
         return Vec::new();
     };
-    let infos: Retained<NSArray<NSDictionary<NSString, AnyObject>>> = unsafe { Retained::cast_unchecked(infos) };
+    let infos: Retained<NSArray<NSDictionary<NSString, AnyObject>>> =
+        unsafe { Retained::cast_unchecked(infos) };
     let mut pools: Vec<(i32, Vec<AXUIElementRef>)> = Vec::new();
     let mut result = Vec::new();
     for info in infos.iter() {
         if number(&info, "kCGWindowLayer").map(|n| n.integerValue()) != Some(0) {
             continue;
         }
-        if number(&info, "kCGWindowAlpha").map(|n| n.doubleValue()).unwrap_or(0.0) <= 0.0 {
+        if number(&info, "kCGWindowAlpha")
+            .map(|n| n.doubleValue())
+            .unwrap_or(0.0)
+            <= 0.0
+        {
             continue;
         }
-        let Some(pid) = number(&info, "kCGWindowOwnerPID").map(|n| n.intValue()) else { continue };
+        let Some(pid) = number(&info, "kCGWindowOwnerPID").map(|n| n.intValue()) else {
+            continue;
+        };
         if pid == own_pid {
             continue;
         }
-        let Some(bounds) = info.objectForKey(&NSString::from_str("kCGWindowBounds")) else { continue };
+        let Some(bounds) = info.objectForKey(&NSString::from_str("kCGWindowBounds")) else {
+            continue;
+        };
         let mut b = CGRect::default();
-        if unsafe { CGRectMakeWithDictionaryRepresentation(Retained::as_ptr(&bounds) as CFTypeRef, &mut b) } == 0 {
+        if unsafe {
+            CGRectMakeWithDictionaryRepresentation(Retained::as_ptr(&bounds) as CFTypeRef, &mut b)
+        } == 0
+        {
             continue;
         }
         if b.size.width < MINIMUM_WINDOW_SIDE || b.size.height < MINIMUM_WINDOW_SIDE {
             continue;
         }
-        let (mid_x, mid_y) = (b.origin.x + b.size.width / 2.0, b.origin.y + b.size.height / 2.0);
+        let (mid_x, mid_y) = (
+            b.origin.x + b.size.width / 2.0,
+            b.origin.y + b.size.height / 2.0,
+        );
         if !screens.iter().any(|s| contains(&s.frame, mid_x, mid_y)) {
             continue;
         }
@@ -353,7 +443,13 @@ fn visible_windows(screens: &[Screen]) -> Vec<Window> {
             if let Some(rect) = rect_of(element) {
                 let (app, bundle) = app_of(pid);
                 let title = string_attribute(element, "AXTitle").unwrap_or_default();
-                result.push(Window { id: id_for(element), rect, app, bundle, title });
+                result.push(Window {
+                    id: id_for(element),
+                    rect,
+                    app,
+                    bundle,
+                    title,
+                });
             }
             unsafe { CFRelease(element) };
         }
@@ -388,12 +484,27 @@ pub fn snapshot(with_windows: bool) -> Result<Snapshot, String> {
             let element = Retained::as_ptr(&window) as AXUIElementRef;
             if let Some(rect) = rect_of(element) {
                 let title = string_attribute(element, "AXTitle").unwrap_or_default();
-                active = Some(Window { id: id_for(element), rect, app: name, bundle, title });
+                active = Some(Window {
+                    id: id_for(element),
+                    rect,
+                    app: name,
+                    bundle,
+                    title,
+                });
             }
         }
     }
-    let windows = if with_windows { visible_windows(&screens) } else { Vec::new() };
-    Ok(Snapshot { active, screens, windows, refusing_app: REFUSING_APP.with_borrow(|r| r.clone()) })
+    let windows = if with_windows {
+        visible_windows(&screens)
+    } else {
+        Vec::new()
+    };
+    Ok(Snapshot {
+        active,
+        screens,
+        windows,
+        refusing_app: REFUSING_APP.with_borrow(|r| r.clone()),
+    })
 }
 
 pub fn apply(moves: &[Move]) -> Result<(), String> {
@@ -404,11 +515,19 @@ pub fn apply(moves: &[Move]) -> Result<(), String> {
         let target = m.rect;
         let error = set_rect(element, &target);
         if error != AX_SUCCESS {
-            return Err(format!("could not move window ({error})"));
+            // Why: a window of fixed size refuses the new size but still takes the new place. That
+            // counts as moved, so the windows after it are moved too and the undo remembers it
+            // (decision 2026-11-11, 4A).
+            let placed = rect_of(element)
+                .is_some_and(|r| (r.x - target.x).abs() <= 1.0 && (r.y - target.y).abs() <= 1.0);
+            if !placed {
+                return Err(format!("could not move window ({error})"));
+            }
         }
         // Why: terminals and similar apps only take sizes in whole character cells, so they end up
         // larger than asked. Shrink a little at a time and centre what is left, as Spectacle did.
-        if let Some(mut moved) = rect_of(element)
+        if error == AX_SUCCESS
+            && let Some(mut moved) = rect_of(element)
             && (moved.width > target.width || moved.height > target.height)
         {
             let mut adjusted = target;
@@ -433,10 +552,13 @@ pub fn apply(moves: &[Move]) -> Result<(), String> {
             set_rect(element, &adjusted);
         }
         // Why: some apps keep a minimum size, so the window may stick out of the screen; pull it back in.
-        let screen = screens
-            .iter()
-            .rev()
-            .find(|s| contains(&s.frame, target.x + target.width / 2.0, target.y + target.height / 2.0));
+        let screen = screens.iter().rev().find(|s| {
+            contains(
+                &s.frame,
+                target.x + target.width / 2.0,
+                target.y + target.height / 2.0,
+            )
+        });
         if let (Some(screen), Some(moved)) = (screen, rect_of(element)) {
             let visible = screen.work_area;
             let mut fixed = moved;
@@ -467,13 +589,21 @@ pub fn is_trusted(prompt: bool) -> bool {
 
 fn info_of(app: &NSRunningApplication) -> AppInfo {
     AppInfo {
-        id: app.bundleIdentifier().map(|b| b.to_string()).unwrap_or_default(),
-        name: app.localizedName().map(|n| n.to_string()).unwrap_or_default(),
+        id: app
+            .bundleIdentifier()
+            .map(|b| b.to_string())
+            .unwrap_or_default(),
+        name: app
+            .localizedName()
+            .map(|n| n.to_string())
+            .unwrap_or_default(),
     }
 }
 
 pub fn frontmost_app() -> Option<AppInfo> {
-    NSWorkspace::sharedWorkspace().frontmostApplication().map(|a| info_of(&a))
+    NSWorkspace::sharedWorkspace()
+        .frontmostApplication()
+        .map(|a| info_of(&a))
 }
 
 fn flags_of(modifiers: NSEventModifierFlags) -> u32 {
@@ -520,10 +650,14 @@ pub fn watch(sink: Sink) {
         return;
     }
     let global_block = RcBlock::new(|event: NonNull<NSEvent>| {
-        send(Event::Modifiers(flags_of(unsafe { event.as_ref() }.modifierFlags())));
+        send(Event::Modifiers(flags_of(
+            unsafe { event.as_ref() }.modifierFlags(),
+        )));
     });
     let local_block = RcBlock::new(|event: NonNull<NSEvent>| -> *mut NSEvent {
-        send(Event::Modifiers(flags_of(unsafe { event.as_ref() }.modifierFlags())));
+        send(Event::Modifiers(flags_of(
+            unsafe { event.as_ref() }.modifierFlags(),
+        )));
         event.as_ptr()
     });
     let activation_block = RcBlock::new(|note: NonNull<NSNotification>| {
@@ -536,8 +670,16 @@ pub fn watch(sink: Sink) {
         }
     });
     // Why: the global monitor only hears keys meant for other apps; the local one covers Split's own windows.
-    let global = NSEvent::addGlobalMonitorForEventsMatchingMask_handler(NSEventMask::FlagsChanged, &global_block);
-    let local = unsafe { NSEvent::addLocalMonitorForEventsMatchingMask_handler(NSEventMask::FlagsChanged, &local_block) };
+    let global = NSEvent::addGlobalMonitorForEventsMatchingMask_handler(
+        NSEventMask::FlagsChanged,
+        &global_block,
+    );
+    let local = unsafe {
+        NSEvent::addLocalMonitorForEventsMatchingMask_handler(
+            NSEventMask::FlagsChanged,
+            &local_block,
+        )
+    };
     let center = NSWorkspace::sharedWorkspace().notificationCenter();
     let queue = NSOperationQueue::mainQueue();
     let activation = unsafe {
@@ -548,5 +690,9 @@ pub fn watch(sink: Sink) {
             &activation_block,
         )
     };
-    WATCHING.set(Some(Watching { _global: global, _local: local, _activation: activation }));
+    WATCHING.set(Some(Watching {
+        _global: global,
+        _local: local,
+        _activation: activation,
+    }));
 }

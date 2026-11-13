@@ -9,7 +9,9 @@ use std::time::Duration;
 
 use x11rb::connection::Connection;
 use x11rb::protocol::randr::ConnectionExt as _;
-use x11rb::protocol::xproto::{AtomEnum, ClientMessageEvent, ConnectionExt as _, EventMask, KeyButMask, Window as XWindow};
+use x11rb::protocol::xproto::{
+    AtomEnum, ClientMessageEvent, ConnectionExt as _, EventMask, KeyButMask, Window as XWindow,
+};
 use x11rb::rust_connection::RustConnection;
 
 use crate::{AppInfo, Event, Move, Rect, Screen, Snapshot, Window};
@@ -72,16 +74,32 @@ fn x11() -> Result<&'static X11, String> {
         let (connection, screen_number) = x11rb::connect(None).map_err(error)?;
         let screen = &connection.setup().roots[screen_number];
         let root = screen.root;
-        let root_size = (screen.width_in_pixels as f64, screen.height_in_pixels as f64);
-        let atoms = Atoms::new(&connection).map_err(error)?.reply().map_err(error)?;
-        Ok(X11 { connection, root, root_size, atoms })
+        let root_size = (
+            screen.width_in_pixels as f64,
+            screen.height_in_pixels as f64,
+        );
+        let atoms = Atoms::new(&connection)
+            .map_err(error)?
+            .reply()
+            .map_err(error)?;
+        Ok(X11 {
+            connection,
+            root,
+            root_size,
+            atoms,
+        })
     })
     .as_ref()
     .map_err(Clone::clone)
 }
 
 fn rect(x: f64, y: f64, width: f64, height: f64) -> Rect {
-    Rect { x, y, width, height }
+    Rect {
+        x,
+        y,
+        width,
+        height,
+    }
 }
 
 fn intersection(a: &Rect, b: &Rect) -> Option<Rect> {
@@ -115,8 +133,13 @@ impl X11 {
     fn app_of(&self, window: XWindow) -> AppInfo {
         let bytes = self.bytes(window, self.atoms.WM_CLASS, AtomEnum::STRING);
         let parts: Vec<&[u8]> = bytes.split(|b| *b == 0).filter(|p| !p.is_empty()).collect();
-        let class = String::from_utf8_lossy(parts.get(1).or(parts.first()).copied().unwrap_or_default()).into_owned();
-        AppInfo { id: class.to_lowercase(), name: class }
+        let class =
+            String::from_utf8_lossy(parts.get(1).or(parts.first()).copied().unwrap_or_default())
+                .into_owned();
+        AppInfo {
+            id: class.to_lowercase(),
+            name: class,
+        }
     }
 
     fn title_of(&self, window: XWindow) -> String {
@@ -124,20 +147,35 @@ impl X11 {
         if !name.is_empty() {
             return String::from_utf8_lossy(&name).into_owned();
         }
-        String::from_utf8_lossy(&self.bytes(window, u32::from(AtomEnum::WM_NAME), AtomEnum::STRING)).into_owned()
+        String::from_utf8_lossy(&self.bytes(window, u32::from(AtomEnum::WM_NAME), AtomEnum::STRING))
+            .into_owned()
     }
 
     /// left, right, top, bottom
     fn extents(&self, window: XWindow, property: u32) -> [f64; 4] {
         let values = self.cardinals(window, property);
-        if values.len() >= 4 { [values[0] as f64, values[1] as f64, values[2] as f64, values[3] as f64] } else { [0.0; 4] }
+        if values.len() >= 4 {
+            [
+                values[0] as f64,
+                values[1] as f64,
+                values[2] as f64,
+                values[3] as f64,
+            ]
+        } else {
+            [0.0; 4]
+        }
     }
 
     /// The window as people see it: the client area plus the window manager's frame, minus the
     /// invisible shadow GTK draws around client-side decorated windows.
     fn visible_rect(&self, window: XWindow) -> Option<Rect> {
         let geometry = self.connection.get_geometry(window).ok()?.reply().ok()?;
-        let origin = self.connection.translate_coordinates(window, self.root, 0, 0).ok()?.reply().ok()?;
+        let origin = self
+            .connection
+            .translate_coordinates(window, self.root, 0, 0)
+            .ok()?
+            .reply()
+            .ok()?;
         let frame = self.extents(window, self.atoms._NET_FRAME_EXTENTS);
         let shadow = self.extents(window, self.atoms._GTK_FRAME_EXTENTS);
         Some(rect(
@@ -149,7 +187,10 @@ impl X11 {
     }
 
     fn is_own(&self, window: XWindow) -> bool {
-        self.cardinals(window, self.atoms._NET_WM_PID).first().copied() == Some(std::process::id())
+        self.cardinals(window, self.atoms._NET_WM_PID)
+            .first()
+            .copied()
+            == Some(std::process::id())
     }
 
     fn info(&self, window: XWindow) -> Option<Window> {
@@ -157,15 +198,27 @@ impl X11 {
             return None;
         }
         let app = self.app_of(window);
-        Some(Window { id: window, rect: self.visible_rect(window)?, app: app.name, bundle: app.id, title: self.title_of(window) })
+        Some(Window {
+            id: window,
+            rect: self.visible_rect(window)?,
+            app: app.name,
+            bundle: app.id,
+            title: self.title_of(window),
+        })
     }
 
     fn active(&self) -> XWindow {
-        self.cardinals(self.root, self.atoms._NET_ACTIVE_WINDOW).first().copied().unwrap_or(0)
+        self.cardinals(self.root, self.atoms._NET_ACTIVE_WINDOW)
+            .first()
+            .copied()
+            .unwrap_or(0)
     }
 
     fn current_desktop(&self) -> u32 {
-        self.cardinals(self.root, self.atoms._NET_CURRENT_DESKTOP).first().copied().unwrap_or(0)
+        self.cardinals(self.root, self.atoms._NET_CURRENT_DESKTOP)
+            .first()
+            .copied()
+            .unwrap_or(0)
     }
 
     fn is_ordinary(&self, window: XWindow, desktop: u32) -> bool {
@@ -174,7 +227,9 @@ impl X11 {
             return false;
         }
         let state = self.cardinals(window, self.atoms._NET_WM_STATE);
-        if state.contains(&self.atoms._NET_WM_STATE_HIDDEN) || state.contains(&self.atoms._NET_WM_STATE_SKIP_TASKBAR) {
+        if state.contains(&self.atoms._NET_WM_STATE_HIDDEN)
+            || state.contains(&self.atoms._NET_WM_STATE_SKIP_TASKBAR)
+        {
             return false;
         }
         match self.cardinals(window, self.atoms._NET_WM_DESKTOP).first() {
@@ -202,14 +257,26 @@ impl X11 {
                             .and_then(|c| c.reply().ok())
                             .map(|n| String::from_utf8_lossy(&n.name).into_owned())
                             .unwrap_or_else(|| format!("{},{}", m.x, m.y));
-                        Screen { frame, work_area: frame, scale: 1.0, primary: m.primary, id }
+                        Screen {
+                            frame,
+                            work_area: frame,
+                            scale: 1.0,
+                            primary: m.primary,
+                            id,
+                        }
                     })
                     .collect()
             })
             .unwrap_or_default();
         if screens.is_empty() {
             let frame = rect(0.0, 0.0, self.root_size.0, self.root_size.1);
-            screens.push(Screen { frame, work_area: frame, scale: 1.0, primary: true, id: "screen".into() });
+            screens.push(Screen {
+                frame,
+                work_area: frame,
+                scale: 1.0,
+                primary: true,
+                id: "screen".into(),
+            });
         }
         if !screens.iter().any(|s| s.primary) {
             screens[0].primary = true;
@@ -264,7 +331,20 @@ impl X11 {
             let simple = self.cardinals(window, self.atoms._NET_WM_STRUT);
             if simple.len() >= 4 {
                 let (w, h) = self.root_size;
-                struts.push([simple[0] as f64, simple[1] as f64, simple[2] as f64, simple[3] as f64, 0.0, h, 0.0, h, 0.0, w, 0.0, w]);
+                struts.push([
+                    simple[0] as f64,
+                    simple[1] as f64,
+                    simple[2] as f64,
+                    simple[3] as f64,
+                    0.0,
+                    h,
+                    0.0,
+                    h,
+                    0.0,
+                    w,
+                    0.0,
+                    w,
+                ]);
             }
         }
         struts
@@ -273,14 +353,25 @@ impl X11 {
     fn send_to_root(&self, window: XWindow, message: u32, data: [u32; 5]) -> Result<(), String> {
         let event = ClientMessageEvent::new(32, window, message, data);
         self.connection
-            .send_event(false, self.root, EventMask::SUBSTRUCTURE_REDIRECT | EventMask::SUBSTRUCTURE_NOTIFY, event)
+            .send_event(
+                false,
+                self.root,
+                EventMask::SUBSTRUCTURE_REDIRECT | EventMask::SUBSTRUCTURE_NOTIFY,
+                event,
+            )
             .map_err(error)?;
         Ok(())
     }
 
     /// The modifier keys held right now, from the pointer query (it carries the keyboard state too).
     fn modifier_flags(&self) -> u32 {
-        let Some(mask) = self.connection.query_pointer(self.root).ok().and_then(|c| c.reply().ok()).map(|r| r.mask) else {
+        let Some(mask) = self
+            .connection
+            .query_pointer(self.root)
+            .ok()
+            .and_then(|c| c.reply().ok())
+            .map(|r| r.mask)
+        else {
             return 0;
         };
         let mut flags = 0;
@@ -306,7 +397,20 @@ fn apply_strut(screen: &mut Screen, s: &[f64; 12], (root_w, root_h): (f64, f64))
     let mut w = screen.work_area;
     let (f_max_x, f_max_y) = (f.x + f.width, f.y + f.height);
     let overlaps = |a0: f64, a1: f64, b0: f64, b1: f64| a0 <= b1 && b0 <= a1;
-    let [left, right, top, bottom, left_y0, left_y1, right_y0, right_y1, top_x0, top_x1, bottom_x0, bottom_x1] = *s;
+    let [
+        left,
+        right,
+        top,
+        bottom,
+        left_y0,
+        left_y1,
+        right_y0,
+        right_y1,
+        top_x0,
+        top_x1,
+        bottom_x0,
+        bottom_x1,
+    ] = *s;
     if left > 0.0 && f.x < left && overlaps(left_y0, left_y1, f.y, f_max_y) {
         let max_x = w.x + w.width;
         w.x = w.x.max(left);
@@ -334,11 +438,20 @@ pub fn snapshot(with_windows: bool) -> Result<Snapshot, String> {
         let desktop = x.current_desktop();
         let mut stacking = x.cardinals(x.root, x.atoms._NET_CLIENT_LIST_STACKING);
         stacking.reverse(); // the property lists bottom to top
-        stacking.into_iter().filter(|w| x.is_ordinary(*w, desktop)).filter_map(|w| x.info(w)).collect()
+        stacking
+            .into_iter()
+            .filter(|w| x.is_ordinary(*w, desktop))
+            .filter_map(|w| x.info(w))
+            .collect()
     } else {
         Vec::new()
     };
-    Ok(Snapshot { active: x.info(x.active()), screens: x.screens(), windows, refusing_app: None })
+    Ok(Snapshot {
+        active: x.info(x.active()),
+        screens: x.screens(),
+        windows,
+        refusing_app: None,
+    })
 }
 
 pub fn apply(moves: &[Move]) -> Result<(), String> {
@@ -347,8 +460,22 @@ pub fn apply(moves: &[Move]) -> Result<(), String> {
     for item in moves {
         let window = item.id as XWindow;
         // A maximized or full screen window ignores new sizes, so those states go first.
-        x.send_to_root(window, a._NET_WM_STATE, [0, a._NET_WM_STATE_MAXIMIZED_VERT, a._NET_WM_STATE_MAXIMIZED_HORZ, 2, 0])?;
-        x.send_to_root(window, a._NET_WM_STATE, [0, a._NET_WM_STATE_FULLSCREEN, 0, 2, 0])?;
+        x.send_to_root(
+            window,
+            a._NET_WM_STATE,
+            [
+                0,
+                a._NET_WM_STATE_MAXIMIZED_VERT,
+                a._NET_WM_STATE_MAXIMIZED_HORZ,
+                2,
+                0,
+            ],
+        )?;
+        x.send_to_root(
+            window,
+            a._NET_WM_STATE,
+            [0, a._NET_WM_STATE_FULLSCREEN, 0, 2, 0],
+        )?;
         let frame = x.extents(window, a._NET_FRAME_EXTENTS);
         let shadow = x.extents(window, a._GTK_FRAME_EXTENTS);
         let r = item.rect;
@@ -362,7 +489,13 @@ pub fn apply(moves: &[Move]) -> Result<(), String> {
         x.send_to_root(
             window,
             a._NET_MOVERESIZE_WINDOW,
-            [flags, left.round() as i32 as u32, top.round() as i32 as u32, width.round() as u32, height.round() as u32],
+            [
+                flags,
+                left.round() as i32 as u32,
+                top.round() as i32 as u32,
+                width.round() as u32,
+                height.round() as u32,
+            ],
         )?;
     }
     x.connection.flush().map_err(error)

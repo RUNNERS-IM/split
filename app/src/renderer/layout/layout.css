@@ -27,7 +27,7 @@
   -webkit-app-region: no-drag;
 }
 
-.layout-fields input[type="text"] {
+.layout-fields input[type='text'] {
   height: 24px;
   padding: 0 7px;
   border: 0.5px solid var(--rw-separator);
@@ -39,14 +39,15 @@
   user-select: text;
 }
 
-.layout-fields input[type="text"]:focus {
+.layout-fields input[type='text']:focus {
   outline: 3px solid color-mix(in srgb, var(--rw-primary) 50%, transparent);
   outline-offset: 0;
 }
 
 .layout-auto {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
   gap: 6px;
   font-size: 12px;
 }
@@ -57,9 +58,31 @@
   gap: 6px;
 }
 
-.layout-auto input[type="checkbox"] {
+.layout-auto input[type='checkbox'] {
   margin: 0;
   accent-color: var(--rw-primary);
+}
+
+.layout-pro-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* The small "Pro" pill of SplitPro.m: 16 points tall, 10-point bold text. */
+.pro-pill {
+  flex: none;
+  height: 16px;
+  padding: 0 6px;
+  border: none;
+  border-radius: 8px;
+  background: var(--pill-bg);
+  color: var(--pill-fg);
+  font: inherit;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 16px;
+  cursor: pointer;
 }
 
 /* Split Pro: 360 wide, 24 around, as kSheetWidth and kSheetPadding. */

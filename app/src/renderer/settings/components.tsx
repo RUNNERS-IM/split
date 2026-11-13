@@ -1,12 +1,12 @@
 // Building blocks shaped like the macOS settings window (SplitPreferencesController.m): rounded
 // cards with rows split by thin lines, small switches and segmented controls, small push buttons,
 // and an in-page alert that stands in for NSAlert.
-import { Children, Fragment, useEffect, type CSSProperties, type ReactNode } from "react";
-import iconUrl from "../about/assets/split-icon.png";
+import { Children, Fragment, useEffect, type CSSProperties, type ReactNode } from 'react'
+import iconUrl from '../about/assets/split-icon.png'
 
 /** A rounded group like the ones in System Settings. Rows are separated by thin lines. */
 export function Card({ children }: { children: ReactNode }) {
-  const rows = Children.toArray(children).filter(Boolean);
+  const rows = Children.toArray(children).filter(Boolean)
   return (
     <div className="card">
       {rows.map((row, index) => (
@@ -16,13 +16,23 @@ export function Card({ children }: { children: ReactNode }) {
         </Fragment>
       ))}
     </div>
-  );
+  )
 }
 
 /** A gray section title (11pt semibold) over a card, with an optional lighter hint line. */
-export function Section({ title, hint, compact, children }: { title?: string; hint?: string; compact?: boolean; children: ReactNode }) {
+export function Section({
+  title,
+  hint,
+  compact,
+  children
+}: {
+  title?: string
+  hint?: string
+  compact?: boolean
+  children: ReactNode
+}) {
   return (
-    <section className={compact ? "section compact" : "section"}>
+    <section className={compact ? 'section compact' : 'section'}>
       {title && (
         <header className="section-header">
           <h2 className="section-title">{title}</h2>
@@ -31,7 +41,7 @@ export function Section({ title, hint, compact, children }: { title?: string; hi
       )}
       {children}
     </section>
-  );
+  )
 }
 
 /**
@@ -45,21 +55,22 @@ export function Row({
   disabled,
   padding,
   children,
-  below,
+  below
 }: {
-  title: ReactNode;
-  hint?: ReactNode;
-  textWidth?: number;
-  disabled?: boolean;
+  title: ReactNode
+  hint?: ReactNode
+  textWidth?: number
+  disabled?: boolean
   /** Space above and below; 13 by default, 8 for shortcut rows. */
-  padding?: number;
-  children?: ReactNode;
+  padding?: number
+  children?: ReactNode
   /** Extra lines under the row, full width (the shortcut conflict message). */
-  below?: ReactNode;
+  below?: ReactNode
 }) {
-  const style = padding === undefined ? undefined : ({ "--row-padding": `${padding}px` } as CSSProperties);
+  const style =
+    padding === undefined ? undefined : ({ '--row-padding': `${padding}px` } as CSSProperties)
   return (
-    <div className={disabled ? "row disabled" : "row"} style={style}>
+    <div className={disabled ? 'row disabled' : 'row'} style={style}>
       <div className="row-line">
         <div className="row-text" style={textWidth ? { maxWidth: textWidth } : undefined}>
           <div className="row-title">{title}</div>
@@ -70,7 +81,7 @@ export function Row({
       </div>
       {below}
     </div>
-  );
+  )
 }
 
 /** The on/off switch every RUNNERS app shares (26 × 16, see settings.css). */
@@ -78,12 +89,12 @@ export function Switch({
   checked,
   onChange,
   label,
-  disabled,
+  disabled
 }: {
-  checked: boolean;
-  onChange: (value: boolean) => void;
-  label: string;
-  disabled?: boolean;
+  checked: boolean
+  onChange: (value: boolean) => void
+  label: string
+  disabled?: boolean
 }) {
   return (
     <button
@@ -92,12 +103,12 @@ export function Switch({
       aria-checked={checked}
       aria-label={label}
       disabled={disabled}
-      className={checked ? "switch on" : "switch"}
+      className={checked ? 'switch on' : 'switch'}
       onClick={() => onChange(!checked)}
     >
       <span className="switch-knob" />
     </button>
-  );
+  )
 }
 
 /** A small segmented control that selects one of its segments. */
@@ -106,16 +117,20 @@ export function Segmented<T extends string | number>({
   options,
   onChange,
   label,
-  disabled,
+  disabled
 }: {
-  value: T;
-  options: { value: T; label: string }[];
-  onChange: (value: T) => void;
-  label: string;
-  disabled?: boolean;
+  value: T
+  options: { value: T; label: string }[]
+  onChange: (value: T) => void
+  label: string
+  disabled?: boolean
 }) {
   return (
-    <div className={disabled ? "segmented disabled" : "segmented"} role="radiogroup" aria-label={label}>
+    <div
+      className={disabled ? 'segmented disabled' : 'segmented'}
+      role="radiogroup"
+      aria-label={label}
+    >
       {options.map((option) => (
         <button
           key={String(option.value)}
@@ -123,14 +138,14 @@ export function Segmented<T extends string | number>({
           role="radio"
           aria-checked={option.value === value}
           disabled={disabled}
-          className={option.value === value ? "selected" : undefined}
+          className={option.value === value ? 'selected' : undefined}
           onClick={() => option.value !== value && onChange(option.value)}
         >
           {option.label}
         </button>
       ))}
     </div>
-  );
+  )
 }
 
 /** A push button; `small` is NSControlSizeSmall, `primary` the blue default button. */
@@ -140,26 +155,36 @@ export function Button({
   small,
   primary,
   disabled,
-  autoFocus,
+  autoFocus
 }: {
-  children: ReactNode;
-  onClick: () => void;
-  small?: boolean;
-  primary?: boolean;
-  disabled?: boolean;
-  autoFocus?: boolean;
+  children: ReactNode
+  onClick: () => void
+  small?: boolean
+  primary?: boolean
+  disabled?: boolean
+  autoFocus?: boolean
 }) {
-  const classes = ["button", small ? "small" : "", primary ? "primary" : ""].filter(Boolean).join(" ");
+  const classes = ['button', small ? 'small' : '', primary ? 'primary' : '']
+    .filter(Boolean)
+    .join(' ')
   return (
-    <button type="button" className={classes} onClick={onClick} disabled={disabled} autoFocus={autoFocus}>
+    <button
+      type="button"
+      className={classes}
+      onClick={onClick}
+      disabled={disabled}
+      autoFocus={autoFocus}
+    >
       {children}
     </button>
-  );
+  )
 }
 
 /** The app icon, as the Mac About line and alerts show it. */
 export function AppIcon({ size }: { size: number }) {
-  return <img className="app-icon" src={iconUrl} width={size} height={size} alt="" draggable={false} />;
+  return (
+    <img className="app-icon" src={iconUrl} width={size} height={size} alt="" draggable={false} />
+  )
 }
 
 /**
@@ -172,25 +197,25 @@ export function Alert({
   confirmLabel,
   cancelLabel,
   onConfirm,
-  onCancel,
+  onCancel
 }: {
-  message: string;
-  informative?: string;
-  confirmLabel: string;
-  cancelLabel?: string;
-  onConfirm: () => void;
-  onCancel?: () => void;
+  message: string
+  informative?: string
+  confirmLabel: string
+  cancelLabel?: string
+  onConfirm: () => void
+  onCancel?: () => void
 }) {
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        (onCancel ?? onConfirm)();
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        ;(onCancel ?? onConfirm)()
       }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onCancel, onConfirm]);
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onCancel, onConfirm])
 
   return (
     <div className="alert-backdrop" role="presentation">
@@ -206,5 +231,5 @@ export function Alert({
         </div>
       </div>
     </div>
-  );
+  )
 }
