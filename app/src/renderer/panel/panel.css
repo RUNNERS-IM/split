@@ -97,8 +97,8 @@ button.rm-item:disabled:hover {
   transform: rotate(180deg);
 }
 
-[dir="rtl"] .rm-item.group .rm-trailing .chevron,
-[dir="rtl"] .account-line .chevron {
+[dir='rtl'] .rm-item.group .rm-trailing .chevron,
+[dir='rtl'] .account-line .chevron {
   transform: scaleX(-1);
 }
 

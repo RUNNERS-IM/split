@@ -1,0 +1,44 @@
+# 커밋·PR 마다 검사만 돈다. 사무실 맥(셀프 호스티드)은 쓰지 않는다:
+# 공개 저장소라 남이 올린 PR 코드가 사무실 맥에서 실행되면 안 되기 때문.
+# 작업 가지는 PR 에서 한 번만 돈다. push 는 master · release 만 본다(같은 커밋을 두 번 돌리지 않게).
+name: check
+
+on:
+  push:
+    branches: [master, release]
+  pull_request:
+
+concurrency:
+  group: check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # 내보내는 판(app/, Electron): 타입 · 린트 · 서식 · 창 위치 계산 시험 · 복사본 검사, 그리고 네이티브 모듈의 서식과 clippy.
+  # clippy 가 맥 코드를 보도록 맥 러너에서 돈다.
+  check:
+    runs-on: macos-15
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: app/package.json
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: app/pnpm-lock.yaml
+      - uses: dtolnay/rust-toolchain@1.99.1
+        with:
+          components: rustfmt, clippy
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm format:check
+      - run: pnpm test
+      - run: pnpm check:account
+      - run: cargo fmt --manifest-path native/Cargo.toml --check
+      - run: cargo clippy --manifest-path native/Cargo.toml -- -D warnings

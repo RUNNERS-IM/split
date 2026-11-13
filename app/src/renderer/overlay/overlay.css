@@ -71,7 +71,9 @@ body {
   color: var(--label-fg);
   background: var(--label-bg);
   border: 0.5px solid var(--label-border);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.22), 0 1px 4px rgba(0, 0, 0, 0.12);
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.22),
+    0 1px 4px rgba(0, 0, 0, 0.12);
   backdrop-filter: blur(20px) saturate(1.6);
   will-change: opacity;
 }

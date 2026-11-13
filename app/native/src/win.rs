@@ -11,19 +11,26 @@ use std::sync::atomic::{AtomicIsize, Ordering};
 use std::time::Duration;
 
 use windows_sys::Win32::Foundation::{CloseHandle, HWND, LPARAM, RECT};
-use windows_sys::Win32::Graphics::Dwm::{DWMWA_CLOAKED, DWMWA_EXTENDED_FRAME_BOUNDS, DwmGetWindowAttribute};
+use windows_sys::Win32::Graphics::Dwm::{
+    DWMWA_CLOAKED, DWMWA_EXTENDED_FRAME_BOUNDS, DwmGetWindowAttribute,
+};
 use windows_sys::Win32::Graphics::Gdi::{
-    EnumDisplayMonitors, GetMonitorInfoW, HDC, HMONITOR, MONITOR_DEFAULTTONEAREST, MONITORINFO, MONITORINFOEXW, MonitorFromWindow,
+    EnumDisplayMonitors, GetMonitorInfoW, HDC, HMONITOR, MONITOR_DEFAULTTONEAREST, MONITORINFO,
+    MONITORINFOEXW, MonitorFromWindow,
 };
 use windows_sys::Win32::System::Threading::{
-    GetCurrentProcessId, OpenProcess, PROCESS_NAME_WIN32, PROCESS_QUERY_LIMITED_INFORMATION, QueryFullProcessImageNameW,
+    GetCurrentProcessId, OpenProcess, PROCESS_NAME_WIN32, PROCESS_QUERY_LIMITED_INFORMATION,
+    QueryFullProcessImageNameW,
 };
 use windows_sys::Win32::UI::HiDpi::{GetDpiForMonitor, MDT_EFFECTIVE_DPI};
-use windows_sys::Win32::UI::Input::KeyboardAndMouse::{GetAsyncKeyState, VK_CONTROL, VK_LWIN, VK_MENU, VK_RWIN, VK_SHIFT};
+use windows_sys::Win32::UI::Input::KeyboardAndMouse::{
+    GetAsyncKeyState, VK_CONTROL, VK_LWIN, VK_MENU, VK_RWIN, VK_SHIFT,
+};
 use windows_sys::Win32::UI::WindowsAndMessaging::{
-    EnumWindows, GW_OWNER, GWL_EXSTYLE, GetClassNameW, GetForegroundWindow, GetWindow, GetWindowLongPtrW, GetWindowRect,
-    GetWindowTextLengthW, GetWindowTextW, GetWindowThreadProcessId, IsIconic, IsWindow, IsWindowVisible, IsZoomed,
-    MONITORINFOF_PRIMARY, SW_RESTORE, SWP_NOACTIVATE, SWP_NOOWNERZORDER, SWP_NOZORDER, SetWindowPos, ShowWindow,
+    EnumWindows, GW_OWNER, GWL_EXSTYLE, GetClassNameW, GetForegroundWindow, GetWindow,
+    GetWindowLongPtrW, GetWindowRect, GetWindowTextLengthW, GetWindowTextW,
+    GetWindowThreadProcessId, IsIconic, IsWindow, IsWindowVisible, IsZoomed, MONITORINFOF_PRIMARY,
+    SW_RESTORE, SWP_NOACTIVATE, SWP_NOOWNERZORDER, SWP_NOZORDER, SetWindowPos, ShowWindow,
     WS_EX_NOACTIVATE, WS_EX_TOOLWINDOW,
 };
 
@@ -47,7 +54,12 @@ fn id_of(hwnd: HWND) -> u32 {
 }
 
 fn rect_of(r: &RECT) -> Rect {
-    Rect { x: r.left as f64, y: r.top as f64, width: (r.right - r.left) as f64, height: (r.bottom - r.top) as f64 }
+    Rect {
+        x: r.left as f64,
+        y: r.top as f64,
+        width: (r.right - r.left) as f64,
+        height: (r.bottom - r.top) as f64,
+    }
 }
 
 fn outer_rect(hwnd: HWND) -> Option<Rect> {
@@ -60,14 +72,30 @@ fn outer_rect(hwnd: HWND) -> Option<Rect> {
 fn visible_rect(hwnd: HWND) -> Option<Rect> {
     let mut frame: RECT = unsafe { std::mem::zeroed() };
     let ok = unsafe {
-        DwmGetWindowAttribute(hwnd, DWMWA_EXTENDED_FRAME_BOUNDS as _, &mut frame as *mut RECT as *mut c_void, size_of::<RECT>() as u32)
+        DwmGetWindowAttribute(
+            hwnd,
+            DWMWA_EXTENDED_FRAME_BOUNDS as _,
+            &mut frame as *mut RECT as *mut c_void,
+            size_of::<RECT>() as u32,
+        )
     } == 0;
-    if ok { Some(rect_of(&frame)) } else { outer_rect(hwnd) }
+    if ok {
+        Some(rect_of(&frame))
+    } else {
+        outer_rect(hwnd)
+    }
 }
 
 fn is_cloaked(hwnd: HWND) -> bool {
     let mut cloaked: u32 = 0;
-    let ok = unsafe { DwmGetWindowAttribute(hwnd, DWMWA_CLOAKED as _, &mut cloaked as *mut u32 as *mut c_void, size_of::<u32>() as u32) } == 0;
+    let ok = unsafe {
+        DwmGetWindowAttribute(
+            hwnd,
+            DWMWA_CLOAKED as _,
+            &mut cloaked as *mut u32 as *mut c_void,
+            size_of::<u32>() as u32,
+        )
+    } == 0;
     ok && cloaked != 0
 }
 
@@ -86,7 +114,9 @@ fn program_of(hwnd: HWND) -> Option<String> {
     }
     let mut buffer = [0u16; 1024];
     let mut length = buffer.len() as u32;
-    let ok = unsafe { QueryFullProcessImageNameW(handle, PROCESS_NAME_WIN32, buffer.as_mut_ptr(), &mut length) } != 0;
+    let ok = unsafe {
+        QueryFullProcessImageNameW(handle, PROCESS_NAME_WIN32, buffer.as_mut_ptr(), &mut length)
+    } != 0;
     unsafe { CloseHandle(handle) };
     ok.then(|| String::from_utf16_lossy(&buffer[..length as usize]))
 }
@@ -96,13 +126,25 @@ fn app_of(hwnd: HWND) -> AppInfo {
     match program_of(hwnd) {
         Some(path) => {
             let path = Path::new(&path);
-            let file = path.file_name().map(|f| f.to_string_lossy().into_owned()).unwrap_or_default();
-            let stem = path.file_stem().map(|f| f.to_string_lossy().into_owned()).unwrap_or_else(|| file.clone());
-            AppInfo { id: file.to_lowercase(), name: stem }
+            let file = path
+                .file_name()
+                .map(|f| f.to_string_lossy().into_owned())
+                .unwrap_or_default();
+            let stem = path
+                .file_stem()
+                .map(|f| f.to_string_lossy().into_owned())
+                .unwrap_or_else(|| file.clone());
+            AppInfo {
+                id: file.to_lowercase(),
+                name: stem,
+            }
         }
         None => {
             let pid = process_id(hwnd);
-            AppInfo { id: format!("pid:{pid}"), name: format!("pid:{pid}") }
+            AppInfo {
+                id: format!("pid:{pid}"),
+                name: format!("pid:{pid}"),
+            }
         }
     }
 }
@@ -123,23 +165,37 @@ fn title_of(hwnd: HWND) -> String {
 fn is_shell_window(hwnd: HWND) -> bool {
     matches!(
         class_name(hwnd).as_str(),
-        "Shell_TrayWnd" | "Shell_SecondaryTrayWnd" | "Progman" | "WorkerW" | "Windows.UI.Core.CoreWindow"
+        "Shell_TrayWnd"
+            | "Shell_SecondaryTrayWnd"
+            | "Progman"
+            | "WorkerW"
+            | "Windows.UI.Core.CoreWindow"
     )
 }
 
 fn window_info(hwnd: HWND) -> Option<Window> {
-    if hwnd.is_null() || is_shell_window(hwnd) || process_id(hwnd) == unsafe { GetCurrentProcessId() } {
+    if hwnd.is_null()
+        || is_shell_window(hwnd)
+        || process_id(hwnd) == unsafe { GetCurrentProcessId() }
+    {
         return None;
     }
     let app = app_of(hwnd);
-    Some(Window { id: id_of(hwnd), rect: visible_rect(hwnd)?, app: app.name, bundle: app.id, title: title_of(hwnd) })
+    Some(Window {
+        id: id_of(hwnd),
+        rect: visible_rect(hwnd)?,
+        app: app.name,
+        bundle: app.id,
+        title: title_of(hwnd),
+    })
 }
 
 /// A window someone would call "a window": visible, not minimized, not a tool palette or popup
 /// that belongs to another window, not hidden on another virtual desktop.
 fn is_ordinary(hwnd: HWND) -> bool {
     unsafe {
-        if IsWindowVisible(hwnd) == 0 || IsIconic(hwnd) != 0 || !GetWindow(hwnd, GW_OWNER).is_null() {
+        if IsWindowVisible(hwnd) == 0 || IsIconic(hwnd) != 0 || !GetWindow(hwnd, GW_OWNER).is_null()
+        {
             return false;
         }
         let ex_style = GetWindowLongPtrW(hwnd, GWL_EXSTYLE) as u32;
@@ -159,15 +215,35 @@ unsafe extern "system" fn collect_window(hwnd: HWND, data: LPARAM) -> i32 {
 /// Top-level windows front to back (EnumWindows walks the Z order from the top).
 fn ordinary_windows() -> Vec<Window> {
     let mut handles: Vec<HWND> = Vec::new();
-    unsafe { EnumWindows(Some(collect_window), &mut handles as *mut Vec<HWND> as LPARAM) };
-    handles.into_iter().filter(|h| is_ordinary(*h)).filter_map(window_info).collect()
+    unsafe {
+        EnumWindows(
+            Some(collect_window),
+            &mut handles as *mut Vec<HWND> as LPARAM,
+        )
+    };
+    handles
+        .into_iter()
+        .filter(|h| is_ordinary(*h))
+        .filter_map(window_info)
+        .collect()
 }
 
-unsafe extern "system" fn collect_monitor(monitor: HMONITOR, _dc: HDC, _clip: *mut RECT, data: LPARAM) -> i32 {
+unsafe extern "system" fn collect_monitor(
+    monitor: HMONITOR,
+    _dc: HDC,
+    _clip: *mut RECT,
+    data: LPARAM,
+) -> i32 {
     let list = unsafe { &mut *(data as *mut Vec<Screen>) };
     let mut info: MONITORINFOEXW = unsafe { std::mem::zeroed() };
     info.monitorInfo.cbSize = size_of::<MONITORINFOEXW>() as u32;
-    if unsafe { GetMonitorInfoW(monitor, &mut info as *mut MONITORINFOEXW as *mut MONITORINFO) } != 0 {
+    if unsafe {
+        GetMonitorInfoW(
+            monitor,
+            &mut info as *mut MONITORINFOEXW as *mut MONITORINFO,
+        )
+    } != 0
+    {
         let mut dpi_x = 96u32;
         let mut dpi_y = 96u32;
         if unsafe { GetDpiForMonitor(monitor, MDT_EFFECTIVE_DPI, &mut dpi_x, &mut dpi_y) } != 0 {
@@ -190,7 +266,14 @@ unsafe extern "system" fn collect_monitor(monitor: HMONITOR, _dc: HDC, _clip: *m
 
 fn screens() -> Vec<Screen> {
     let mut list: Vec<Screen> = Vec::new();
-    unsafe { EnumDisplayMonitors(std::ptr::null_mut(), std::ptr::null(), Some(collect_monitor), &mut list as *mut Vec<Screen> as LPARAM) };
+    unsafe {
+        EnumDisplayMonitors(
+            std::ptr::null_mut(),
+            std::ptr::null(),
+            Some(collect_monitor),
+            &mut list as *mut Vec<Screen> as LPARAM,
+        )
+    };
     list
 }
 
@@ -198,13 +281,23 @@ pub fn snapshot(with_windows: bool) -> Result<Snapshot, String> {
     let foreground = unsafe { GetForegroundWindow() };
     let active = window_info(foreground).or_else(|| {
         let remembered = LAST_FOREGROUND.load(Ordering::Relaxed) as HWND;
-        let usable = !remembered.is_null() && unsafe { IsWindow(remembered) } != 0 && unsafe { IsIconic(remembered) } == 0;
-        if usable { window_info(remembered) } else { None }
+        let usable = !remembered.is_null()
+            && unsafe { IsWindow(remembered) } != 0
+            && unsafe { IsIconic(remembered) } == 0;
+        if usable {
+            window_info(remembered)
+        } else {
+            None
+        }
     });
     Ok(Snapshot {
         active,
         screens: screens(),
-        windows: if with_windows { ordinary_windows() } else { Vec::new() },
+        windows: if with_windows {
+            ordinary_windows()
+        } else {
+            Vec::new()
+        },
         refusing_app: None,
     })
 }
@@ -259,7 +352,8 @@ pub fn is_trusted(_prompt: bool) -> bool {
 
 pub fn frontmost_app() -> Option<AppInfo> {
     let foreground = unsafe { GetForegroundWindow() };
-    (!foreground.is_null() && process_id(foreground) != unsafe { GetCurrentProcessId() }).then(|| app_of(foreground))
+    (!foreground.is_null() && process_id(foreground) != unsafe { GetCurrentProcessId() })
+        .then(|| app_of(foreground))
 }
 
 fn is_down(key: u16) -> bool {
@@ -311,7 +405,9 @@ pub fn watch(sink: Sink) {
                 let foreground = unsafe { GetForegroundWindow() };
                 if foreground != front {
                     front = foreground;
-                    if !foreground.is_null() && process_id(foreground) != unsafe { GetCurrentProcessId() } {
+                    if !foreground.is_null()
+                        && process_id(foreground) != unsafe { GetCurrentProcessId() }
+                    {
                         if window_info(foreground).is_some() {
                             LAST_FOREGROUND.store(foreground as isize, Ordering::Relaxed);
                         }

@@ -99,7 +99,7 @@ h1 {
 }
 
 .guide-switch::after {
-  content: "";
+  content: '';
   position: absolute;
   top: 2px;
   inset-inline-start: 2px;
@@ -121,7 +121,7 @@ h1 {
 }
 
 .guide-check::after {
-  content: "";
+  content: '';
   position: absolute;
   left: 20px;
   top: 13px;
@@ -197,7 +197,6 @@ h1 {
   flex: 1;
 }
 
-
 .status {
   display: flex;
   align-items: center;
@@ -213,8 +212,6 @@ h1 {
   border-radius: 50%;
   background: #ff9500;
 }
-
-
 
 .link {
   margin-top: 8px;
