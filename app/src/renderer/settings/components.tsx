@@ -148,7 +148,7 @@ export function Segmented<T extends string | number>({
   )
 }
 
-/** A push button; `small` is NSControlSizeSmall, `primary` the blue default button. */
+/** A push button; `small` is NSControlSizeSmall, `primary` the filled default button (black, white in dark mode). */
 export function Button({
   children,
   onClick,

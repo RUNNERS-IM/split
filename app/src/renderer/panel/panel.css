@@ -47,8 +47,10 @@ button.rm-item {
   cursor: default;
 }
 
-button.rm-item:disabled {
-  opacity: 0.4;
+/* Why: opacity left the text unreadable on the dark panel; a line that cannot be used takes the disabled colour. */
+button.rm-item:disabled,
+button.rm-item:disabled * {
+  color: var(--r-disabled-text);
 }
 
 button.rm-item:disabled:hover {
@@ -190,8 +192,7 @@ button.rm-item:disabled:hover {
 }
 
 .account-status {
-  color: var(--rm-secondary, inherit);
-  opacity: 0.7;
+  color: var(--rm-text-secondary);
 }
 
 .account-line .chevron {

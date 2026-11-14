@@ -218,9 +218,11 @@ h1 {
   padding: 0;
   border: 0;
   background: none;
-  color: var(--rw-primary);
+  color: var(--r-link);
   font: inherit;
   font-size: 12px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
   cursor: pointer;
   -webkit-app-region: no-drag;
 }
