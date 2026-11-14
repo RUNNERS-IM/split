@@ -25,7 +25,9 @@ The Account tab in settings lets the Split phone app arrange this computer's win
 
 ## Error reports
 
-When Split hits an error or crashes, it sends a short error report to Sentry (sentry.io), the service Runners uses to find and fix bugs. The report has the kind of error, the lines of Split's code where it happened, the Split version and the operating system version.
+When Split hits an error, it sends a short error report to Sentry (sentry.io), the service Runners uses to find and fix bugs. The report has the kind of error, the lines of Split's code where it happened, the Split version and the operating system version. Each time Split starts, it also sends whether that run started, ended normally or ended with an error, with nothing that identifies you.
+
+Split does not send crash records when the whole app quits suddenly (crash dumps), because they are copies of the app's memory and cannot be checked for personal details first.
 
 Before the report leaves your computer, Split replaces email addresses, sign-in tokens, your user folder name and your computer's name with "[가림]" ("hidden"), and leaves out window titles, text you typed, your IP address, screenshots and screen recordings.
 
@@ -66,7 +68,9 @@ Split 에는 광고와 사용 통계 수집이 없습니다. Split 에 오류가
 
 ## 오류 보고
 
-Split 에 오류가 나거나 앱이 갑자기 꺼지면, Runners 가 버그를 찾아 고치는 데 쓰는 서비스인 Sentry(sentry.io)로 짧은 오류 보고를 보냅니다. 보고에는 오류 종류, 오류가 난 Split 코드 줄, Split 판, 운영체제 판이 들어갑니다.
+Split 에 오류가 나면, Runners 가 버그를 찾아 고치는 데 쓰는 서비스인 Sentry(sentry.io)로 짧은 오류 보고를 보냅니다. 보고에는 오류 종류, 오류가 난 Split 코드 줄, Split 판, 운영체제 판이 들어갑니다. 또 Split 을 켤 때마다 그 실행이 켜졌는지, 정상으로 끝났는지, 오류로 끝났는지만 보냅니다. 사용자를 알아볼 값은 들어가지 않습니다.
+
+앱이 통째로 죽는 충돌 기록(충돌 덤프)은 보내지 않습니다. 앱 메모리를 그대로 옮긴 것이라 개인 정보를 먼저 가릴 수 없기 때문입니다.
 
 보고가 컴퓨터를 떠나기 전에 이메일 주소, 로그인 토큰, 사용자 폴더 이름, 컴퓨터 이름은 「[가림]」으로 바꾸고, 창 제목, 입력한 글, IP 주소, 스크린샷, 화면 녹화는 넣지 않습니다.
 
