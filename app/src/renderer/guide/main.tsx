@@ -1,6 +1,7 @@
 // The Accessibility guide (SplitAccessibilityGuideController.m): icon, title, the System Settings row
 // with the switch to turn on, Later / Open System Settings, and a status line. Once permission
 // arrives the window turns into a check mark and the Left Half shortcut to try first.
+import '../error-report-start.ts'
 import { StrictMode, useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import type { ViewState } from '../../shared/types'

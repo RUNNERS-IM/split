@@ -1,12 +1,12 @@
 # Split Privacy Policy
 
-Last updated: November 5, 2026
+Last updated: November 15, 2026
 
 Split is a window manager for macOS, Windows and Linux made by Runners Co., Ltd. This policy covers every version of Split, including the one on the Mac App Store.
 
 ## What Split collects
 
-Split has no ads and no analytics. It sends nothing about you or your computer to Runners or anyone else, except what is listed under "Account tab" below, and only after you sign in there.
+Split has no ads and no analytics. It sends nothing about you or your computer to Runners or anyone else, except an error report when Split runs into an error (see "Error reports" below) and what is listed under "Account tab", which is sent only after you sign in there.
 
 ## What Split reads on your computer
 
@@ -23,6 +23,12 @@ The Account tab in settings lets the Split phone app arrange this computer's win
 - Commands from your phone (apply a shape, bring back a saved layout, undo) come back over the same connection and run only on your computer. Window titles, window contents and the apps you use are not sent.
 - Signing out in the Account tab tells the server to end that sign-in, closes the connection and deletes the tokens and the email from your computer.
 
+## Error reports
+
+When Split hits an error or crashes, it sends a short error report to Sentry (sentry.io), the service Runners uses to find and fix bugs. The report has the kind of error, the lines of Split's code where it happened, the Split version and the operating system version.
+
+Before the report leaves your computer, Split replaces email addresses, sign-in tokens, your user folder name and your computer's name with "[가림]" ("hidden"), and leaves out window titles, text you typed, your IP address, screenshots and screen recordings.
+
 ## Updates
 
 The version downloaded from GitHub, runners.im or Homebrew checks GitHub (github.com/RUNNERS-IM/split) for a new version once a day and downloads it from there. You can turn this off in settings. The Mac App Store version is updated by the App Store and does not check for updates itself.
@@ -35,13 +41,13 @@ Questions: open an issue at https://github.com/RUNNERS-IM/split/issues.
 
 # Split 개인정보 처리방침
 
-최종 수정: 2026년 11월 5일
+최종 수정: 2026년 11월 15일
 
 Split 은 Runners Co., Ltd 가 만드는 macOS · Windows · Linux 창 정렬 앱입니다. 이 방침은 맥 앱스토어 판을 포함한 모든 Split 에 적용됩니다.
 
 ## 모으는 정보
 
-Split 에는 광고와 사용 통계 수집이 없습니다. 아래 「계정 탭」에 적은 것을 빼면 사용자나 컴퓨터에 관한 어떤 정보도 Runners 나 다른 곳으로 보내지 않습니다. 계정 탭도 그곳에서 로그인한 뒤에만 보냅니다.
+Split 에는 광고와 사용 통계 수집이 없습니다. Split 에 오류가 났을 때의 오류 보고(아래 「오류 보고」)와 「계정 탭」에 적은 것을 빼면 사용자나 컴퓨터에 관한 어떤 정보도 Runners 나 다른 곳으로 보내지 않습니다. 계정 탭은 그곳에서 로그인한 뒤에만 보냅니다.
 
 ## 컴퓨터 안에서 읽는 정보
 
@@ -57,6 +63,12 @@ Split 에는 광고와 사용 통계 수집이 없습니다. 아래 「계정 �
 - 로그인해 있는 동안 server.system.runners.im 과 연결 하나를 열어 두고 다음을 보냅니다: Split 이 만든 이 컴퓨터의 식별 번호, 컴퓨터 이름, 연결된 모니터 이름, Split 이 제공하는 창 모양, 저장한 배치의 이름. 같은 계정으로 로그인한 휴대폰 앱이 이것으로 이 컴퓨터를 화면에 그립니다.
 - 휴대폰에서 보낸 명령(모양대로 정리, 저장한 배치 되돌리기, 되돌리기)은 같은 연결로 들어와 컴퓨터 안에서만 실행됩니다. 창 제목, 창 안의 내용, 쓰는 앱 목록은 보내지 않습니다.
 - 계정 탭에서 로그아웃하면 서버에 그 로그인을 끝내라고 알리고, 연결을 닫고, 컴퓨터에 저장한 토큰과 이메일을 지웁니다.
+
+## 오류 보고
+
+Split 에 오류가 나거나 앱이 갑자기 꺼지면, Runners 가 버그를 찾아 고치는 데 쓰는 서비스인 Sentry(sentry.io)로 짧은 오류 보고를 보냅니다. 보고에는 오류 종류, 오류가 난 Split 코드 줄, Split 판, 운영체제 판이 들어갑니다.
+
+보고가 컴퓨터를 떠나기 전에 이메일 주소, 로그인 토큰, 사용자 폴더 이름, 컴퓨터 이름은 「[가림]」으로 바꾸고, 창 제목, 입력한 글, IP 주소, 스크린샷, 화면 녹화는 넣지 않습니다.
 
 ## 업데이트
 

@@ -1,5 +1,6 @@
 // The "new version" window (one per RUNNERS app, same layout): icon, title, question, a scrolling
 // "What's new" box, then Later / Install Now. The main process puts the text in the URL hash.
+import '../error-report-start.ts'
 import { StrictMode, useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import type { UpdatePayload, UpdateProgress } from '../../shared/types'
