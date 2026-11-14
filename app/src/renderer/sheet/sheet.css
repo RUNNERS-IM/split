@@ -1,19 +1,17 @@
 :root {
   color-scheme: light dark;
+  /* Why: the see-through background stays like a macOS HUD, but text and borders take the RUNNERS colours
+     (runners-tokens.css); the old 42% grey section titles read under 3:1. */
   --sheet-bg: rgba(246, 246, 246, 0.94);
-  --sheet-fg: #1d1d1f;
-  --sheet-secondary: rgba(29, 29, 31, 0.6);
-  --sheet-tertiary: rgba(29, 29, 31, 0.42);
-  --sheet-border: rgba(0, 0, 0, 0.08);
+  --sheet-fg: var(--r-text);
+  --sheet-secondary: var(--r-text-muted);
+  --sheet-tertiary: var(--r-text-muted);
+  --sheet-border: var(--r-border);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --sheet-bg: rgba(30, 30, 32, 0.9);
-    --sheet-fg: #f5f5f7;
-    --sheet-secondary: rgba(245, 245, 247, 0.6);
-    --sheet-tertiary: rgba(245, 245, 247, 0.4);
-    --sheet-border: rgba(255, 255, 255, 0.1);
   }
 }
 

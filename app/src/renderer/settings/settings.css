@@ -5,7 +5,8 @@
 :root {
   --label: var(--rw-text);
   --secondary: var(--rw-text-secondary);
-  --tertiary: rgba(0, 0, 0, 0.26);
+  /* Why: the old 26% grey read 1.9:1 on the card; RUNNERS colours have one grey for small text (runners-tokens.css). */
+  --tertiary: var(--r-text-muted);
   --window: var(--rw-window-bg);
   --card: var(--rw-box-bg);
   --separator: var(--rw-separator);
@@ -41,7 +42,6 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --tertiary: rgba(255, 255, 255, 0.25);
     --control-selected: rgba(255, 255, 255, 0.24);
     --button: rgba(255, 255, 255, 0.15);
     --button-pressed: rgba(255, 255, 255, 0.25);
@@ -88,7 +88,7 @@ button {
 }
 
 button:focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--rw-primary) 50%, transparent);
+  outline: 3px solid color-mix(in srgb, var(--r-accent) 50%, transparent);
   outline-offset: 1px;
 }
 
@@ -155,8 +155,13 @@ p {
 }
 
 .toolbar-item.selected {
-  background: var(--control-track);
-  color: var(--rw-primary);
+  background: var(--r-selected-bg);
+  color: var(--r-selected-text);
+}
+
+.toolbar-item.selected span {
+  color: var(--r-selected-text);
+  font-weight: 600;
 }
 
 /* Content */
@@ -265,8 +270,10 @@ p {
   align-items: center;
 }
 
-.row.disabled .row-text {
-  opacity: 0.45;
+/* Why: dimming with opacity made the text unreadable on the dark card; a line that cannot be changed takes the disabled colour. */
+.row.disabled .row-text,
+.row.disabled .row-text * {
+  color: var(--r-disabled-text);
 }
 
 /* Accessibility permission */
@@ -419,8 +426,8 @@ p {
 }
 
 .recorder.recording .recorder-field {
-  background: color-mix(in srgb, var(--rw-primary) 16%, transparent);
-  box-shadow: inset 0 0 0 1.5px var(--rw-primary);
+  background: color-mix(in srgb, var(--r-accent) 16%, transparent);
+  box-shadow: inset 0 0 0 1.5px var(--r-accent);
 }
 
 .recorder-field:focus-visible {
@@ -438,7 +445,7 @@ p {
   padding: 0;
   border: none;
   background: none;
-  color: color-mix(in srgb, var(--secondary) 60%, transparent);
+  color: var(--secondary);
 }
 
 .recorder-badge:hover {
@@ -527,7 +534,7 @@ p {
 }
 
 .segmented.disabled {
-  opacity: 0.45;
+  color: var(--r-disabled-text);
 }
 
 /* Push buttons */
@@ -566,8 +573,11 @@ p {
   filter: brightness(0.92);
 }
 
-.button:disabled {
-  opacity: 0.45;
+.button:disabled,
+.button.primary:disabled {
+  background: var(--r-disabled-bg);
+  color: var(--r-disabled-text);
+  box-shadow: none;
 }
 
 /* Color swatches: 22 points, the color 4 in from the edge, a ring when chosen */
