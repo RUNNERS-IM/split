@@ -4,7 +4,7 @@
 // waiting the right badge either stops (no shortcut yet) or keeps the current one.
 import { useEffect, useState } from 'react'
 import { useStrings } from './strings.ts'
-import { displayShortcut, modifierLabel, shortcutFromEvent, type Platform } from './keys.ts'
+import { modifierLabel, shortcutFromEvent, shortcutKeys, type Platform } from './keys.ts'
 
 function ClearBadge() {
   return (
@@ -108,14 +108,20 @@ export function ShortcutRecorder({
   } else if (recording) {
     text = t(value ? 'ShortcutRecorderLabelUseExisting' : 'ShortcutRecorderLabelStopRecording')
   } else if (value) {
-    text = displayShortcut(value, platform)
-    keys = true
+    text = ''
   } else {
     text = t('ShortcutRecorderLabelClickToRecord')
   }
 
   const badge = recording || value
-  const classes = ['recorder', recording ? 'recording' : '', value || recording ? '' : 'empty']
+  // A saved shortcut is drawn as one keycap per key; while recording the field shows one line of text.
+  const keycaps = recording ? [] : shortcutKeys(value, platform)
+  const classes = [
+    'recorder',
+    recording ? 'recording' : '',
+    value || recording ? '' : 'empty',
+    keycaps.length > 0 ? 'has-keycaps' : ''
+  ]
     .filter(Boolean)
     .join(' ')
 
@@ -128,9 +134,19 @@ export function ShortcutRecorder({
         aria-pressed={recording}
         onClick={() => (recording ? onStop() : onStart())}
       >
-        <span className="recorder-label" dir={keys ? 'ltr' : undefined}>
-          {text}
-        </span>
+        {keycaps.length > 0 ? (
+          <span className="recorder-keycaps" dir="ltr">
+            {keycaps.map((key, index) => (
+              <kbd key={index} className="keycap">
+                {key}
+              </kbd>
+            ))}
+          </span>
+        ) : (
+          <span className="recorder-label" dir={keys ? 'ltr' : undefined}>
+            {text}
+          </span>
+        )}
       </button>
       {badge && (
         <button
