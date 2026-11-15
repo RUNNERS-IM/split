@@ -22,7 +22,16 @@ module.exports = {
   copyright: '© 2026 RUNNERS. All rights reserved.',
   // Why: .noindex keeps Spotlight from listing the test app next to the installed one.
   directories: { output: 'dist.noindex', buildResources: 'resources/build' },
-  files: ['out/**', 'package.json'],
+  files: [
+    'out/**',
+    'package.json',
+    // Why: @sentry/node pulls in @sentry/bundler-plugins and oxc-parser for its build-tool entry points (@sentry/node/vite
+    // and the like), which Split never loads. oxc-parser carries a per-CPU .node file, and the macOS universal build stops on
+    // a .node that is the same in both halves (Release 43665628232, 2026-11-15).
+    '!**/node_modules/@sentry/bundler-plugins/**',
+    '!**/node_modules/oxc-parser/**',
+    '!**/node_modules/@oxc-parser/**'
+  ],
   extraResources: [
     // The native module (native/split-native.<os>-<cpu>*.node) is added per system below.
     { from: 'resources/menu', to: 'menu' },
