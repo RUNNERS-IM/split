@@ -460,6 +460,58 @@ p {
   color: var(--secondary);
 }
 
+/* A saved shortcut is one small keycap per key, right-aligned, with the x only on hover.
+   Why: "⌃⌘←" and "⌥⌘←" differ by one symbol; separate keys show that at a glance, and 30 rows
+   of boxes no longer fill the window (user pick 1C, 2026-11-15, the way Draw settings draw keys). */
+.recorder.has-keycaps {
+  width: auto;
+  min-width: 96px;
+}
+
+.recorder.has-keycaps .recorder-field {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.recorder-keycaps {
+  display: flex;
+  gap: 4px;
+}
+
+.keycap {
+  display: grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 5px;
+  background: var(--recorder);
+  box-shadow: inset 0 0 0 1px var(--recorder-border);
+  color: var(--label);
+  font: inherit;
+  font-size: 12px;
+}
+
+.recorder.has-keycaps .recorder-field:hover .keycap,
+.recorder.has-keycaps .recorder-field:active .keycap {
+  background: var(--recorder-pressed);
+}
+
+.recorder.has-keycaps .recorder-badge {
+  right: auto;
+  left: -20px;
+  opacity: 0;
+}
+
+.recorder.has-keycaps:hover .recorder-badge,
+.recorder.has-keycaps:focus-within .recorder-badge {
+  opacity: 1;
+}
+
 /* On/off switch, the same values as every RUNNERS app (공통.md 「켬/끔 줄」, model: Remote's .switch .knob):
    26 × 16 track, 12 pt white knob that moves 10 pt, 0.15 s.
    Why green: the user picked a green on-track with a knob that stays white for every RUNNERS app (2026-11-12);
