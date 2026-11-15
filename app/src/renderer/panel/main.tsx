@@ -1,6 +1,7 @@
 // The tray panel on macOS (src/main/trayPanel.ts): the account line, then the menu lines the main process sends, drawn
 // with the shared menu look (runners-menu.css) like Monitor's and Prompt's panels. On/off lines are switches, a line with more under it
 // ("Turn Off Shortcuts", "More") opens in place, and the layout card shows monitors, shapes and saved layouts.
+import '../error-report-start.ts'
 import { StrictMode, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { Check, ChevronDown, ChevronRight, Command, type LucideIcon } from 'lucide-react'

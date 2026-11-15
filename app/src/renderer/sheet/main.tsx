@@ -1,6 +1,7 @@
 // The card that lists every Split shortcut with a small picture of where the window goes
 // (SplitShortcutSheet in SplitWindowFeedback.m). Shown while ⌥⌘ is held; the main process
 // decides when, this page only draws what `onSheet` sends.
+import '../error-report-start.ts'
 import { StrictMode, useEffect, useState, type ComponentType } from 'react'
 import { createRoot } from 'react-dom/client'
 import { Maximize2, Minimize2, Redo2, SquareArrowLeft, SquareArrowRight, Undo2 } from 'lucide-react'

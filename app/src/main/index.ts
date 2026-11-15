@@ -3,6 +3,7 @@
 // Flow of one shortcut: globalShortcut hears the keys → `perform` asks the native module what is
 // on screen → `Engine` (src/core) works out where windows go with the macOS JavaScript math →
 // the native module moves them → the overlay shows where they went.
+import './error-report-start.ts'
 import { execFileSync } from 'node:child_process'
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { createRequire } from 'node:module'

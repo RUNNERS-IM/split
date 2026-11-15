@@ -1,6 +1,7 @@
 // The see-through, click-through page that covers one screen and draws move feedback
 // (SplitWindowFeedback.m): the glow around moved windows, the shortcut label, and the outline
 // shown while a tray menu row is hovered.
+import '../error-report-start.ts'
 import { StrictMode, useEffect, useRef, useState, type CSSProperties } from 'react'
 import { createRoot } from 'react-dom/client'
 import type { FeedbackColor, OverlayPayload } from '../../shared/types'

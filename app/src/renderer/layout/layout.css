@@ -1,19 +1,10 @@
 /* Builds on ../update/update.css (colours, icon, title, buttons) so every small Split window looks alike. */
 
 :root {
-  --field-bg: #ffffff;
-  --pill-bg: #ffe8cc;
-  --pill-fg: #994a00;
-  --tertiary: rgba(0, 0, 0, 0.26);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --field-bg: rgba(255, 255, 255, 0.06);
-    --pill-bg: #593b12;
-    --pill-fg: #ffcf99;
-    --tertiary: rgba(255, 255, 255, 0.26);
-  }
+  /* Why: RUNNERS colours are black and white only (runners-tokens.css); the orange Pro pill and the 26% grey went. */
+  --pill-bg: var(--r-primary);
+  --pill-fg: var(--r-on-primary);
+  --tertiary: var(--r-text-muted);
 }
 
 /* The name field and the checkbox sit where an NSAlert puts its accessory view. */
@@ -30,17 +21,17 @@
 .layout-fields input[type='text'] {
   height: 24px;
   padding: 0 7px;
-  border: 0.5px solid var(--rw-separator);
+  border: 1px solid var(--r-input-border);
   border-radius: 5px;
-  background: var(--field-bg);
-  color: var(--rw-text);
+  background: var(--r-input-bg);
+  color: var(--r-input-text);
   font: inherit;
   font-size: 13px;
   user-select: text;
 }
 
 .layout-fields input[type='text']:focus {
-  outline: 3px solid color-mix(in srgb, var(--rw-primary) 50%, transparent);
+  outline: 3px solid color-mix(in srgb, var(--r-accent) 50%, transparent);
   outline-offset: 0;
 }
 
@@ -60,7 +51,7 @@
 
 .layout-auto input[type='checkbox'] {
   margin: 0;
-  accent-color: var(--rw-primary);
+  accent-color: var(--r-accent);
 }
 
 .layout-pro-row {

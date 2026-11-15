@@ -2,6 +2,7 @@
 // - "Save Current Layout": icon, title, text, a name field and the "restore for these monitors"
 //   box, the "open apps" box with its Pro mark, then Cancel / Save. Same order as the NSAlert in SplitLayoutMenu.m.
 // - Split Pro: what it adds and costs, with buying not open yet. Same order as SplitPro.m.
+import '../error-report-start.ts'
 import { StrictMode, useEffect, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import type { LayoutPagePayload, LayoutSavePayload, ProPayload } from '../../shared/types'
