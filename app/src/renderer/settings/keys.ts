@@ -123,28 +123,38 @@ function keyLabel(key: string, platform: Platform): string {
   return PUNCTUATION[key] ?? key.toUpperCase()
 }
 
+/** Each held modifier as its own key name, in the order macOS writes them: ⌃⌥⇧⌘, or Ctrl Alt Shift Win/Super. */
+function modifierKeys(
+  modifiers: { ctrl: boolean; alt: boolean; shift: boolean; logo: boolean },
+  platform: Platform
+): string[] {
+  const mac = platform === 'darwin'
+  const keys: string[] = []
+  if (modifiers.ctrl) {
+    keys.push(mac ? '⌃' : 'Ctrl')
+  }
+  if (modifiers.alt) {
+    keys.push(mac ? '⌥' : 'Alt')
+  }
+  if (modifiers.shift) {
+    keys.push(mac ? '⇧' : 'Shift')
+  }
+  if (modifiers.logo) {
+    keys.push(mac ? '⌘' : platform === 'win32' ? 'Win' : 'Super')
+  }
+  return keys
+}
+
 /** The modifiers held during a key event, the way the recorder shows them while recording. */
 export function modifierLabel(
   modifiers: { ctrl: boolean; alt: boolean; shift: boolean; logo: boolean },
   platform: Platform
 ): string {
+  const keys = modifierKeys(modifiers, platform)
   if (platform === 'darwin') {
-    return `${modifiers.ctrl ? '⌃' : ''}${modifiers.alt ? '⌥' : ''}${modifiers.shift ? '⇧' : ''}${modifiers.logo ? '⌘' : ''}`
+    return keys.join('')
   }
-  const parts: string[] = []
-  if (modifiers.ctrl) {
-    parts.push('Ctrl')
-  }
-  if (modifiers.alt) {
-    parts.push('Alt')
-  }
-  if (modifiers.shift) {
-    parts.push('Shift')
-  }
-  if (modifiers.logo) {
-    parts.push(platform === 'win32' ? 'Win' : 'Super')
-  }
-  return parts.length > 0 ? `${parts.join('+')}+` : ''
+  return keys.length > 0 ? `${keys.join('+')}+` : ''
 }
 
 /** How a stored shortcut is written on this platform; empty for none. */
@@ -157,6 +167,19 @@ export function displayShortcut(text: string | null | undefined, platform: Platf
     return text
   }
   return modifierLabel(combo.modifiers, platform) + keyLabel(combo.key, platform)
+}
+
+/** A stored shortcut as one name per key, for drawing each key as its own keycap; empty for none.
+ *  Why: "⌃⌘←" and "⌥⌘←" differ by one symbol, and separate keys make that difference easy to see (user pick 1C, 2026-11-15). */
+export function shortcutKeys(text: string | null | undefined, platform: Platform): string[] {
+  if (!text) {
+    return []
+  }
+  const combo = KeyCombo.parse(text)
+  if (!combo) {
+    return [text]
+  }
+  return [...modifierKeys(combo.modifiers, platform), keyLabel(combo.key, platform)]
 }
 
 /** The shortcut an action has now: the saved one, or the default when it was never changed. */
