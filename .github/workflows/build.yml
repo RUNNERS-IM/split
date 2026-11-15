@@ -49,6 +49,9 @@ jobs:
       - uses: pnpm/action-setup@v4
         with:
           package_json_file: app/package.json
+          # 사무실 맥에서는 앱마다 출시 작업이 동시에 돈다. 기본 자리(~/setup-pnpm)를 같이 쓰면 다른 앱 작업이 pnpm 을
+          # 다시 깔며 이 작업의 받은 파일 저장소를 지운다(2026-11-15 Monitor run 43665631276). Split 전용 자리를 쓴다
+          dest: ~/setup-pnpm-split
       - uses: actions/setup-node@v6
         with:
           node-version: 24
