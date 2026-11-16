@@ -27,8 +27,9 @@ type LayoutCard = {
   monitorImage: string
   checkImage: string
   selected: string
-  screens: { id: string; name: string; detail: string; auto: Cell[] }[]
+  screens: { id: string; name: string; detail: string }[]
   shapes: { id: string; label: string; cells?: Cell[]; auto?: boolean }[]
+  autoCycle: Cell[][]
   saved: { id: string; label: string; cells: Cell[]; toolTip?: string }[]
 }
 
@@ -56,8 +57,8 @@ function Picture({ item }: { item: { name?: string; image?: string; template?: b
   return <img className="picture" src={item.image} alt="" />
 }
 
-/** A small screen outline with its parts filled (or only outlined, for "Auto"), like the shapes in the menu. */
-function MiniScreen({ cells, outline }: { cells: Cell[]; outline?: boolean }) {
+/** A small screen outline with its parts filled, like the shapes in the menu. */
+function MiniScreen({ cells, slots = cells.length }: { cells: Cell[]; slots?: number }) {
   const width = 34
   const height = 22
   const inner = { x: 3, y: 3, width: width - 6, height: height - 6 }
@@ -79,21 +80,57 @@ function MiniScreen({ cells, outline }: { cells: Cell[]; outline?: boolean }) {
         stroke="currentColor"
         strokeWidth={1.5}
       />
-      {cells.map(([x, y, w, h], index) => (
-        <rect
-          key={index}
-          x={inner.x + x * inner.width + 0.8}
-          y={inner.y + y * inner.height + 0.8}
-          width={Math.max(0, w * inner.width - 1.6)}
-          height={Math.max(0, h * inner.height - 1.6)}
-          rx={1.5}
-          fill={outline ? 'none' : 'currentColor'}
-          stroke={outline ? 'currentColor' : 'none'}
-          strokeWidth={outline ? 1.2 : 0}
-        />
-      ))}
+      {Array.from({ length: slots }, (_, index) => {
+        const cell = cells[index]
+        // Why: geometry goes in style so a changing shape can move its parts with a CSS transition;
+        // a part the shape does not use shrinks to the middle and fades.
+        const style = cell
+          ? {
+              x: inner.x + cell[0] * inner.width + 0.8,
+              y: inner.y + cell[1] * inner.height + 0.8,
+              width: Math.max(0, cell[2] * inner.width - 1.6),
+              height: Math.max(0, cell[3] * inner.height - 1.6)
+            }
+          : { x: width / 2 - 3, y: height / 2 - 2, width: 6, height: 4, opacity: 0 }
+        return (
+          <rect
+            key={index}
+            className="mini-screen-part"
+            style={style}
+            rx={1.5}
+            fill="currentColor"
+          />
+        )
+      })}
     </svg>
   )
+}
+
+const AUTO_STEP_MS = 1200
+
+/** The "Auto" chip: Auto's shapes for two, three and four windows in turn while the panel is open (user choice 1B). */
+function AutoScreen({ cycle }: { cycle: Cell[][] }) {
+  const [step, setStep] = useState(0)
+  useEffect(() => {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches || cycle.length < 2) {
+      return
+    }
+    let timer: number | undefined
+    const run = () => {
+      window.clearInterval(timer)
+      timer = document.hidden
+        ? undefined
+        : window.setInterval(() => setStep((current) => (current + 1) % cycle.length), AUTO_STEP_MS)
+    }
+    run()
+    document.addEventListener('visibilitychange', run)
+    return () => {
+      window.clearInterval(timer)
+      document.removeEventListener('visibilitychange', run)
+    }
+  }, [cycle.length])
+  const slots = Math.max(0, ...cycle.map((cells) => cells.length))
+  return <MiniScreen cells={cycle[step % cycle.length] ?? []} slots={slots} />
 }
 
 function Layouts({ card }: { card: LayoutCard }) {
@@ -144,10 +181,11 @@ function Layouts({ card }: { card: LayoutCard }) {
               className="chip"
               onClick={() => screen && void window.split.panelChoose(`${shape.id}\t${screen.id}`)}
             >
-              <MiniScreen
-                cells={shape.auto ? (screen?.auto ?? []) : (shape.cells ?? [])}
-                outline={shape.auto}
-              />
+              {shape.auto ? (
+                <AutoScreen cycle={card.autoCycle} />
+              ) : (
+                <MiniScreen cells={shape.cells ?? []} />
+              )}
               <span>{shape.label}</span>
             </button>
           ))}
