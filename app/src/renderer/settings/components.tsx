@@ -138,7 +138,7 @@ export function Segmented<T extends string | number>({
           role="radio"
           aria-checked={option.value === value}
           disabled={disabled}
-          className={option.value === value ? 'selected' : undefined}
+          className={option.value === value ? 'selected rw-picked' : undefined}
           onClick={() => option.value !== value && onChange(option.value)}
         >
           {option.label}

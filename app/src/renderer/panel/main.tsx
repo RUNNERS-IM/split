@@ -11,6 +11,7 @@ import panda from '../runners-account/assets/panda/face.webp'
 import '../runners-account/runners-account.css'
 import '../runners-account/runners-menu.css'
 import './panel.css'
+import { ActionIcon, hasScreenPicture } from '../settings/ActionIcon.tsx'
 
 const ICON_SIZE = 16
 const ICON_STROKE = 1.5
@@ -35,6 +36,9 @@ function Picture({ item }: { item: { name?: string; image?: string; template?: b
   const Glyph = item.name ? LINE_ICONS[item.name] : undefined
   if (Glyph) {
     return <Glyph size={ICON_SIZE} strokeWidth={ICON_STROKE} aria-hidden />
+  }
+  if (item.name && hasScreenPicture(item.name)) {
+    return <ActionIcon action={item.name} />
   }
   if (!item.image) {
     return <span className="picture" aria-hidden />
