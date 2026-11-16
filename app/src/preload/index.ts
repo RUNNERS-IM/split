@@ -6,7 +6,7 @@ import type {
   SettingsTab,
   SheetPayload,
   SplitApi,
-  UpdateProgress,
+  UpdateOffer,
   ViewState
 } from '../shared/types'
 
@@ -37,7 +37,9 @@ const api: SplitApi = {
     ipcRenderer.on('settings:tab', handler)
     return () => ipcRenderer.removeListener('settings:tab', handler)
   },
-  answerUpdate: (install) => ipcRenderer.invoke('update:answer', install),
+  updateOffer: () => ipcRenderer.invoke('update:offer'),
+  answerUpdate: (answer) => ipcRenderer.invoke('update:answer', answer),
+  fitUpdateHeight: (height) => ipcRenderer.send('update:fit', height),
   answerLayoutSave: (answer) => ipcRenderer.invoke('layout:answer', answer),
   showPro: () => ipcRenderer.invoke('pro:show'),
   guideLater: () => ipcRenderer.invoke('guide:later'),
@@ -45,7 +47,7 @@ const api: SplitApi = {
   onState: (listener) => listen<ViewState>('state:changed', listener),
   onOverlay: (listener) => listen<OverlayPayload | null>('overlay:show', listener),
   onSheet: (listener) => listen<SheetPayload>('sheet:show', listener),
-  onUpdateProgress: (listener) => listen<UpdateProgress>('update:progress', listener),
+  onUpdateOffer: (listener) => listen<UpdateOffer>('update:offerChanged', listener),
   panelView: () => ipcRenderer.invoke('panel:view'),
   panelRun: (id) => ipcRenderer.invoke('panel:run', id),
   panelChoose: (chosen) => ipcRenderer.invoke('panel:choose', chosen),

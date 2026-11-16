@@ -932,7 +932,7 @@ let answerSave: ((answer: LayoutSaveAnswer) => void) | null = null
 /**
  * Asks for a name (and whether it comes back by itself for these monitors), then saves the
  * layout. Resolves with the saved layout, or null for Cancel. A second call while the window is
- * open only brings it forward. Same look and sizing as the update window (overlay.ts askToInstall).
+ * open only brings it forward. Its look is in src/renderer/layout/layout.css.
  */
 export function askToSaveLayout(): Promise<SavedLayout | null> {
   if (isMac) {
