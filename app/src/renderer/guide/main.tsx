@@ -9,6 +9,7 @@ import '../runners-account/runners-window.css'
 import './guide.css'
 
 const SPLIT_ICON = new URL('../about/assets/split-icon.png', import.meta.url).href
+const DONE_PICTURE = new URL('../runners-account/assets/panda/done.webp', import.meta.url).href
 
 function App({ initial }: { initial: ViewState }) {
   const [state, setState] = useState(initial)
@@ -27,7 +28,7 @@ function App({ initial }: { initial: ViewState }) {
     const keys = state.leftHalfShortcut
     return (
       <div className="guide">
-        <span className="guide-check" aria-hidden="true" />
+        <img className="guide-done" src={DONE_PICTURE} alt="" />
         <h1>{t('AccessibilityGuide.GrantedTitle')}</h1>
         <p className="guide-description">
           {t(keys ? 'AccessibilityGuide.GrantedTry' : 'AccessibilityGuide.GrantedDescription')}

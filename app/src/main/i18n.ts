@@ -75,8 +75,11 @@ export function textPlatform(): 'darwin' | 'win32' | 'linux' {
   return platform === 'win32' || platform === 'linux' ? platform : 'darwin'
 }
 
-export function loadLanguage(): void {
-  language = pickLanguage(app.getPreferredSystemLanguages())
+/** Reads the system's languages; the test-shot mode passes the one it photographs. */
+export function loadLanguage(
+  preferred: readonly string[] = app.getPreferredSystemLanguages()
+): void {
+  language = pickLanguage(preferred)
   table = { ...en, ...TABLES[language] }
   // Why: "menu bar", "Applications folder", "Mac" and ⌥⌘ are macOS words. `<key>Win` and
   // `<key>Linux` hold the same line in Windows words (notification area, Start menu, Alt+Win) and
