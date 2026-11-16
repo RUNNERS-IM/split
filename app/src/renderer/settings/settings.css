@@ -539,8 +539,10 @@ p {
   display: inline-flex;
   flex: none;
   padding: 1px;
-  border-radius: 6px;
+  border-radius: var(--rw-small-radius);
   background: var(--control-track);
+  /* Why: the guide rings the group once; the options inside draw no lines, the picked one shows by its blue. */
+  box-shadow: 0 0 0 1px var(--r-border);
 }
 
 .segmented button {
@@ -555,20 +557,6 @@ p {
 /* Why: only the unpicked options are see-through; the picked one takes .rw-picked's blue from runners-window.css. */
 .segmented button:not(.rw-picked) {
   background: transparent;
-}
-
-.segmented button + button:not(.selected) {
-  box-shadow: -0.5px 0 0 0 var(--separator);
-}
-
-.segmented button.selected + button {
-  box-shadow: none;
-}
-
-.segmented button.selected {
-  box-shadow:
-    0 0 0 0.5px rgba(0, 0, 0, 0.06),
-    0 1px 1.5px rgba(0, 0, 0, 0.16);
 }
 
 .segmented.disabled {
