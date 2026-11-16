@@ -1,4 +1,55 @@
-/* Builds on ../update/update.css (colours, icon, title, buttons) so every small Split window looks alike. */
+/* Colours, type and buttons come from runners-window.css (shared by the four RUNNERS apps). The page and the
+   icon / title / text / buttons order below are what the update window had before it moved to runners-app-kit,
+   kept here so the Save Layout and Split Pro windows look as they did. */
+html,
+body {
+  margin: 0;
+  background: var(--rw-window-bg);
+  /* Why: Korean lines break between words, not inside them. */
+  word-break: keep-all;
+  user-select: none;
+  cursor: default;
+}
+
+/* Same order as an NSAlert: icon, bold title, text; the fields and buttons go under them. */
+.dialog {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--rw-pad) 24px 20px;
+  text-align: center;
+  -webkit-app-region: drag;
+}
+
+.dialog-icon {
+  width: 64px;
+  height: 64px;
+}
+
+h1 {
+  margin: 12px 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.dialog-body {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--rw-text);
+}
+
+.buttons {
+  display: flex;
+  align-self: stretch;
+  gap: 8px;
+  margin-top: 18px;
+  -webkit-app-region: no-drag;
+}
+
+.buttons .rw-button {
+  flex: 1;
+}
 
 :root {
   /* Why: RUNNERS colours are black and white only (runners-tokens.css); the orange Pro pill and the 26% grey went. */

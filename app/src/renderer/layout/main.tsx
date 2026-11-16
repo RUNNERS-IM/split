@@ -7,7 +7,6 @@ import { StrictMode, useEffect, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import type { LayoutPagePayload, LayoutSavePayload, ProPayload } from '../../shared/types'
 import '../runners-account/runners-window.css'
-import '../update/update.css'
 import './layout.css'
 
 const SPLIT_ICON = new URL('../about/assets/split-icon.png', import.meta.url).href
@@ -43,15 +42,15 @@ function Save({ payload }: { payload: LayoutSavePayload }) {
   useEscape(cancel)
   return (
     <form
-      className="update layout"
+      className="dialog layout"
       onSubmit={(event) => {
         event.preventDefault()
         void window.split.answerLayoutSave({ name, restoresForDisplays: auto, opensApps: openApps })
       }}
     >
-      <img className="update-icon" src={SPLIT_ICON} alt="" draggable={false} />
+      <img className="dialog-icon" src={SPLIT_ICON} alt="" draggable={false} />
       <h1>{payload.title}</h1>
-      <p className="update-body">{payload.message}</p>
+      <p className="dialog-body">{payload.message}</p>
       <div className="layout-fields">
         <input
           ref={field}
@@ -110,8 +109,8 @@ function Pro({ payload }: { payload: ProPayload }) {
   const close = () => window.close()
   useEscape(close)
   return (
-    <div className="update pro">
-      <img className="update-icon" src={SPLIT_ICON} alt="" draggable={false} />
+    <div className="dialog pro">
+      <img className="dialog-icon" src={SPLIT_ICON} alt="" draggable={false} />
       <h1 className="pro-title">{payload.title}</h1>
       <p className="pro-features">{payload.features}</p>
       <div className="pro-prices">
