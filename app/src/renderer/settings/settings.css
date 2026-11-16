@@ -11,16 +11,13 @@
   --card: var(--rw-box-bg);
   --separator: var(--rw-separator);
   --control-track: var(--rw-control-bg);
-  --control-selected: #ffffff;
-  --button: #ffffff;
-  --button-pressed: #e6e6e6;
-  --button-border: rgba(0, 0, 0, 0.14);
-  --recorder: #ffffff;
+  --button-border: var(--r-border);
+  --recorder: var(--r-input-bg);
   --recorder-pressed: #e6e6e6;
-  --recorder-border: rgba(0, 0, 0, 0.14);
-  --switch-off: rgba(0, 0, 0, 0.08);
-  --switch-on: #34c759;
-  --alert: #f0f0f0;
+  --recorder-border: var(--r-border);
+  --switch-off: var(--r-track);
+  --switch-on: var(--r-active);
+  --alert: var(--r-raised);
   --backdrop: rgba(0, 0, 0, 0.12);
   --green: #28cd41;
   --red: #ff3b30;
@@ -42,16 +39,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --control-selected: rgba(255, 255, 255, 0.24);
-    --button: rgba(255, 255, 255, 0.15);
-    --button-pressed: rgba(255, 255, 255, 0.25);
-    --button-border: rgba(255, 255, 255, 0.06);
-    --recorder: rgba(255, 255, 255, 0.07);
     --recorder-pressed: rgba(255, 255, 255, 0.14);
-    --recorder-border: rgba(255, 255, 255, 0.12);
-    --switch-off: rgba(255, 255, 255, 0.12);
-    --switch-on: #30d158;
-    --alert: #2c2c2e;
     --backdrop: rgba(0, 0, 0, 0.3);
     --green: #32d74b;
     --red: #ff453a;
@@ -154,11 +142,6 @@ p {
   background: var(--control-track);
 }
 
-.toolbar-item.selected {
-  background: var(--r-selected-bg);
-  color: var(--r-selected-text);
-}
-
 .toolbar-item.selected span {
   color: var(--r-selected-text);
   font-weight: 600;
@@ -221,7 +204,7 @@ p {
   flex: none;
   border-radius: var(--rw-radius);
   background: var(--card);
-  box-shadow: 0 0 0 var(--rw-border) var(--separator);
+  box-shadow: 0 0 0 1px var(--r-border);
 }
 
 .card-separator {
@@ -293,12 +276,12 @@ p {
 }
 
 .permission-dot.on {
-  background: var(--green);
+  background: var(--r-success);
 }
 
 .problems {
   font-size: 11px;
-  color: var(--orange);
+  color: var(--r-warning);
   white-space: pre-line;
 }
 
@@ -384,7 +367,7 @@ p {
 
 .conflict-message {
   font-weight: 600;
-  color: var(--orange);
+  color: var(--r-warning);
 }
 
 .conflict-informative {
@@ -514,8 +497,8 @@ p {
 
 /* On/off switch, the same values as every RUNNERS app (공통.md 「켬/끔 줄」, model: Remote's .switch .knob):
    26 × 16 track, 12 pt white knob that moves 10 pt, 0.15 s.
-   Why green: the user picked a green on-track with a knob that stays white for every RUNNERS app (2026-11-12);
-   the black/white primary read as a white track with a black knob in dark mode. */
+   Why blue: on is --r-active for every RUNNERS app (2026-11-16, green from 2026-11-12 until then) with a knob that
+   stays white; off is --r-track, dark enough to stand out from the card (2026-11-15). */
 .switch {
   position: relative;
   flex: none;
@@ -556,33 +539,24 @@ p {
   display: inline-flex;
   flex: none;
   padding: 1px;
-  border-radius: 6px;
+  border-radius: var(--rw-small-radius);
   background: var(--control-track);
+  /* Why: the guide rings the group once; the options inside draw no lines, the picked one shows by its blue. */
+  box-shadow: 0 0 0 1px var(--r-border);
 }
 
 .segmented button {
   height: 18px;
   padding: 0 9px;
   border: none;
-  border-radius: 5px;
-  background: transparent;
+  border-radius: var(--rw-small-radius);
   font-size: 11px;
   white-space: nowrap;
 }
 
-.segmented button + button:not(.selected) {
-  box-shadow: -0.5px 0 0 0 var(--separator);
-}
-
-.segmented button.selected + button {
-  box-shadow: none;
-}
-
-.segmented button.selected {
-  background: var(--control-selected);
-  box-shadow:
-    0 0 0 0.5px rgba(0, 0, 0, 0.06),
-    0 1px 1.5px rgba(0, 0, 0, 0.16);
+/* Why: only the unpicked options are see-through; the picked one takes .rw-picked's blue from runners-window.css. */
+.segmented button:not(.rw-picked) {
+  background: transparent;
 }
 
 .segmented.disabled {
@@ -595,11 +569,10 @@ p {
   height: 22px;
   padding: 0 12px;
   border: none;
-  border-radius: 6px;
-  background: var(--button);
-  box-shadow:
-    0 0 0 0.5px var(--button-border),
-    0 0.5px 1px rgba(0, 0, 0, 0.12);
+  border-radius: var(--rw-small-radius);
+  background: var(--rw-control-bg);
+  box-shadow: 0 0 0 1px var(--button-border);
+  color: var(--rw-text);
   font-size: 13px;
   white-space: nowrap;
 }
@@ -607,18 +580,20 @@ p {
 .button.small {
   height: 19px;
   padding: 0 9px;
-  border-radius: 5px;
+  border-radius: var(--rw-small-radius);
   font-size: 11px;
 }
 
+.button:hover,
 .button:active {
-  background: var(--button-pressed);
+  background: var(--rw-control-hover);
 }
 
 .button.primary {
   background: var(--rw-primary);
   color: var(--rw-on-primary);
-  box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.2);
+  box-shadow: none;
+  font-weight: 600;
 }
 
 .button.primary:active {
@@ -715,7 +690,7 @@ p {
   border-radius: 12px;
   background: var(--alert);
   box-shadow:
-    0 0 0 0.5px var(--separator),
+    0 0 0 1px var(--r-border),
     0 12px 36px rgba(0, 0, 0, 0.28);
   text-align: center;
 }
@@ -758,7 +733,7 @@ p {
 }
 
 .phone-dot.connected {
-  background: var(--green);
+  background: var(--r-success);
 }
 
 .phone-dot.offline {

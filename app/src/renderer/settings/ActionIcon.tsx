@@ -10,6 +10,7 @@ import {
   Undo2,
   type LucideIcon
 } from 'lucide-react'
+import './action-icon.css'
 
 type Fraction = [x: number, y: number, width: number, height: number]
 
@@ -58,14 +59,7 @@ function MiniScreen({ fractions }: { fractions: Fraction[] }) {
   const inset = fractions.length > 1 ? 0.6 : 0.4
   return (
     <svg width={WIDTH} height={HEIGHT} viewBox={`0 0 ${WIDTH} ${HEIGHT}`} aria-hidden>
-      <rect
-        {...screen}
-        rx={2.5}
-        fill="none"
-        stroke="currentColor"
-        strokeOpacity={0.55}
-        strokeWidth={1.3}
-      />
+      <rect {...screen} rx={2.5} fill="none" strokeWidth={1.3} className="mini-screen-frame" />
       {fractions.map(([x, y, width, height], index) => (
         <rect
           key={index}
@@ -74,11 +68,16 @@ function MiniScreen({ fractions }: { fractions: Fraction[] }) {
           width={Math.max(0, width * inner.width - 2 * inset)}
           height={Math.max(0, height * inner.height - 2 * inset)}
           rx={1.2}
-          fill="currentColor"
+          className="mini-screen-cell"
         />
       ))}
     </svg>
   )
+}
+
+/** True when the action has a screen picture, so the tray panel draws it the same way as the settings. */
+export function hasScreenPicture(action: string): boolean {
+  return action in REGIONS
 }
 
 export function ActionIcon({ action }: { action: string }) {

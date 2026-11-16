@@ -172,10 +172,10 @@ export default function App() {
               type="button"
               role="tab"
               aria-selected={tab === id}
-              className={tab === id ? 'toolbar-item selected' : 'toolbar-item'}
+              className={tab === id ? 'toolbar-item selected rw-selected' : 'toolbar-item'}
               onClick={() => setTab(id)}
             >
-              <Icon size={22} strokeWidth={1.5} aria-hidden />
+              <Icon size={24} strokeWidth={1.5} aria-hidden />
               <span>{strings.t(label)}</span>
             </button>
           ))}

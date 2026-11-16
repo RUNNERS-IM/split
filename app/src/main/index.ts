@@ -43,7 +43,7 @@ import type {
   SheetPayload,
   ViewState
 } from '../shared/types'
-import { removeLoginItem, runningPids } from './apps.ts'
+import { appPath, removeLoginItem, reopenApp, runningPids } from './apps.ts'
 import { displayChangeLabel, recordSoon, startDisplayWatcher } from './displays.ts'
 import {
   applyShape,
@@ -385,21 +385,53 @@ function perform(action: Action): void {
     console.error(`split: ${action}:`, error)
     // Why: shown in settings so a shortcut that does nothing has a reason.
     if (activeApp) {
-      setRefusingApp(activeApp)
+      setRefusingApp(activeApp, raw.active?.bundle)
     }
     return
   }
-  setRefusingApp(raw.refusingApp ?? (refusingApp === activeApp ? null : refusingApp))
+  const refusing = raw.refusingApp ?? (refusingApp === activeApp ? null : refusingApp)
+  setRefusingApp(refusing, raw.active?.app === refusing ? raw.active?.bundle : undefined)
   showOutcome(action, outcome, snapshot)
   recordSoon()
 }
 
-function setRefusingApp(name: string | null): void {
+/**
+ * `bundle` is given when the app was found at the moment of a shortcut; the first time an app
+ * refuses, that offers to reopen it, since until then every shortcut on it does nothing.
+ */
+function setRefusingApp(name: string | null, bundle?: string): void {
   if (refusingApp === name) {
     return
   }
   refusingApp = name
   pushState()
+  if (MAC && name && bundle) {
+    void offerToReopen(name, bundle)
+  }
+}
+
+let askingToReopen = false
+
+/** Asks to reopen an app that refuses to let Split move its windows; "Later" leaves the note in settings. */
+async function offerToReopen(name: string, bundle: string): Promise<void> {
+  if (askingToReopen) {
+    return
+  }
+  askingToReopen = true
+  // Why: the shortcut was pressed with the refusing app in front; without this the alert opens behind it.
+  app.focus({ steal: true })
+  const { response } = await dialog.showMessageBox({
+    type: 'warning',
+    message: t('ApplicationRefused.Title', name),
+    detail: t('ApplicationRefused.Body', name),
+    buttons: [t('ApplicationRefused.Reopen', name), t('ApplicationRefused.Later')],
+    defaultId: 0,
+    cancelId: 1
+  })
+  askingToReopen = false
+  if (response === 0 && (await reopenApp(bundle)) && refusingApp === name) {
+    setRefusingApp(null)
+  }
 }
 
 function showOutcome(action: Action, outcome: Outcome, snapshot: Snapshot): void {
@@ -586,6 +618,8 @@ function menuTemplate(panel: boolean): MenuItemConstructorOptions[] {
     const text = shortcutText(settings, action)
     const combo = text ? KeyCombo.parse(text) : null
     const item: MenuItemConstructorOptions = {
+      // Why: the tray panel draws the same picture as the settings' Shortcuts tab from this id (ActionIcon.tsx).
+      id: action,
       label: t(action),
       icon: menuIcon(action),
       // Why: the menu is shown while another app is in front; doing it now would move the menu's own window.
@@ -1387,6 +1421,19 @@ function openedAgain(argv: string[]): void {
   // with 3 windows, so it can be seen and photographed without unplugging a monitor.
   else if (argv.some((arg) => arg.startsWith('--display-notice'))) {
     showDisplayNotice(3, argv.includes('--display-notice=restored'))
+  }
+  // `--refused-notice=<bundle id>` asks to reopen that app as if it had refused, for screenshots.
+  else if (argv.some((arg) => arg.startsWith('--refused-notice='))) {
+    const bundle = argv.find((arg) => arg.startsWith('--refused-notice='))!.split('=')[1]
+    void appPath(bundle).then((path) =>
+      offerToReopen(
+        path
+          ?.split('/')
+          .pop()
+          ?.replace(/\.app$/, '') ?? bundle,
+        bundle
+      )
+    )
   }
   // `--guide` shows the Accessibility guide even when permission is on, for support and screenshots.
   else if (argv.includes('--guide') && MAC) {

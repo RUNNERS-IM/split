@@ -1,11 +1,9 @@
 ## 한국어
 
-- 어색하던 문구를 고쳤습니다. 창 정리를 되돌렸을 때의 안내, 업데이트 확인 결과, 휴대폰 연결 · 로그인 안내가 더 자연스럽게 읽힙니다.
-- 계정을 만들거나 비밀번호를 바꿀 때 비밀번호 형식이 틀리면 빨간 안내 한 줄만 보입니다. 전에는 같은 말이 회색으로 한 줄 더 나왔습니다.
-- 오픈소스 고지 첫 문장의 띄어쓰기를 고쳤습니다.
+- 창 이동을 막는 앱이 있으면 경고 창으로 알려 드리고, 그 자리에서 앱을 다시 열 수 있습니다.
+- 켜진 스위치 · 고른 탭 · 고른 모니터가 파랑으로 바뀌고, 단축키 아이콘은 창이 갈 자리만 파랗게 칠해 마우스를 올리면 펼쳐집니다.
 
 ## English
 
-- Reworded unclear text in Settings. The option that rearranges windows when displays change, its description, and the option for extra desktops after unplugging a display now explain themselves more clearly.
-- When creating an account or resetting your password, a password in the wrong format now shows a single red message instead of repeating the same rule in gray.
-- Fixed spacing in the first sentence of the open-source notices.
+- When an app blocks window moves, Split now warns you and lets you reopen that app right away.
+- Switches that are on, the selected tab and the selected display are now blue, and shortcut icons fill only the area the window goes to, opening up when you point at them.

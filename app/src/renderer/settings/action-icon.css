@@ -1,0 +1,42 @@
+/* The tiny screen in front of a shortcut, in the settings' Shortcuts tab and the tray panel: the part the window
+   goes to is a soft blue, the screen around it grey (user choice 1A 2A, 2026-11-16). The blue is lighter than
+   --r-active so a list of them does not read as picked lines. */
+:root {
+  --mini-screen-cell: #6ea8ff;
+  --mini-screen-frame: #6b6b6b;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --mini-screen-cell: #7ab0ff;
+    --mini-screen-frame: #a3a3a3;
+  }
+}
+
+.mini-screen-frame {
+  stroke: var(--mini-screen-frame);
+}
+
+.mini-screen-cell {
+  fill: var(--mini-screen-cell);
+}
+
+/* Only the line under the pointer moves: its parts open from a small window in the middle to their places.
+   Why not when a window opens: the tray panel opens many times a day, and every line moving at once is busy. */
+@media (prefers-reduced-motion: no-preference) {
+  .row:hover .mini-screen-cell,
+  .rm-item:hover .mini-screen-cell {
+    animation: mini-screen-open 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+}
+
+/* Centred in the 22 × 15 picture: a 6 × 4 window. The end is each part's own x, y, width and height. */
+@keyframes mini-screen-open {
+  from {
+    x: 8px;
+    y: 5.5px;
+    width: 6px;
+    height: 4px;
+    opacity: 0.4;
+  }
+}
