@@ -43,6 +43,27 @@ body,
   -webkit-mask-size: contain;
 }
 
+/* A shortcut's tiny screen (ActionIcon.tsx), in the same room as the other pictures. */
+.rm-item .action-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: calc(var(--rm-icon) + 4px);
+  height: var(--rm-icon);
+  margin: 0 -2px;
+}
+
+/* Why: the picture is drawn 22 wide; scaled into the row's icon room it keeps the same gap to the label as the other icons. */
+.rm-item .action-icon svg {
+  width: 100%;
+  height: auto;
+}
+
+/* The picked monitor: the light blue row comes from runners-menu.css; its picture takes the same blue as a picked tab's icon. */
+.rm-item[aria-selected='true'] .picture.template {
+  background: var(--r-active);
+}
+
 button.rm-item {
   cursor: default;
 }

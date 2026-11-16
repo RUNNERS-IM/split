@@ -94,7 +94,7 @@ h1 {
   height: 22px;
   border-radius: 11px;
   background: var(--rw-control-hover);
-  outline: 2px solid #ff9500;
+  outline: 2px solid var(--r-warning);
   outline-offset: 3px;
 }
 
@@ -117,7 +117,7 @@ h1 {
   height: 56px;
   margin-top: 8px;
   border-radius: 50%;
-  background: #34c759;
+  background: var(--r-success);
 }
 
 .guide-check::after {
@@ -210,7 +210,7 @@ h1 {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #ff9500;
+  background: var(--r-warning);
 }
 
 .link {

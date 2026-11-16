@@ -618,6 +618,8 @@ function menuTemplate(panel: boolean): MenuItemConstructorOptions[] {
     const text = shortcutText(settings, action)
     const combo = text ? KeyCombo.parse(text) : null
     const item: MenuItemConstructorOptions = {
+      // Why: the tray panel draws the same picture as the settings' Shortcuts tab from this id (ActionIcon.tsx).
+      id: action,
       label: t(action),
       icon: menuIcon(action),
       // Why: the menu is shown while another app is in front; doing it now would move the menu's own window.
