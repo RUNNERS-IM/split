@@ -37,7 +37,7 @@ h1 {
   color: var(--rw-text);
 }
 
-/* About five lines tall; longer notes scroll inside the box. */
+/* Five lines tall; longer notes scroll inside the box. */
 .changes {
   align-self: stretch;
   margin-top: 16px;
@@ -57,7 +57,8 @@ h1 {
 }
 
 .changes ul {
-  max-height: 96px;
+  /* Why: a whole number of lines (5 x line-height), so the box never ends halfway through a line. */
+  max-height: 8em;
   margin: 0;
   padding-inline-start: 16px;
   overflow-y: auto;

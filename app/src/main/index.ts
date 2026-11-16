@@ -7,6 +7,7 @@ import './error-report-start.ts'
 import { execFileSync } from 'node:child_process'
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
+import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import {
@@ -81,6 +82,8 @@ import {
 } from './overlay.ts'
 import { bindings, loadSettings, sanitize, saveSettings, shortcutText } from './settings.ts'
 import { checkForUpdatesNow, startUpdater } from './updater.ts'
+import { keepHidden, prepareTestShots, readTestShots } from './runners/test-shots.ts'
+import { runSplitTestShots } from './testShots.ts'
 import { proSublabel } from './pro.ts'
 import { preparePanel, setupTrayPanel, showPanelAtPointer, togglePanelUnder } from './trayPanel.ts'
 
@@ -88,6 +91,14 @@ const WEBSITE_URL = 'https://runners.im/tools/split'
 const ISSUES_URL = 'https://github.com/RUNNERS-IM/split/issues'
 /** The App Store build is made with SPLIT_STORE=1; Apple updates it, so it has no update check. */
 const STORE = process.env.SPLIT_STORE === '1' || process.mas === true
+
+// RUNNERS_TEST_SHOTS=<folder>: photograph every screen and quit (testShots.ts).
+const testShots = readTestShots()
+if (testShots) {
+  // Why: a run of its own settings and lock, so it neither reads nor changes the Split in use, and runs beside it.
+  app.setPath('userData', join(tmpdir(), `split-test-shots-${process.pid}`))
+}
+prepareTestShots(testShots, app.commandLine)
 const MAC = process.platform === 'darwin'
 
 /** Apps where Split's shortcuts always stay off: they use the same keys, or they are Split itself. */
@@ -1318,21 +1329,27 @@ function start(): void {
     preparePanel()
   }
   updateTray()
-  watchTrust()
-  if (MAC && app.isPackaged) {
+  // Why: in test shots the scenes set the permission state themselves; the real one would flip the guide to "ready".
+  if (!testShots) {
+    watchTrust()
+  }
+  if (MAC && app.isPackaged && !testShots) {
     watchBundle()
   }
-  applyLoginDefault()
-  if (!STORE) {
-    startUpdater(settings.autoUpdate)
-  }
-  if (!trusted) {
-    askForTrust()
-  } else if (loaded.firstLaunch || !settings.showTrayIcon) {
-    showSettings()
-  }
-  if (MAC) {
-    watchConflictingApps()
+  // Why: a test run opens its own screens; the guide, updates, login item and questions would change this Mac or cover them.
+  if (!testShots) {
+    applyLoginDefault()
+    if (!STORE) {
+      startUpdater(settings.autoUpdate)
+    }
+    if (!trusted) {
+      askForTrust()
+    } else if (loaded.firstLaunch || !settings.showTrayIcon) {
+      showSettings()
+    }
+    if (MAC) {
+      watchConflictingApps()
+    }
   }
   // Shortcuts registered before sleep can stop firing on some systems; register them again on wake.
   powerMonitor.on('resume', syncShortcuts)
@@ -1344,6 +1361,9 @@ function start(): void {
   onLayoutsChanged(announceState)
   screen.on('display-added', announceState)
   screen.on('display-removed', announceState)
+  if (testShots) {
+    void runSplitTestShots(testShots, testScreens())
+  }
 }
 
 /** What the phone app shows for this computer; also the answer to layouts.list. */
@@ -1400,6 +1420,36 @@ function showDisplayNotice(count: number, restored: boolean): void {
     shortcut: '',
     tip: label.tip
   })
+}
+
+/** What the test-shot mode opens, from the same functions the menu and the dev switches use. */
+function testScreens() {
+  return {
+    showSettings,
+    showGuide() {
+      // Why: this Mac may have already let the test app in; the guide's first view is the one before permission.
+      trusted = false
+      pushState()
+      showGuide({
+        preload: preloadPath(),
+        url: rendererUrl('guide'),
+        register: () => undefined,
+        // Why: "already allowed" keeps the guide from opening the real System Settings during the shots.
+        trusted: () => true
+      })
+    },
+    showGuideGranted() {
+      trusted = true
+      pushState()
+      guideGranted()
+    },
+    showDisplayNotice: () => showDisplayNotice(3, false),
+    openSheet,
+    languageChanged() {
+      updateTray()
+      pushState()
+    }
+  }
 }
 
 /**
@@ -1471,6 +1521,10 @@ if (!app.requestSingleInstanceLock()) {
       globalShortcut.unregisterAll()
     }
   })
+  if (testShots) {
+    // Why: photographs are taken from the page, so the windows stay see-through and never cover the screen of whoever uses this Mac.
+    app.on('browser-window-created', (_event, window) => keepHidden(window))
+  }
   app.on('web-contents-created', (_event, contents) => {
     // Links in pages open in the browser, never in a Split window.
     contents.setWindowOpenHandler(({ url }) => {

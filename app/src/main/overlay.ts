@@ -377,7 +377,10 @@ export function askToInstall(payload: UpdatePayload, focus: boolean): Promise<bo
       answerUpdate?.(false)
     })
     window.webContents.once('did-finish-load', () => {
-      const measure = 'Math.ceil(document.documentElement.scrollHeight)'
+      // Why: the page's own scrollHeight never drops below the window's first height, so the window kept empty
+      // space under the buttons; the content block is measured instead, a frame later so React has drawn it.
+      const measure = `new Promise((done) => requestAnimationFrame(() => done(Math.ceil(
+        document.querySelector('.update')?.getBoundingClientRect().height ?? document.documentElement.scrollHeight))))`
       void window.webContents
         .executeJavaScript(measure)
         .then((height: unknown) => {

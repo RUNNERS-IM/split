@@ -850,10 +850,11 @@ export function layoutPanel(): LayoutPanel {
       return {
         id: displayIdOf(nativeScreen),
         name: displayNameOf(nativeScreen),
-        detail: screenDetail(nativeScreen, count),
-        auto: cells(shapeFractions('Auto', autoPreviewCount(count)))
+        detail: screenDetail(nativeScreen, count)
       }
     }),
+    // Why: the panel's "Auto" chip cycles through what Auto does for two, three and four windows (user choice 1B).
+    autoCycle: [2, 3, 4].map((count) => cells(shapeFractions('Auto', count))),
     shapes: SHAPES.map((shape) => ({
       id: `shape:${shape}`,
       label: t(`LayoutShape${shape}`),
