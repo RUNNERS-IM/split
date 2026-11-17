@@ -5,10 +5,10 @@ import '../error-report-start.ts'
 import { StrictMode, useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import type { ViewState } from '../../shared/types'
+import { SplitIcon } from '../about/split-icon'
 import '../runners-account/runners-window.css'
 import './guide.css'
 
-const SPLIT_ICON = new URL('../about/assets/split-icon.png', import.meta.url).href
 const DONE_PICTURE = new URL('../runners-account/assets/panda/done.webp', import.meta.url).href
 
 function App({ initial }: { initial: ViewState }) {
@@ -65,7 +65,7 @@ function App({ initial }: { initial: ViewState }) {
   return (
     <div className="guide">
       <div className="guide-heading">
-        <img className="guide-icon" src={SPLIT_ICON} alt="" draggable={false} />
+        <SplitIcon className="guide-icon" />
         <h1>{t('AccessibilityGuide.Title')}</h1>
       </div>
       <p className="guide-description">
@@ -78,7 +78,7 @@ function App({ initial }: { initial: ViewState }) {
       <div className="guide-list">
         <p className="guide-list-title">{t('AccessibilityGuide.ListTitle')}</p>
         <div className="guide-row">
-          <img src={SPLIT_ICON} alt="" draggable={false} />
+          <SplitIcon />
           <span>Split</span>
           <span className="guide-switch" aria-hidden="true" />
         </div>
