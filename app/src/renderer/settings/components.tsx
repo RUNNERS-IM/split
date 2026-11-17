@@ -2,7 +2,7 @@
 // cards with rows split by thin lines, small switches and segmented controls, small push buttons,
 // and an in-page alert that stands in for NSAlert.
 import { Children, Fragment, useEffect, type CSSProperties, type ReactNode } from 'react'
-import iconUrl from '../about/assets/split-icon.png'
+import { SplitIcon } from '../about/split-icon'
 
 /** A rounded group like the ones in System Settings. Rows are separated by thin lines. */
 export function Card({ children }: { children: ReactNode }) {
@@ -182,9 +182,7 @@ export function Button({
 
 /** The app icon, as the Mac About line and alerts show it. */
 export function AppIcon({ size }: { size: number }) {
-  return (
-    <img className="app-icon" src={iconUrl} width={size} height={size} alt="" draggable={false} />
-  )
+  return <SplitIcon className="app-icon" size={size} />
 }
 
 /**

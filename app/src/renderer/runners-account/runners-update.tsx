@@ -15,6 +15,8 @@ export type RunnersUpdateOffer = {
 
 export type RunnersUpdateProps = {
   appIcon: string
+  /** 어두운 화면에서 쓸 블랙 판. 주면 화면 밝기를 따라 바뀐다(2026-11-11 결정: Dock 은 화이트 판, 앱 안은 밝기를 따라감). */
+  appIconDark?: string
   t: (key: string, args?: Record<string, string | number>) => string
   /** 창이 뜰 때 메인 프로세스에 있는 지금 상태. */
   offer: () => Promise<RunnersUpdateOffer | null>
@@ -24,7 +26,7 @@ export type RunnersUpdateProps = {
 }
 
 export function RunnersUpdate(props: RunnersUpdateProps) {
-  const { appIcon, t, offer: readOffer, onOffer, answer, fitHeight } = props
+  const { appIcon, appIconDark, t, offer: readOffer, onOffer, answer, fitHeight } = props
   const [offer, setOffer] = useState<RunnersUpdateOffer | null>(null)
   const [installing, setInstalling] = useState(false)
   const root = useRef<HTMLElement>(null)
@@ -108,7 +110,10 @@ export function RunnersUpdate(props: RunnersUpdateProps) {
   const percent = Math.max(0, Math.min(100, Math.floor(offer?.percent ?? 0)))
   return (
     <main className="update" ref={root}>
-      <img className="update-icon" src={appIcon} alt="" draggable={false} />
+      <picture className="rw-picture">
+        {appIconDark && <source srcSet={appIconDark} media="(prefers-color-scheme: dark)" />}
+        <img className="update-icon" src={appIcon} alt="" draggable={false} />
+      </picture>
       <h1 className="update-title">{t('update.title')}</h1>
       <p className="update-ask">{offer ? t('update.ask', { version: offer.version }) : ' '}</p>
       {notes && (

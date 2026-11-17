@@ -3,7 +3,7 @@
 import '../error-report-start.ts'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import iconUrl from '../about/assets/split-icon.png'
+import { splitIcon, splitIconDark } from '../about/split-icon'
 import { RunnersUpdate, type RunnersUpdateProps } from '../runners-account/runners-update'
 import type { UpdatePageText } from '../../shared/types'
 import './update.css'
@@ -38,7 +38,8 @@ document.title = t('update.title')
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <RunnersUpdate
-      appIcon={iconUrl}
+      appIcon={splitIcon}
+      appIconDark={splitIconDark}
       t={t}
       offer={updateOffer}
       onOffer={onUpdateOffer}

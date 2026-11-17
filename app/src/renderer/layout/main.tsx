@@ -6,10 +6,9 @@ import '../error-report-start.ts'
 import { StrictMode, useEffect, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import type { LayoutPagePayload, LayoutSavePayload, ProPayload } from '../../shared/types'
+import { SplitIcon } from '../about/split-icon'
 import '../runners-account/runners-window.css'
 import './layout.css'
-
-const SPLIT_ICON = new URL('../about/assets/split-icon.png', import.meta.url).href
 
 function readPayload(): LayoutPagePayload | null {
   try {
@@ -48,7 +47,7 @@ function Save({ payload }: { payload: LayoutSavePayload }) {
         void window.split.answerLayoutSave({ name, restoresForDisplays: auto, opensApps: openApps })
       }}
     >
-      <img className="dialog-icon" src={SPLIT_ICON} alt="" draggable={false} />
+      <SplitIcon className="dialog-icon" />
       <h1>{payload.title}</h1>
       <p className="dialog-body">{payload.message}</p>
       <div className="layout-fields">
@@ -110,7 +109,7 @@ function Pro({ payload }: { payload: ProPayload }) {
   useEscape(close)
   return (
     <div className="dialog pro">
-      <img className="dialog-icon" src={SPLIT_ICON} alt="" draggable={false} />
+      <SplitIcon className="dialog-icon" />
       <h1 className="pro-title">{payload.title}</h1>
       <p className="pro-features">{payload.features}</p>
       <div className="pro-prices">
