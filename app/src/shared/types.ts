@@ -94,20 +94,21 @@ export type SheetPayload = {
   sections: { title: string; rows: { name: string; keys: string }[] }[]
 }
 
-/** What the update window shows; it arrives in the page URL's hash as JSON. */
-export type UpdatePayload = {
-  title: string
-  body: string
-  /** "What's new" heading and its lines (already in Korean or English). */
-  changesTitle: string
-  changes: string[]
-  install: string
-  later: string
-  /** True when the window opens before the download is done (a check from the menu). */
+/** The update window's words in the chosen language (update.* keys); it arrives in the page URL's hash as JSON. */
+export type UpdatePageText = {
+  lang: string
+  rtl: boolean
+  text: Record<string, string>
+}
+
+/** What the update window shows now (runners-app-kit UpdateOffer): sent again on every change. */
+export type UpdateOffer = {
+  version: string
+  /** "What's new" lines in Korean or English, or null when the release text has none. */
+  notes: string[] | null
+  /** True while the download runs (a check from the menu); the buttons show once it is done. */
   downloading: boolean
-  /** "Downloading… %@%" and "Installing…". */
-  downloadingText: string
-  installingText: string
+  percent: number
 }
 
 /** What the "Save Current Layout" window shows; it arrives in the page URL's hash as JSON. */
@@ -152,9 +153,6 @@ export type LayoutSaveAnswer = {
   restoresForDisplays: boolean
   opensApps: boolean
 } | null
-
-/** Download progress in percent, or "ready" once the update can be installed. */
-export type UpdateProgress = number | 'ready'
 
 /** One line of the tray panel (macOS), made from the menu template by src/core/panelItems.ts. */
 type PanelLine = {
@@ -219,9 +217,11 @@ export type SplitApi = {
   openLink(kind: LinkKind): Promise<void>
   /** Asks macOS for Accessibility access (shows the system prompt the first time). */
   requestTrust(): Promise<boolean>
-  /** The update window's answer: true installs now, false is "Later". */
-  answerUpdate(install: boolean): Promise<void>
-  onUpdateProgress(listener: (progress: UpdateProgress) => void): () => void
+  /** The update window: its state now, its later changes, the button pressed, and its content height. */
+  updateOffer(): Promise<UpdateOffer | null>
+  onUpdateOffer(listener: (offer: UpdateOffer) => void): () => void
+  answerUpdate(answer: 'install' | 'later'): Promise<void>
+  fitUpdateHeight(height: number): void
   /** The "Save Current Layout" window's answer. */
   answerLayoutSave(answer: LayoutSaveAnswer): Promise<void>
   /** Opens the Split Pro window as a sheet on the window that asks (the Pro mark was clicked). */

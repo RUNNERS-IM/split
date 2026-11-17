@@ -1,7 +1,7 @@
 // About tab: the shared About part (runners-app-kit/desktop), the same in the other RUNNERS apps. It took the place
 // of the separate About window (shared decision 2026-11-07).
 import { useMemo } from 'react'
-import iconUrl from '../../about/assets/split-icon.png'
+import { splitIcon, splitIconDark } from '../../about/split-icon'
 import { RunnersAbout, type RunnersT } from '../../runners-account/runners-about'
 import type { ViewState } from '../../../shared/types.ts'
 import { useStrings } from '../strings.ts'
@@ -35,7 +35,8 @@ export default function AboutTab({ state }: { state: ViewState }) {
       <RunnersAbout
         appId="split"
         appName="Split"
-        appIcon={iconUrl}
+        appIcon={splitIcon}
+        appIconDark={splitIconDark}
         website="https://runners.im/tools/split"
         github="https://github.com/RUNNERS-IM/split"
         locale={state.locale}

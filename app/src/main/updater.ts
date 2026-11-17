@@ -1,12 +1,16 @@
 // Updates for the direct-download build (not the App Store one): check once a day, download in
 // the background, then ask before installing, the same as every RUNNERS app.
+// The window is runners-app-kit's (overlay.ts askUpdate); this check-and-download flow is still Split's own,
+// as Draw's is, so "Later" and the settings switch keep working as before.
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { app, dialog, powerMonitor } from 'electron'
 import updater, { type UpdateInfo } from 'electron-updater'
-import type { UpdatePayload } from '../shared/types'
+import type { UpdateOffer } from '../shared/types'
 import { currentLanguage, t } from './i18n.ts'
-import { askToInstall, closeUpdateWindow, setUpdateProgress } from './overlay.ts'
+import { askUpdate, showUpdateWindow } from './overlay.ts'
+import { releaseNoteLines } from './runners/release-notes.ts'
+import type { UpdatePrompt } from './runners/updates.ts'
 
 const { autoUpdater } = updater
 const DAY = 24 * 60 * 60 * 1000
@@ -51,67 +55,61 @@ function postpone(): void {
   }
 }
 
-type Notes = string | { note: string | null }[] | null | undefined
+/** The open update window; `dropped` once Split closed it itself, so its "Later" is not taken as an answer. */
+let asking: { prompt: UpdatePrompt; dropped: boolean } | null = null
 
-/**
- * The "What's new" lines for one language from the GitHub release text, which has a "## 한국어"
- * and a "## English" heading, each over a "- " list (see _docs/작업 가이드/공통.md).
- * GitHub hands the text over as HTML, so tags are turned back into lines first.
- * Anything that does not follow that shape gives no lines, and the window leaves the box out.
- */
-export function releaseNotes(notes: Notes, language: 'ko' | 'en'): string[] {
-  const raw = Array.isArray(notes) ? (notes[0]?.note ?? '') : (notes ?? '')
-  const text = raw
-    .replace(/<h\d[^>]*>/gi, '\n## ')
-    .replace(/<li[^>]*>/gi, '\n- ')
-    .replace(/<\/(h\d|li|p|ul)>|<br\s*\/?>/gi, '\n')
-    .replace(/<[^>]+>/g, '')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&amp;/g, '&')
-  const heading = language === 'ko' ? '한국어' : 'english'
-  const lines: string[] = []
-  let inside = false
-  for (const line of text.split('\n').map((value) => value.trim())) {
-    if (line.startsWith('#')) {
-      inside = line.replace(/^#+\s*/, '').toLowerCase() === heading
-    } else if (inside && line.startsWith('- ') && line.length > 2) {
-      lines.push(line.slice(2).trim())
-    }
-  }
-  return lines
-}
-
-function payload(info: UpdateInfo, downloading: boolean): UpdatePayload {
+function offer(info: UpdateInfo, downloading: boolean): UpdateOffer {
   return {
-    title: t('UpdateAvailableTitle'),
-    body: t('UpdateAvailableBody', info.version.replace('+', '.')),
-    changesTitle: t('UpdateChanges'),
-    changes: releaseNotes(info.releaseNotes, currentLanguage().startsWith('ko') ? 'ko' : 'en'),
-    install: t('UpdateInstall'),
-    later: t('UpdateLater'),
+    version: info.version.replace('+', '.'),
+    notes: releaseNoteLines(info.releaseNotes, currentLanguage().startsWith('ko') ? 'ko' : 'en'),
     downloading,
-    downloadingText: t('UpdateDownloading'),
-    installingText: t('UpdateInstalling')
+    percent: downloading ? 0 : 100
   }
 }
 
 /** Waits for the window's answer: install, or remember "Later" for the rest of the day. */
 async function ask(info: UpdateInfo, downloading: boolean, focus: boolean): Promise<void> {
-  const install = await askToInstall(payload(info, downloading), focus)
-  if (install === null) {
+  // Why: a window already asking only comes forward, so a second check never turns into a "Later".
+  if (asking && showUpdateWindow(focus)) {
+    return
+  }
+  const mine = { prompt: askUpdate(offer(info, downloading), focus), dropped: false }
+  asking = mine
+  const answer = await mine.prompt.answer
+  if (asking === mine) {
+    asking = null
+  }
+  if (mine.dropped) {
     return
   }
   // Why silent and run after: Windows would otherwise walk through the installer's pages and not open Split again.
-  if (install) {
+  if (answer === 'install') {
     autoUpdater.quitAndInstall(true, true)
   } else if (!downloaded) {
     reopenWhenReady = true
   } else {
     postpone()
   }
+}
+
+/** Shows the download in the open window, or its buttons once done; false when no window is open. */
+function setProgress(change: Partial<UpdateOffer>): boolean {
+  if (!asking) {
+    return false
+  }
+  asking.prompt.set(change)
+  return true
+}
+
+/** Closes the update window with no answer, when the download it shows has failed; false when none is open. */
+function closeUpdateWindow(): boolean {
+  if (!asking) {
+    return false
+  }
+  asking.dropped = true
+  asking.prompt.close()
+  asking = null
+  return true
 }
 
 function wire(): void {
@@ -132,10 +130,10 @@ function wire(): void {
     manual = false
     void ask(info, true, true)
   })
-  autoUpdater.on('download-progress', (progress) => setUpdateProgress(progress.percent))
+  autoUpdater.on('download-progress', (progress) => setProgress({ percent: progress.percent }))
   autoUpdater.on('update-downloaded', (info) => {
     downloaded = true
-    if (setUpdateProgress('ready')) {
+    if (setProgress({ downloading: false, percent: 100 })) {
       return
     }
     if (reopenWhenReady) {

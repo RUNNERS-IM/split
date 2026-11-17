@@ -1,11 +1,13 @@
 // Main-process side of the three small Split windows that are not Settings:
 // - the move feedback overlay (glow, label, menu preview), one see-through window over one screen,
 // - the shortcut list card shown while ⌥⌘ is held,
-// - the About window.
-// The pages live in src/renderer/{overlay,sheet}; this file only places, shows and hides them.
+// - the update window (runners-app-kit's RunnersUpdate).
+// The pages live in src/renderer/{overlay,sheet,update}; this file only places, shows and hides them.
 import { app, BrowserWindow, ipcMain, screen, type Display } from 'electron'
-import type { OverlayPayload, SheetPayload, UpdatePayload, UpdateProgress } from '../shared/types'
+import type { OverlayPayload, SheetPayload, UpdatePageText } from '../shared/types'
 import { durationMs, overlayLifetime, type OverlayMessage } from '../renderer/overlay/metrics'
+import { currentLanguage, rightToLeft, t } from './i18n.ts'
+import { createUpdateWindow } from './runners/update-window.ts'
 
 export { durationMs }
 
@@ -324,104 +326,94 @@ export function hideSheet(): void {
   }, 120 / steps)
 }
 
+const UPDATE_WIDTH = 400
+/** The words RunnersUpdate asks for (runners-update.tsx); the page fills {{version}} and {{percent}} itself. */
+const UPDATE_TEXT_KEYS = [
+  'update.title',
+  'update.ask',
+  'update.notes',
+  'update.later',
+  'update.install',
+  'update.installing',
+  'update.downloading'
+]
 let updateWindow: BrowserWindow | null = null
-let answerUpdate: ((install: boolean | null) => void) | null = null
 
 /**
- * Shows the "new version" window and resolves with the answer: true for Install Now, false for
- * Later or closing the window, null when nobody answered (this call only brought an open window
- * forward, or closeUpdateWindow closed it).
- * `focus` is for a check from the menu, where the person is waiting for it. The daily check shows
- * the window without taking focus, so keys typed in another app never land on it.
+ * The "new version" window: runners-app-kit's createUpdateWindow (answers, the 1 s guard, closing is Later) around a
+ * Split window that shows RunnersUpdate. The page gets its words in the URL hash and its state over `update:offer`.
  */
-export function askToInstall(payload: UpdatePayload, focus: boolean): Promise<boolean | null> {
-  if (focus && isMac) {
-    app.focus({ steal: true })
-  }
-  if (updateWindow && !updateWindow.isDestroyed()) {
-    if (focus) {
-      updateWindow.show()
-      updateWindow.focus()
-    } else {
-      updateWindow.showInactive()
+const updates = createUpdateWindow({
+  channel: 'update:offerChanged',
+  focusApp: () => {
+    if (isMac) {
+      app.focus({ steal: true })
     }
-    return Promise.resolve(null)
-  }
-  const window = new BrowserWindow({
-    width: 400,
-    height: payload.changes.length > 0 ? 420 : 270,
-    useContentSize: true,
-    show: false,
-    resizable: false,
-    minimizable: false,
-    maximizable: false,
-    fullscreenable: false,
-    autoHideMenuBar: true,
-    title: payload.title,
-    ...(isMac ? { titleBarStyle: 'hidden' as const } : {}),
-    webPreferences: { preload: preloadPath, contextIsolation: true, sandbox: true }
-  })
-  updateWindow = window
-  return new Promise((resolve) => {
-    answerUpdate = (install) => {
-      answerUpdate = null
-      resolve(install)
-      if (!window.isDestroyed()) {
-        window.close()
-      }
-    }
+  },
+  create: () => {
+    const window = new BrowserWindow({
+      width: UPDATE_WIDTH,
+      height: 270,
+      useContentSize: true,
+      show: false,
+      resizable: false,
+      minimizable: false,
+      maximizable: false,
+      fullscreenable: false,
+      autoHideMenuBar: true,
+      title: t('update.title'),
+      ...(isMac ? { titleBarStyle: 'hidden' as const } : {}),
+      webPreferences: { preload: preloadPath, contextIsolation: true, sandbox: true }
+    })
+    updateWindow = window
     window.on('closed', () => {
       if (updateWindow === window) {
         updateWindow = null
       }
-      answerUpdate?.(false)
     })
-    window.webContents.once('did-finish-load', () => {
-      // Why: the page's own scrollHeight never drops below the window's first height, so the window kept empty
-      // space under the buttons; the content block is measured instead, a frame later so React has drawn it.
-      const measure = `new Promise((done) => requestAnimationFrame(() => done(Math.ceil(
-        document.querySelector('.update')?.getBoundingClientRect().height ?? document.documentElement.scrollHeight))))`
-      void window.webContents
-        .executeJavaScript(measure)
-        .then((height: unknown) => {
-          if (!window.isDestroyed() && typeof height === 'number' && height > 0) {
-            window.setContentSize(400, height)
-          }
-        })
-        .catch(() => undefined)
-        .finally(() => {
-          if (window.isDestroyed()) {
-            return
-          }
-          window.center()
-          if (focus) {
-            window.show()
-            window.focus()
-          } else {
-            window.showInactive()
-          }
-        })
-    })
-    void window.loadURL(`${urlFor('update.html')}#${encodeURIComponent(JSON.stringify(payload))}`)
-  })
-}
+    const page: UpdatePageText = {
+      lang: currentLanguage(),
+      rtl: rightToLeft(),
+      text: Object.fromEntries(UPDATE_TEXT_KEYS.map((key) => [key, t(key)]))
+    }
+    void window.loadURL(`${urlFor('update.html')}#${encodeURIComponent(JSON.stringify(page))}`)
+    return window
+  }
+})
 
-/** Passes download progress to the open update window; false when no window is open. */
-export function setUpdateProgress(progress: UpdateProgress): boolean {
-  if (!updateWindow || updateWindow.isDestroyed()) {
+/** Opens the update window (closing one already open); see runners/updates.ts for the answer and `set`. */
+export const askUpdate = updates.askUpdate
+
+/** Brings the open update window forward; false when none is open. Without focus it never takes the keyboard. */
+export function showUpdateWindow(focus: boolean): boolean {
+  const window = updateWindow
+  if (!window || window.isDestroyed()) {
     return false
   }
-  updateWindow.webContents.send('update:progress', progress)
+  if (focus) {
+    if (isMac) {
+      app.focus({ steal: true })
+    }
+    window.show()
+    window.focus()
+  } else {
+    window.showInactive()
+  }
   return true
 }
 
-/** Closes the update window with no answer, when the download it shows has failed; false when none is open. */
-export function closeUpdateWindow(): boolean {
-  if (!updateWindow || updateWindow.isDestroyed()) {
-    return false
+ipcMain.handle('update:offer', () => updates.offer())
+ipcMain.handle('update:answer', (_event, answer: unknown) =>
+  updates.answer(answer === 'install' ? 'install' : 'later')
+)
+ipcMain.on('update:fit', (event, height: unknown) => {
+  const window = BrowserWindow.fromWebContents(event.sender)
+  if (!window || window !== updateWindow || typeof height !== 'number' || height <= 0) {
+    return
   }
-  answerUpdate?.(null)
-  return true
-}
-
-ipcMain.handle('update:answer', (_event, install: boolean) => answerUpdate?.(install === true))
+  window.setContentSize(UPDATE_WIDTH, Math.ceil(height))
+  // Why: the window is centred once when it first shows; a height that arrives before that keeps it centred too.
+  if (!window.isVisible()) {
+    window.center()
+  }
+})

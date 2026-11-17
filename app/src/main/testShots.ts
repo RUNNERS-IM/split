@@ -4,11 +4,12 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { app, BrowserWindow, nativeTheme } from 'electron'
-import type { SettingsTab, UpdatePayload } from '../shared/types'
-import { currentLanguage, loadLanguage, t } from './i18n.ts'
-import { askToInstall, closeUpdateWindow, hideFeedback, hideSheet } from './overlay.ts'
+import type { SettingsTab, UpdateOffer } from '../shared/types'
+import { currentLanguage, loadLanguage } from './i18n.ts'
+import { askUpdate, hideFeedback, hideSheet } from './overlay.ts'
+import { askToSaveLayout } from './layouts.ts'
 import { hidePanel, showPanelAtPointer } from './trayPanel.ts'
-import { releaseNotes } from './updater.ts'
+import { releaseNoteLines } from './runners/release-notes.ts'
 import { runTestShots, type TestShotPass, type TestShotsConfig } from './runners/test-shots.ts'
 
 export type SplitScreens = {
@@ -54,23 +55,18 @@ async function evaluate(window: BrowserWindow | undefined, script: string): Prom
 }
 
 /** The update window with this release's notes, as an old version would show it. */
-function updatePayload(): UpdatePayload {
+function updateOffer(): UpdateOffer {
   let notes = ''
   try {
     notes = readFileSync(join(app.getAppPath(), '..', 'RELEASE_NOTES.md'), 'utf8')
   } catch {
-    // A packaged app has no notes beside it; the window then shows its heading only.
+    // A packaged app has no notes beside it; the window then leaves the box out.
   }
   return {
-    title: t('UpdateAvailableTitle'),
-    body: t('UpdateAvailableBody', app.getVersion()),
-    changesTitle: t('UpdateChanges'),
-    changes: releaseNotes(notes, currentLanguage().startsWith('ko') ? 'ko' : 'en'),
-    install: t('UpdateInstall'),
-    later: t('UpdateLater'),
+    version: app.getVersion(),
+    notes: releaseNoteLines(notes, currentLanguage().startsWith('ko') ? 'ko' : 'en'),
     downloading: false,
-    downloadingText: t('UpdateDownloading'),
-    installingText: t('UpdateInstalling')
+    percent: 100
   }
 }
 
@@ -148,7 +144,7 @@ async function popupScenes(pass: TestShotPass, screens: SplitScreens) {
     pass.note('권한 안내 창 없음')
   }
 
-  void askToInstall(updatePayload(), false)
+  askUpdate(updateOffer(), false)
   await pass.wait(900)
   const update = windowOf('update')
   if (update) {
@@ -156,7 +152,7 @@ async function popupScenes(pass: TestShotPass, screens: SplitScreens) {
   } else {
     pass.note('업데이트 창 없음')
   }
-  closeUpdateWindow()
+  await closeWindowOf('update')
 
   screens.showDisplayNotice()
   await pass.wait(700)
@@ -184,6 +180,28 @@ async function popupScenes(pass: TestShotPass, screens: SplitScreens) {
   await closeWindowOf('settings')
   // The "app refuses to move" warning is a native macOS alert: it has no page to photograph.
   pass.note('창 이동 거부 경고는 macOS 기본 경고 창이라 찍지 않음')
+
+  // Why: closing the window is Cancel, so nothing is saved.
+  void askToSaveLayout()
+  await pass.wait(900)
+  const layout = windowOf('layout')
+  if (layout) {
+    await pass.shot(layout, 'popups', '배치-저장')
+  } else {
+    pass.note('배치 저장 창 없음')
+  }
+  await closeWindowOf('layout')
+
+  // The update window as a check from the menu shows it: a progress bar where the buttons go.
+  askUpdate({ ...updateOffer(), downloading: true, percent: 42 }, false)
+  await pass.wait(900)
+  const progress = windowOf('update')
+  if (progress) {
+    await pass.shot(progress, 'popups', '업데이트-받는-중')
+  } else {
+    pass.note('업데이트 창(받는 중) 없음')
+  }
+  await closeWindowOf('update')
 }
 
 async function accountScenes(pass: TestShotPass, screens: SplitScreens) {
