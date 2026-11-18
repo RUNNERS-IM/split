@@ -217,7 +217,7 @@
   "update.downloading": "Downloading… {{percent}}%",
   "update.done": "Updated to {{version}}",
   "update.ok": "OK",
-  "update.showNotes": "See what's new",
+  "update.showNotes": "See What’s New",
   "update.installing": "Installing…",
   "SectionBehavior": "Behavior",
   "SectionPermission": "Permissions",

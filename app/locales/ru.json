@@ -221,7 +221,7 @@
   "update.downloading": "Загрузка… {{percent}} %",
   "update.done": "Обновлено до {{version}}",
   "update.ok": "ОК",
-  "update.showNotes": "Что нового",
+  "update.showNotes": "Посмотреть, что нового",
   "update.installing": "Установка…",
   "SectionBehavior": "Поведение",
   "SectionPermission": "Разрешения",

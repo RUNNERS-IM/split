@@ -213,7 +213,7 @@
   "update.downloading": "ダウンロード中… {{percent}}%",
   "update.done": "{{version}} にアップデートしました",
   "update.ok": "OK",
-  "update.showNotes": "新機能を見る",
+  "update.showNotes": "変更点を見る",
   "update.installing": "インストール中…",
   "SectionBehavior": "動作",
   "SectionPermission": "アクセス権",

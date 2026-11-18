@@ -213,7 +213,7 @@
   "update.downloading": "Đang tải về… {{percent}}%",
   "update.done": "Đã cập nhật lên {{version}}",
   "update.ok": "OK",
-  "update.showNotes": "Xem điểm mới",
+  "update.showNotes": "Xem có gì mới",
   "update.installing": "Đang cài đặt…",
   "SectionBehavior": "Hoạt động",
   "SectionPermission": "Quyền",

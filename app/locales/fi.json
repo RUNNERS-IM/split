@@ -217,7 +217,7 @@
   "update.downloading": "Ladataan… {{percent}} %",
   "update.done": "Päivitetty versioon {{version}}",
   "update.ok": "OK",
-  "update.showNotes": "Näytä uutuudet",
+  "update.showNotes": "Katso uutta",
   "update.installing": "Asennetaan…",
   "SectionBehavior": "Toiminta",
   "SectionPermission": "Käyttöoikeudet",

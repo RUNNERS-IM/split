@@ -221,7 +221,7 @@
   "update.downloading": "Pobieranie… {{percent}}%",
   "update.done": "Zaktualizowano do {{version}}",
   "update.ok": "OK",
-  "update.showNotes": "Zobacz nowości",
+  "update.showNotes": "Zobacz, co nowego",
   "update.installing": "Instalowanie…",
   "SectionBehavior": "Działanie",
   "SectionPermission": "Uprawnienia",
