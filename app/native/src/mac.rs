@@ -74,6 +74,7 @@ unsafe extern "C" {
         attribute: CFTypeRef,
         value: CFTypeRef,
     ) -> AXError;
+    fn AXUIElementGetPid(element: AXUIElementRef, pid: *mut i32) -> AXError;
     fn AXValueCreate(kind: u32, value: *const c_void) -> CFTypeRef;
     fn AXValueGetValue(value: CFTypeRef, kind: u32, out: *mut c_void) -> u8;
     fn AXIsProcessTrusted() -> u8;
@@ -92,6 +93,8 @@ unsafe extern "C" {
     fn CFArrayGetCount(array: CFTypeRef) -> isize;
     fn CFArrayGetValueAtIndex(array: CFTypeRef, index: isize) -> CFTypeRef;
     fn CFUUIDCreateString(allocator: CFTypeRef, uuid: CFTypeRef) -> CFTypeRef;
+    static kCFBooleanTrue: CFTypeRef;
+    static kCFBooleanFalse: CFTypeRef;
 }
 
 /// An Accessibility attribute name; CFString and NSString are the same object.
@@ -186,6 +189,40 @@ fn set_rect(element: AXUIElementRef, r: &Rect) -> AXError {
             position_error
         } else {
             size_error
+        }
+    }
+}
+
+/// Turns off an app's AXEnhancedUserInterface while its window moves, and back on when dropped.
+struct PlainUi(Option<AXUIElementRef>);
+
+impl PlainUi {
+    // Why: helpers such as 1Password or Grammarly turn this on in Chrome, which then animates a
+    // move and leaves the window at the wrong place and size. Rectangle turns it off the same way.
+    fn for_window(window: AXUIElementRef) -> Self {
+        let mut pid = 0;
+        if unsafe { AXUIElementGetPid(window, &mut pid) } != AX_SUCCESS {
+            return PlainUi(None);
+        }
+        let application = unsafe { AXUIElementCreateApplication(pid) };
+        if !bool_attribute(application, "AXEnhancedUserInterface") {
+            unsafe { CFRelease(application) };
+            return PlainUi(None);
+        }
+        let name = attr("AXEnhancedUserInterface");
+        unsafe { AXUIElementSetAttributeValue(application, cf(&name), kCFBooleanFalse) };
+        PlainUi(Some(application))
+    }
+}
+
+impl Drop for PlainUi {
+    fn drop(&mut self) {
+        if let Some(application) = self.0 {
+            let name = attr("AXEnhancedUserInterface");
+            unsafe {
+                AXUIElementSetAttributeValue(application, cf(&name), kCFBooleanTrue);
+                CFRelease(application);
+            }
         }
     }
 }
@@ -512,6 +549,7 @@ pub fn apply(moves: &[Move]) -> Result<(), String> {
     let screens = screens(mtm);
     for m in moves {
         let element = element_for(m.id).ok_or("unknown window")?;
+        let _plain = PlainUi::for_window(element);
         let target = m.rect;
         let error = set_rect(element, &target);
         if error != AX_SUCCESS {
