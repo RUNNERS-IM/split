@@ -401,9 +401,22 @@ function perform(action: Action): void {
     return
   }
   const refusing = raw.refusingApp ?? (refusingApp === activeApp ? null : refusingApp)
-  setRefusingApp(refusing, raw.active?.app === refusing ? raw.active?.bundle : undefined)
+  setRefusingApp(refusing, refusingBundle(raw, refusing))
   showOutcome(action, outcome, snapshot)
   recordSoon()
+}
+
+/** The bundle id of the refusing app when it is the one in front, so the first refusal can offer to reopen it. */
+function refusingBundle(raw: NativeSnapshot, refusing: string | null): string | undefined {
+  if (!refusing) {
+    return undefined
+  }
+  if (raw.active?.app === refusing) {
+    return raw.active.bundle
+  }
+  // Why: an app that refuses gives no focused window, so there is no active window to take the bundle from.
+  const front = native.frontmostApp()
+  return front?.name === refusing && front.id ? front.id : undefined
 }
 
 /**
