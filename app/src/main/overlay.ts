@@ -335,7 +335,10 @@ const UPDATE_TEXT_KEYS = [
   'update.later',
   'update.install',
   'update.installing',
-  'update.downloading'
+  'update.downloading',
+  'update.done',
+  'update.showNotes',
+  'update.ok'
 ]
 let updateWindow: BrowserWindow | null = null
 

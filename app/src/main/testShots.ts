@@ -205,6 +205,23 @@ async function popupScenes(pass: TestShotPass, screens: SplitScreens) {
   }
   await closeWindowOf('update')
 
+  // The one-time note on the first launch after an install while away, then with its notes opened.
+  askUpdate({ ...updateOffer(), installed: true }, false)
+  await pass.wait(900)
+  const installed = windowOf('update')
+  if (installed) {
+    await pass.shot(installed, 'popups', '업데이트-됨')
+    await evaluate(
+      installed,
+      `document.querySelector('.update-buttons .rw-button:not(.default)')?.click()`
+    )
+    await pass.wait(600)
+    await pass.shot(installed, 'popups', '업데이트-됨-바뀐-점')
+  } else {
+    pass.note('업데이트 창(업데이트됨) 없음')
+  }
+  await closeWindowOf('update')
+
   screens.showRefusedNotice()
   await pass.wait(700)
   const refused = windowOf('overlay')

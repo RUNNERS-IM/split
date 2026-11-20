@@ -1039,9 +1039,6 @@ function changeSettings(next: Settings): ViewState {
   if (previous.showTrayIcon !== settings.showTrayIcon) {
     updateTray()
   }
-  if (!STORE && previous.autoUpdate !== settings.autoUpdate) {
-    startUpdater(settings.autoUpdate)
-  }
   const state = viewState()
   pushState()
   return state
@@ -1373,7 +1370,7 @@ function start(): void {
   if (!testShots) {
     applyLoginDefault()
     if (!STORE) {
-      startUpdater(settings.autoUpdate)
+      startUpdater(() => settings.autoUpdate)
     }
     if (!trusted) {
       askForTrust()

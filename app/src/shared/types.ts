@@ -109,6 +109,8 @@ export type UpdateOffer = {
   /** True while the download runs (a check from the menu); the buttons show once it is done. */
   downloading: boolean
   percent: number
+  /** True for the one-time "updated to this version" note after an install while away; it only has a close button. */
+  installed?: boolean
 }
 
 /** What the "Save Current Layout" window shows; it arrives in the page URL's hash as JSON. */
