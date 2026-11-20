@@ -401,9 +401,29 @@ function perform(action: Action): void {
     return
   }
   const refusing = raw.refusingApp ?? (refusingApp === activeApp ? null : refusingApp)
+  const alreadyRefusing = refusing !== null && refusing === refusingApp
   setRefusingApp(refusing, refusingBundle(raw, refusing))
   showOutcome(action, outcome, snapshot)
+  // Why: after "Later" on the reopen alert, a shortcut on that app only beeped, so it felt like
+  // Split sometimes does nothing. The first refusal already has the alert, so only later ones.
+  if (alreadyRefusing && outcome.feedback.kind === 'Failed' && !askingToReopen) {
+    showRefusedNotice(refusing)
+  }
   recordSoon()
+}
+
+/** "Chrome won't let Split move its windows" on the monitor under the pointer, as the shortcut is pressed. */
+function showRefusedNotice(name: string): void {
+  const area = screen.getDisplayNearestPoint(screen.getCursorScreenPoint()).workArea
+  showFeedback({
+    ...overlayBase(),
+    kind: 'label',
+    rects: [Rect.from(fromDip(area))],
+    title: t('ApplicationRefused.Title', name),
+    shortcut: '',
+    // Why: the first paragraph of the alert says why and what fixes it; the rest is about lost tabs.
+    tip: t('ApplicationRefused.Body', name).split('\n\n')[0] ?? ''
+  })
 }
 
 /** The bundle id of the refusing app when it is the one in front, so the first refusal can offer to reopen it. */
@@ -1457,6 +1477,7 @@ function testScreens() {
       guideGranted()
     },
     showDisplayNotice: () => showDisplayNotice(3, false),
+    showRefusedNotice: () => showRefusedNotice('Google Chrome'),
     openSheet,
     languageChanged() {
       updateTray()

@@ -18,6 +18,8 @@ export type SplitScreens = {
   /** Shows the guide's "ready" view, as when permission arrives. */
   showGuideGranted(): void
   showDisplayNotice(): void
+  /** The note a shortcut shows on an app that refuses window moves, once its reopen alert was put off. */
+  showRefusedNotice(): void
   openSheet(): void
   /** Sends the new language's words to the open windows. */
   languageChanged(): void
@@ -202,6 +204,16 @@ async function popupScenes(pass: TestShotPass, screens: SplitScreens) {
     pass.note('업데이트 창(받는 중) 없음')
   }
   await closeWindowOf('update')
+
+  screens.showRefusedNotice()
+  await pass.wait(700)
+  const refused = windowOf('overlay')
+  if (refused) {
+    await pass.shot(refused, 'popups', '창-이동-거부-알림')
+  } else {
+    pass.note('창 이동 거부 알림 없음')
+  }
+  hideFeedback()
 }
 
 async function accountScenes(pass: TestShotPass, screens: SplitScreens) {
