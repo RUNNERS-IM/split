@@ -44,7 +44,15 @@ function view(): PanelView {
   if (!source) {
     return {
       items: [],
-      account: { status: 'signedOut', email: null, name: '', signInLine: '', connecting: '' }
+      account: {
+        status: 'signedOut',
+        email: null,
+        nickname: null,
+        customNickname: false,
+        name: '',
+        signInLine: '',
+        connecting: ''
+      }
     }
   }
   const layouts = source.layouts()

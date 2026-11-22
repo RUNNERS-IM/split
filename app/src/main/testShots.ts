@@ -21,6 +21,9 @@ export type SplitScreens = {
   /** The note a shortcut shows on an app that refuses window moves, once its reopen alert was put off. */
   showRefusedNotice(): void
   openSheet(): void
+  /** Signs in to the test server (SPLIT_API_URL) as kim@example.com; returns the sign-in problem, or null. */
+  signInForTest(password: string): Promise<string | null>
+  signOutForTest(): void
   /** Sends the new language's words to the open windows. */
   languageChanged(): void
 }
@@ -234,17 +237,87 @@ async function popupScenes(pass: TestShotPass, screens: SplitScreens) {
 }
 
 async function accountScenes(pass: TestShotPass, screens: SplitScreens) {
-  if (pass.account === 'signed-in') {
-    pass.note('로그인한 계정 화면은 시험 계정을 넣는 길이 없어 찍지 않음')
-  }
   screens.showSettings('account', true)
   await pass.wait(1200)
-  const window = windowOf('settings')
+  let window = windowOf('settings')
   if (!window) {
     pass.note('로그인 시트 없음')
     return
   }
   await pass.shot(window, 'account', '로그인-시트')
+  await closeWindowOf('settings')
+
+  // Why: signing in sends a password, so only to a local test server (kit 0.1.50 relay-dev answers the nickname API).
+  if (!process.env.SPLIT_API_URL) {
+    pass.note('시험 서버 없음(SPLIT_API_URL): 로그인한 계정 · 별명 화면은 건너뜀')
+    return
+  }
+  const problem = await screens.signInForTest('split1234')
+  if (problem) {
+    pass.note(`시험 서버 로그인 실패: ${problem}`)
+    return
+  }
+  screens.showSettings('account')
+  await pass.wait(1200)
+  window = windowOf('settings')
+  if (!window) {
+    pass.note('계정 탭 없음')
+    return
+  }
+  const page = (script: string) => evaluate(window, script)
+  const fill = (value: string) =>
+    page(`(() => {
+      const field = document.querySelector('.account-nickname');
+      Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(field, ${JSON.stringify(value)});
+      field.dispatchEvent(new Event('input', { bubbles: true }));
+    })()`)
+  const row = "document.querySelector('.account-nickname').closest('.row')"
+  const save = async (name: string) => {
+    await fill(name)
+    await page(`${row}.querySelector('button').click()`)
+    await pass.wait(900)
+  }
+  const lines = () =>
+    page(
+      `[...document.querySelectorAll('.account-text > span')].map((line) => line.textContent).join(' / ') + ' | 설명 줄=' + ${row}.querySelector('.row-hint').textContent`
+    )
+  pass.note(
+    `로그인됨: ${String(await lines())}, 칸 기본 글=${String(await page("document.querySelector('.account-nickname').placeholder"))}`
+  )
+  await pass.shot(window, 'account', '로그인됨')
+  await fill('가'.repeat(31))
+  await page(`${row}.querySelector('button').click()`)
+  await pass.wait(300)
+  pass.note(
+    `별명 31자: 알림=${String(await page(`${row}.querySelector('.ra-error')?.textContent ?? '(없음)'`))}, 저장 단추 켜짐=${String(await page(`!${row}.querySelector('button').disabled`))}`
+  )
+  await pass.shot(window, 'account', '별명-너무김')
+  await save('김러너')
+  pass.note(`별명 저장(김러너): ${String(await lines())}`)
+  await pass.shot(window, 'account', '별명-저장됨')
+
+  showPanelAtPointer()
+  await pass.wait(1200)
+  const panel = windowOf('panel')
+  if (panel) {
+    await evaluate(panel, `document.documentElement.dataset.translucent = 'false'`)
+    await pass.wait(300)
+    pass.note(
+      `메뉴 맨 위 줄: ${String(await evaluate(panel, "document.querySelector('.account-line .rm-label')?.textContent"))}`
+    )
+    await pass.shot(panel, 'account', '메뉴-별명')
+  } else {
+    pass.note('메뉴 창 없음')
+  }
+  hidePanel()
+
+  await save('')
+  pass.note(`별명 비워 저장: ${String(await lines())}`)
+  if (pass.account === 'signed-in') {
+    pass.note('RUNNERS_TEST_ACCOUNT=signed-in: 로그인한 채로 둔다')
+  } else {
+    screens.signOutForTest()
+  }
   await closeWindowOf('settings')
 }
 

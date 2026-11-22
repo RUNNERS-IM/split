@@ -38,6 +38,10 @@ export type PhoneStatus = 'signedOut' | 'connecting' | 'connected' | 'offline'
 export type PhoneView = {
   status: PhoneStatus
   email: string | null
+  /** The account's name in every RUNNERS app: the one chosen, or the part of the email before @. Null when signed out. */
+  nickname: string | null
+  /** Whether a nickname was chosen; without one the settings field stays empty and shows the default as its placeholder. */
+  customNickname: boolean
   /** The name the phone shows for this computer. */
   name: string
 }
@@ -172,9 +176,12 @@ function phoneAccessToken(): string | null {
 }
 
 export function phoneView(): PhoneView {
+  const signedIn = status !== 'signedOut'
   return {
     status,
-    email: status === 'signedOut' ? null : runnersAccount().current(),
+    email: signedIn ? runnersAccount().current() : null,
+    nickname: signedIn ? runnersAccount().nickname() : null,
+    customNickname: signedIn && runnersAccount().customNickname(),
     name: deviceName()
   }
 }
@@ -222,6 +229,17 @@ export async function sendCode(
     return null
   } catch (error) {
     return problem(error)
+  }
+}
+
+/** Saves the nickname every RUNNERS app shows (empty goes back to the email's first part). `format` when it is over
+ *  30 characters, `network` when the server was not reached. */
+export async function setNickname(name: string): Promise<'format' | 'network' | null> {
+  try {
+    await runnersAccount().setNickname(name)
+    return null
+  } catch (error) {
+    return (error as Error).message === 'format' ? 'format' : 'network'
   }
 }
 
@@ -452,7 +470,11 @@ function connect(): void {
 /** Call once when Split starts; connects at once when an account is already signed in. */
 export function setupPhone(given: PhoneHooks): void {
   hooks = given
+  // Why: a nickname saved here or fetched from the server changes the panel and settings, like a status change does.
+  runnersAccount().onChange(() => hooks?.changed())
   if (phoneAccessToken()) {
     connect()
+    // Why: a nickname changed in another RUNNERS app shows here from the next start. It never throws.
+    void runnersAccount().loadProfile()
   }
 }

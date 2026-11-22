@@ -65,6 +65,7 @@ import {
   phoneView,
   resetPassword,
   sendCode,
+  setNickname,
   setupPhone,
   signIn,
   signOut
@@ -691,7 +692,7 @@ function menuTemplate(panel: boolean): MenuItemConstructorOptions[] {
       ? []
       : [
           {
-            label: phone.email ?? t('AccountSignInLine'),
+            label: phone.email ? phone.nickname || phone.email : t('AccountSignInLine'),
             click: () => showSettings('account', !phone.email)
           },
           { type: 'separator' as const }
@@ -1102,6 +1103,10 @@ function registerIpc(): void {
       state: viewState()
     })
   )
+  ipcMain.handle('phone:setNickname', async (_event, name: unknown) => ({
+    error: await setNickname(typeof name === 'string' ? name : ''),
+    state: viewState()
+  }))
   ipcMain.handle('phone:signOut', () => {
     signOut()
     return viewState()
@@ -1476,6 +1481,8 @@ function testScreens() {
     showDisplayNotice: () => showDisplayNotice(3, false),
     showRefusedNotice: () => showRefusedNotice('Google Chrome'),
     openSheet,
+    signInForTest: (password: string) => signIn('login', 'kim@example.com', password),
+    signOutForTest: signOut,
     languageChanged() {
       updateTray()
       pushState()

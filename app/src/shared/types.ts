@@ -64,6 +64,9 @@ export type ViewState = {
   phone: {
     status: 'signedOut' | 'connecting' | 'connected' | 'offline'
     email: string | null
+    /** The account's name in every RUNNERS app (the email's first part until one is chosen). */
+    nickname: string | null
+    customNickname: boolean
     name: string
   }
   /** Screen text for the chosen language, already merged over English. */
@@ -211,6 +214,9 @@ export type SplitApi = {
     password: string
   ): Promise<{ error: string | null; state: ViewState }>
   phoneSignOut(): Promise<ViewState>
+  /** Saves the nickname every RUNNERS app shows; empty goes back to the email's first part. `error` is `format`
+   *  (over 30 characters) or `network`, or null. */
+  phoneSetNickname(name: string): Promise<{ error: 'format' | 'network' | null; state: ViewState }>
   saveSettings(settings: Settings): Promise<ViewState>
   restoreDefaultShortcuts(): Promise<ViewState>
   /** While recording, Split lets go of its own shortcuts so the keys reach the page. */
