@@ -232,7 +232,8 @@ function AccountLine({ account }: { account: PanelView['account'] }) {
           <RunnersMark size={16} />
         </span>
       )}
-      <span className="rm-label">{email ?? account.signInLine}</span>
+      {/* Why: the same name as beside the panda in the other RUNNERS apps (runners-wiki 2026-11-21 별명 칸). */}
+      <span className="rm-label">{email ? account.nickname || email : account.signInLine}</span>
       <span className="rm-trailing">
         {email && account.status !== 'connected' ? (
           <span className="account-status">{account.connecting}</span>

@@ -24,6 +24,7 @@ const api: SplitApi = {
   phoneResetPassword: (email, code, password) =>
     ipcRenderer.invoke('phone:resetPassword', email, code, password),
   phoneSignOut: () => ipcRenderer.invoke('phone:signOut'),
+  phoneSetNickname: (name) => ipcRenderer.invoke('phone:setNickname', name),
   saveSettings: (settings) => ipcRenderer.invoke('settings:save', settings),
   restoreDefaultShortcuts: () => ipcRenderer.invoke('shortcuts:restore'),
   setRecording: (recording) => ipcRenderer.invoke('shortcuts:recording', recording),

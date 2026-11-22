@@ -752,6 +752,20 @@ p {
   margin-bottom: 0;
 }
 
+/* The nickname field and its Save button, side by side as in Draw's Settings › Account */
+.account-nickname-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.account-nickname {
+  width: 160px;
+  height: 26px;
+  padding: 0 8px;
+  font-size: 12px;
+}
+
 .account-text {
   display: flex;
   flex-direction: column;
