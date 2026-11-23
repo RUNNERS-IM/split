@@ -4,7 +4,7 @@
 <h1 align="center">Split</h1>
 <p align="center"><b>One shortcut, half the screen.</b><br>Move windows to halves, thirds, corners or the next display with one shortcut, and arrange up to nine at once.</p>
 <p align="center">
-  <a href="https://runners.im/split"><b>Download for Mac</b></a> ·
+  <a href="https://runners.im/en/split"><b>Download for Mac</b></a> ·
   <a href="https://github.com/RUNNERS-IM/split/releases/latest">Windows · Linux</a> ·
   <a href="README.ko.md">한국어</a>
 </p>

@@ -4,7 +4,7 @@
 <h1 align="center">Split</h1>
 <p align="center"><b>단축키 한 번으로 창을 반반으로.</b><br>창을 반 · 1/3 · 모서리 · 다음 모니터로 단축키 하나에 옮기고, 9개까지 한 번에 나눠 놓습니다.</p>
 <p align="center">
-  <a href="https://runners.im/ko/split"><b>맥용 받기</b></a> ·
+  <a href="https://runners.im/split"><b>맥용 받기</b></a> ·
   <a href="https://github.com/RUNNERS-IM/split/releases/latest">Windows · Linux</a> ·
   <a href="README.md">English</a>
 </p>
