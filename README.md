@@ -1,60 +1,69 @@
-# Split
+<p align="center">
+  <img src="https://runners.im/images/apps/split/icon.webp" width="96" alt="Split">
+</p>
+<h1 align="center">Split</h1>
+<p align="center"><b>One shortcut, half the screen.</b><br>Move windows to halves, thirds, corners or the next display with one shortcut, and arrange up to nine at once.</p>
+<p align="center">
+  <a href="https://runners.im/split"><b>Download for Mac</b></a> ·
+  <a href="https://github.com/RUNNERS-IM/split/releases/latest">Windows · Linux</a> ·
+  <a href="README.ko.md">한국어</a>
+</p>
+<p align="center"><sub>Free · macOS 13 or later · Apple silicon · Intel · Windows · Linux · 20 languages</sub></p>
 
-**English** · [한국어](README.ko.md)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://runners.im/images/apps/split/stage-en-dark.webp">
+  <img src="https://runners.im/images/apps/split/stage-en-light.webp" alt="Split arranging the windows on a Mac">
+</picture>
 
-Move and resize windows with keyboard shortcuts. No mouse required.
+## What it does
 
-Split is a free window manager by RUNNERS for macOS (universal for Apple silicon and Intel, notarized), Windows and Linux, with auto-arrange, saved layouts, arranging from the phone app and 20 languages. The shortcuts below are the Mac ones.
+<table>
+<tr>
+<td colspan="2"><picture><source media="(prefers-color-scheme: dark)" srcset="https://runners.im/images/apps/split/shortcuts-en-dark.webp"><img src="https://runners.im/images/apps/split/shortcuts-en-light.webp" alt="The Split shortcut list that appears when you hold ⌥⌘ for a second"></picture><br><b>Never leave the keyboard</b><br>Halves, corners, thirds and the next display are each one shortcut away. Press the same key again to cycle 1/2 → 2/3 → 1/3, and hold ⌥⌘ for a second to see every shortcut.</td>
+</tr>
+<tr>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="https://runners.im/images/apps/split/layouts-en-dark.webp"><img src="https://runners.im/images/apps/split/layouts-en-light.webp" alt="The Split menu for picking a display and a layout shape"></picture><br><b>Up to nine windows with one ⌥⌘A</b><br>Arranges the windows on the display to fit how many there are. One ⌥⌘Z puts them all back.</td>
+<td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="https://runners.im/images/apps/split/save-en-dark.webp"><img src="https://runners.im/images/apps/split/save-en-light.webp" alt="The Split window for saving the current layout under a name"></picture><br><b>Save and restore layouts</b><br>Save every window's place across all displays under a name, and load it when the same displays connect.</td>
+</tr>
+<tr>
+<td><picture><source media="(prefers-color-scheme: dark)" srcset="https://runners.im/images/apps/split/displays-en-dark.webp"><img src="https://runners.im/images/apps/split/displays-en-light.webp" alt="Split notice saying windows were rearranged because the displays changed"></picture><br><b>Unplug and replug without losing your place</b><br>Windows move to the screens that are left and come back when the display returns.</td>
+<td><picture><source media="(prefers-color-scheme: dark)" srcset="https://runners.im/images/apps/split/effects-en-dark.webp"><img src="https://runners.im/images/apps/split/effects-en-light.webp" alt="The Effects tab of Split settings"></picture><br><b>See where it went</b><br>The moved window glows briefly and the shortcut you pressed appears on screen.</td>
+</tr>
+</table>
+
+With the Split phone app and the same RUNNERS account, you can also arrange this computer's windows from your phone (Settings → Account).
 
 ## Install
 
-1. Download `Split-<version>.dmg` from [Releases](https://github.com/RUNNERS-IM/split/releases), open it and drag Split to Applications. Split is signed and notarized, so it opens without a warning. On Windows download `Split-<version>-windows-x64-setup.exe`, on Linux the `.AppImage` or `.deb`.
-2. On a Mac, Split opens **System Settings → Privacy & Security → Accessibility** next to its guide window. Turn on the switch next to Split. Split cannot move windows of other apps without this permission. Once it is on, the guide turns into a "You’re all set" view with a first shortcut to try, and stays until you close it.
-3. If another copy of a Spectacle-style window manager is still running, Split offers to quit it so the two apps don't react to the same shortcuts.
-
-On a Mac, Split runs natively on Apple silicon and Intel with macOS 13 or later. Split checks GitHub for a new version once a day, downloads it and asks before installing.
-
-With Homebrew:
-
 ```sh
-brew tap runners-im/tap
-brew trust runners-im/tap   # recent Homebrew asks you to trust third-party taps once
+brew tap runners-im/tap && brew trust runners-im/tap
 brew install --cask split
 ```
 
-Split speaks Arabic, Chinese (Simplified), Chinese (Traditional), Dutch, English, Finnish, French, German, Hindi, Indonesian, Italian, Japanese, Korean, Polish, Portuguese, Russian, Spanish, Thai, Turkish and Vietnamese. It follows the language set for your Mac.
+Or download `Split-<version>.dmg` from [Releases](https://github.com/RUNNERS-IM/split/releases/latest), open it and drag Split to Applications. It is signed and notarized, so it opens without a warning. Windows (`-windows-x64-setup.exe`) and Linux (`.AppImage`, `.deb`) builds are on the same page.
 
-## Default keyboard shortcuts
+On first launch Split opens **System Settings → Privacy & Security → Accessibility**. Turn on the switch next to Split; it cannot move other apps' windows without this. Windows and Linux skip this step. Split checks GitHub for a new version once a day and asks before installing it.
 
-| Symbol | Key |
-|:---:|:---|
-| ⌘ | Command |
-| ⌃ | Control |
-| ⌥ | Option |
-| ⇧ | Shift |
+## Default shortcuts
 
-All shortcuts can be changed or cleared in Settings → Shortcuts.
+`⌘` Command · `⌃` Control · `⌥` Option · `⇧` Shift. Change or clear any of them in Settings → Shortcuts.
 
-### Basic window actions
+| Action | Keys | Action | Keys |
+|:---|:---:|:---|:---:|
+| Left half | ⌥⌘← | Upper left | ⌃⌘← |
+| Right half | ⌥⌘→ | Lower left | ⌃⇧⌘← |
+| Top half | ⌥⌘↑ | Upper right | ⌃⌘→ |
+| Bottom half | ⌥⌘↓ | Lower right | ⌃⇧⌘→ |
+| Center (same size) | ⌥⌘C | Fullscreen | ⌥⌘F |
+| Next third | ⌃⌥→ | Previous third | ⌃⌥← |
+| Make larger | ⌃⌥⇧→ | Make smaller | ⌃⌥⇧← |
+| Next display | ⌃⌥⌘→ | Previous display | ⌃⌥⌘← |
+| Undo | ⌥⌘Z | Redo | ⌥⇧⌘Z |
+| **Arrange all windows** | **⌥⌘A** | | |
 
-- Center — ⌥⌘C (size is not changed)
-- Fullscreen — ⌥⌘F
-- Left half — ⌥⌘←
-- Right half — ⌥⌘→
-- Top half — ⌥⌘↑
-- Bottom half — ⌥⌘↓
-- Upper left — ⌃⌘←
-- Lower left — ⌃⇧⌘←
-- Upper right — ⌃⌘→
-- Lower right — ⌃⇧⌘→
+Pressing a half or corner shortcut again cycles the window through 1/2, 2/3 and 1/3 of that region. Resizing keeps the window touching the screen edges it already touches.
 
-Pressing a half or corner shortcut repeatedly cycles the window through 1/2, 2/3 and 1/3 of that region.
-
-### Auto arrange
-
-- Arrange all windows — ⌥⌘A
-
-Places up to 9 visible windows on the display with the frontmost window, most recently used first:
+**Arrange all windows** places up to nine visible windows on the front window's display, most recently used first:
 
 | Windows | Layout |
 |:---:|:---|
@@ -66,42 +75,14 @@ Places up to 9 visible windows on the display with the frontmost window, most re
 | 6 | 3 × 2 grid |
 | 7–9 | 3 × 2 grid, the rest stacked in the middle at 60%, 30 points apart |
 
-Minimized windows, windows in full screen and windows of hidden apps are left alone. One undo (⌥⌘Z) puts every arranged window back where it was. Hovering the menu item shows where each window will go.
+Minimized windows, full-screen windows and windows of hidden apps are left alone. Hover the menu item to preview where each window will go.
 
-### Thirds
+**Pausing shortcuts.** When another app needs the same keys, choose **Pause Shortcuts** in the Split menu: **For an Hour**, or **While (app) Is in Front**, which turns Split's shortcuts off only while that app is the front app.
 
-- Next third — ⌃⌥→
-- Previous third — ⌃⌥←
+<details>
+<summary><b>Launch options</b></summary>
 
-### Resize
-
-- Make larger — ⌃⌥⇧→
-- Make smaller — ⌃⌥⇧←
-
-Split keeps the window touching the screen edges it already touches while resizing.
-
-### Multiple displays
-
-- Next display — ⌃⌥⌘→
-- Previous display — ⌃⌥⌘←
-
-### History
-
-- Undo last window action — ⌥⌘Z
-- Redo — ⌥⇧⌘Z
-
-Hold ⌥⌘ for a second to see the list of shortcuts on screen. This can be turned off in Settings.
-
-### Pausing shortcuts
-
-When another app needs the same keys, choose **Pause Shortcuts** in the Split menu:
-
-- **For an Hour** — every Split shortcut is off for an hour.
-- **While (app) Is in Front** — Split shortcuts are off whenever that app is the front app, and come back as soon as you switch away. With that app in front, choose the same item again to turn its shortcuts back on.
-
-## Launch options
-
-These are checked in the version downloaded from Releases or Homebrew; the Mac App Store version has not been tried. Split must already be running; the options are passed to it.
+Split must already be running. Checked with the Releases and Homebrew versions.
 
 ```sh
 open -g -a Split --args --perform MoveToLeftHalf   # run one window action, for scripts and launchers
@@ -109,51 +90,45 @@ open -g -a Split --args --menu                     # show the Split menu at the 
 open -g -a Split --args --guide                    # show the Accessibility guide again
 ```
 
-The action names for `--perform` are MoveToCenter, MoveToFullscreen, MoveToLeftHalf, MoveToRightHalf, MoveToTopHalf, MoveToBottomHalf, MoveToUpperLeft, MoveToUpperRight, MoveToLowerLeft, MoveToLowerRight, MoveToNextThird, MoveToPreviousThird, MoveToNextDisplay, MoveToPreviousDisplay, MakeLarger, MakeSmaller, UndoLastMove, RedoLastMove and ArrangeWindows. Opening Split again without options opens its settings.
+Action names for `--perform`: MoveToCenter, MoveToFullscreen, MoveToLeftHalf, MoveToRightHalf, MoveToTopHalf, MoveToBottomHalf, MoveToUpperLeft, MoveToUpperRight, MoveToLowerLeft, MoveToLowerRight, MoveToNextThird, MoveToPreviousThird, MoveToNextDisplay, MoveToPreviousDisplay, MakeLarger, MakeSmaller, UndoLastMove, RedoLastMove and ArrangeWindows. Opening Split again without options opens its settings.
 
-## Roadmap
+</details>
 
-Done:
+## Privacy
 
-- Rebuilt with Electron for macOS, Windows and Linux, plus a Mac App Store version
-- The Account tab in settings: arrange windows into a shape or bring back a saved layout from the Split phone app
-- Developer ID signing, notarization and automatic updates from GitHub Releases
-- A step-by-step Accessibility permission guide
-- Homebrew tap
-- New icon, a picture menu with a live preview, and a glow after each move
-- Auto arrange (⌥⌘A)
-- A new settings window and 18 languages
-- 1.2: an Effects tab (strength, color, label, duration, position), space between windows (screen edges stay flush),
-  full screen that toggles back, rearranging windows when monitors are plugged in or out,
-  a shortcut list while ⌥⌘ is held, and short tips for new users
-
-Issues and pull requests are welcome in this repository.
+Split has no ads and no analytics. Window positions are read only on your computer, and window contents are never read. It sends a short error report (with emails, tokens and names hidden) when it runs into an error, and talks to the RUNNERS account server only after you sign in on the Account tab. Details: [PRIVACY.md](PRIVACY.md).
 
 ## Common issues
 
-### Split asks for accessibility access
+<details>
+<summary><b>A window does not resize as expected</b></summary>
 
-Split uses the macOS Accessibility protocol to move windows that belong to other applications. It cannot work until it is allowed in **System Settings → Privacy & Security → Accessibility**.
+Apps can set a minimum or maximum size for their windows, and Split respects it. A window with a minimum width of 1600 px cannot fit a 1440 px half, so it is sized as close as the app allows.
+</details>
 
-### A window does not resize as expected
+<details>
+<summary><b>Terminal windows look jittery</b></summary>
 
-Applications may set a minimum or maximum size for their windows. Split always respects those constraints, so a window with a minimum width of 1600 px cannot be fitted into a 1440 px half of the screen. It will be resized as close to the target as the application allows.
+Terminal, iTerm2 and similar apps only allow sizes that show whole rows and columns. Split tries the exact size first, then shrinks step by step until it fits, and centers the result in the intended region.
+</details>
 
-### Terminal windows behave oddly
+<details>
+<summary><b>The Split icon is hidden behind the notch</b></summary>
 
-Terminal and similar apps (iTerm2 and others) only allow sizes that show whole rows and columns. Split tries the exact size first and then shrinks the window step by step until it fits, which can look slightly jittery. The result is centered inside the intended region.
+On a MacBook with a notch, a full menu bar can push the icon under the notch. Open Split again from Applications or Spotlight to get its settings, or run `open -g -a Split --args --menu`. The same works when the menu bar icon is turned off.
+</details>
 
-### The Split icon is hidden behind the notch
+<details>
+<summary><b>Some apps cannot be controlled</b></summary>
 
-On a MacBook with a notch, a full menu bar can push the Split icon under the notch. Open Split again (from Applications or Spotlight) to get its settings, or run `open -g -a Split --args --menu` to show the Split menu at the pointer. The same works when the menu bar icon is turned off in Settings.
+Apps that draw their interface in non-standard ways may not expose their windows through the Accessibility protocol, so Split cannot move them.
+</details>
 
-### Some applications cannot be controlled
-
-Applications that build their interface in non-standard ways may not expose their windows through the Accessibility protocol. Split cannot move those windows.
+Issues and pull requests are welcome in this repository.
 
 ## Building from source
 
-The current app is the Electron app in `app/`. It needs Node.js and pnpm.
+The app is the Electron app in `app/` and needs Node.js and pnpm.
 
 ```sh
 cd app
@@ -163,10 +138,8 @@ pnpm test       # tests
 pnpm typecheck  # type check
 ```
 
-Pushing to the `release` branch makes GitHub Actions build, sign and notarize the macOS, Windows and Linux versions and upload them to GitHub Releases. To build by hand use `pnpm dist:mac`, `pnpm dist:win` or `pnpm dist:linux`. The earlier Objective-C Mac version is kept at the tag `legacy-objc`.
+Pushing to the `release` branch makes GitHub Actions build, sign and notarize the macOS, Windows and Linux versions and upload them to Releases. By hand: `pnpm dist:mac`, `pnpm dist:win` or `pnpm dist:linux`. The earlier Objective-C Mac version is kept at the tag `legacy-objc`.
 
-## License
+---
 
-Copyright (c) 2026 Runners Co., Ltd. All rights reserved. See [LICENSE.md](LICENSE.md).
-
-The notices of the open source code Split uses (Lucide and Spectacle) are in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and in the app under Settings → About → Open Source Notices.
+<p align="center"><a href="https://runners.im"><picture><source media="(prefers-color-scheme: dark)" srcset="https://runners.im/icons/logos/RUNNERS_H_W.svg"><img src="https://runners.im/icons/logos/RUNNERS_H.svg" height="20" alt="RUNNERS"></picture></a><br><sub>Made by RUNNERS · © 2026 Runners Co., Ltd. All rights reserved (<a href="LICENSE.md">LICENSE.md</a>) · Open source notices in <a href="THIRD_PARTY_NOTICES.md">THIRD_PARTY_NOTICES.md</a></sub></p>
