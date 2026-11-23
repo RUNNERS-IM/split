@@ -48,18 +48,27 @@ On first launch Split opens **System Settings → Privacy & Security → Accessi
 
 `⌘` Command · `⌃` Control · `⌥` Option · `⇧` Shift. Change or clear any of them in Settings → Shortcuts.
 
-| Action | Keys | Action | Keys |
-|:---|:---:|:---|:---:|
-| Left half | ⌥⌘← | Upper left | ⌃⌘← |
-| Right half | ⌥⌘→ | Lower left | ⌃⇧⌘← |
-| Top half | ⌥⌘↑ | Upper right | ⌃⌘→ |
-| Bottom half | ⌥⌘↓ | Lower right | ⌃⇧⌘→ |
-| Center (same size) | ⌥⌘C | Fullscreen | ⌥⌘F |
-| Next third | ⌃⌥→ | Previous third | ⌃⌥← |
-| Make larger | ⌃⌥⇧→ | Make smaller | ⌃⌥⇧← |
-| Next display | ⌃⌥⌘→ | Previous display | ⌃⌥⌘← |
-| Undo | ⌥⌘Z | Redo | ⌥⇧⌘Z |
-| **Arrange all windows** | **⌥⌘A** | | |
+| Action | Keys |
+|:---|:---:|
+| **Arrange all windows** | **⌥⌘A** |
+| Left half | ⌥⌘← |
+| Right half | ⌥⌘→ |
+| Top half | ⌥⌘↑ |
+| Bottom half | ⌥⌘↓ |
+| Upper left | ⌃⌘← |
+| Lower left | ⌃⇧⌘← |
+| Upper right | ⌃⌘→ |
+| Lower right | ⌃⇧⌘→ |
+| Center (same size) | ⌥⌘C |
+| Fullscreen | ⌥⌘F |
+| Next third | ⌃⌥→ |
+| Previous third | ⌃⌥← |
+| Make larger | ⌃⌥⇧→ |
+| Make smaller | ⌃⌥⇧← |
+| Next display | ⌃⌥⌘→ |
+| Previous display | ⌃⌥⌘← |
+| Undo | ⌥⌘Z |
+| Redo | ⌥⇧⌘Z |
 
 Pressing a half or corner shortcut again cycles the window through 1/2, 2/3 and 1/3 of that region. Resizing keeps the window touching the screen edges it already touches.
 
