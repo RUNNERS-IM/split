@@ -75,6 +75,21 @@ function updateOffer(): UpdateOffer {
   }
 }
 
+/**
+ * Waits until the window shows its words, up to 5 seconds.
+ * Why: on a cold start the strings arrive after the first 900 ms, and the first settings shot came out as empty boxes.
+ */
+async function waitForText(pass: TestShotPass, window: BrowserWindow): Promise<void> {
+  for (let i = 0; i < 25; i++) {
+    const length = await evaluate(window, `document.body?.innerText.trim().length ?? 0`)
+    if (typeof length === 'number' && length > 20) {
+      return
+    }
+    await pass.wait(200)
+  }
+  pass.note('글자가 5초 안에 안 나옴')
+}
+
 async function settingsScenes(pass: TestShotPass, screens: SplitScreens) {
   for (const [tab, name] of SETTINGS_TABS) {
     screens.showSettings(tab)
@@ -84,6 +99,7 @@ async function settingsScenes(pass: TestShotPass, screens: SplitScreens) {
       pass.note(`설정 창 없음: ${name}`)
       continue
     }
+    await waitForText(pass, window)
     await pass.shot(window, 'settings', name)
     // Long tabs: the end too, where the last rows and buttons are.
     if (tab === 'shortcuts' || tab === 'general') {
