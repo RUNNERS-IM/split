@@ -246,5 +246,14 @@
   "PhoneSignOutTitle": "Keluar dari komputer ini",
   "PhoneSignOut": "Keluar",
   "ShortcutsOff": "Pintasan nonaktif",
-  "MoreActions": "Lainnya"
+  "MoreActions": "Lainnya",
+  "MaximizeHeight": "Maksimalkan Tinggi",
+  "MoveLeft": "Geser ke Kiri",
+  "MoveRight": "Geser ke Kanan",
+  "MoveUp": "Geser ke Atas",
+  "MoveDown": "Geser ke Bawah",
+  "FirstTwoThirds": "Dua Pertiga Kiri",
+  "LastTwoThirds": "Dua Pertiga Kanan",
+  "SectionEdges": "Tepi",
+  "SectionEdgesHint": "Ukuran tetap, jendela digeser ke tepi layar."
 }

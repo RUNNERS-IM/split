@@ -246,5 +246,14 @@
   "PhoneSignOutTitle": "이 컴퓨터에서 로그아웃",
   "PhoneSignOut": "로그아웃",
   "ShortcutsOff": "단축키 꺼짐",
-  "MoreActions": "더 보기"
+  "MoreActions": "더 보기",
+  "MaximizeHeight": "높이만 꽉 채우기",
+  "MoveLeft": "왼쪽 끝으로(크기 그대로)",
+  "MoveRight": "오른쪽 끝으로(크기 그대로)",
+  "MoveUp": "위쪽 끝으로(크기 그대로)",
+  "MoveDown": "아래쪽 끝으로(크기 그대로)",
+  "FirstTwoThirds": "왼쪽 2/3",
+  "LastTwoThirds": "오른쪽 2/3",
+  "SectionEdges": "가장자리로 밀기",
+  "SectionEdgesHint": "크기는 그대로 두고 화면 끝에 붙입니다."
 }

@@ -250,5 +250,14 @@
   "PhoneSignOutTitle": "Uitloggen op deze computer",
   "PhoneSignOut": "Log uit",
   "ShortcutsOff": "Sneltoetsen uit",
-  "MoreActions": "Meer"
+  "MoreActions": "Meer",
+  "MaximizeHeight": "Hoogte maximaliseren",
+  "MoveLeft": "Naar links schuiven",
+  "MoveRight": "Naar rechts schuiven",
+  "MoveUp": "Naar boven schuiven",
+  "MoveDown": "Naar onder schuiven",
+  "FirstTwoThirds": "Linker twee derde",
+  "LastTwoThirds": "Rechter twee derde",
+  "SectionEdges": "Randen",
+  "SectionEdgesHint": "Houdt de grootte en schuift het venster tegen de schermrand."
 }

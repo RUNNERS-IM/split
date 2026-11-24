@@ -197,6 +197,26 @@ function resize(window: Frame, s: Frame, offset: number): Frame {
     : out
 }
 
+/** Keeps the size and slides the window to one edge of the screen. */
+const toEdge =
+  (side: 'left' | 'right' | 'up' | 'down'): Calculation =>
+  (window, _source, s) => {
+    const w = Math.min(window.width, s.width)
+    const h = Math.min(window.height, s.height)
+    const x = Math.min(Math.max(window.x, s.x), maxX(s) - w)
+    const y = Math.min(Math.max(window.y, s.y), maxY(s) - h)
+    if (side === 'left') {
+      return { x: s.x, y, width: w, height: h }
+    }
+    if (side === 'right') {
+      return { x: maxX(s) - w, y, width: w, height: h }
+    }
+    if (side === 'up') {
+      return { x, y: maxY(s) - h, width: w, height: h }
+    }
+    return { x, y: s.y, width: w, height: h }
+  }
+
 /** Keyed by the action's name in actions.ts. Actions that are not here (undo, redo, arrange) have no calculation. */
 export const CALCULATIONS: Partial<Record<string, Calculation>> = {
   MoveToCenter: (window, _source, s) => center(window, s),
@@ -214,5 +234,16 @@ export const CALCULATIONS: Partial<Record<string, Calculation>> = {
   MoveToNextDisplay: moveToDisplay,
   MoveToPreviousDisplay: moveToDisplay,
   MakeLarger: (window, _source, s) => resize(window, s, RESIZE_STEP),
-  MakeSmaller: (window, _source, s) => resize(window, s, -RESIZE_STEP)
+  MakeSmaller: (window, _source, s) => resize(window, s, -RESIZE_STEP),
+  MaximizeHeight: (window, _source, s) => ({ ...window, y: s.y, height: s.height }),
+  MoveLeft: toEdge('left'),
+  MoveRight: toEdge('right'),
+  MoveUp: toEdge('up'),
+  MoveDown: toEdge('down'),
+  FirstTwoThirds: (_window, _source, s) => ({ ...s, width: twoThirds(s.width) }),
+  LastTwoThirds: (_window, _source, s) => ({
+    ...s,
+    x: s.x + s.width - twoThirds(s.width),
+    width: twoThirds(s.width)
+  })
 }

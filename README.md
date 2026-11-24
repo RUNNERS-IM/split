@@ -72,6 +72,8 @@ On first launch Split opens **System Settings → Privacy & Security → Accessi
 
 Pressing a half or corner shortcut again cycles the window through 1/2, 2/3 and 1/3 of that region. Resizing keeps the window touching the screen edges it already touches.
 
+Maximize Height, the two-thirds actions and the four edge moves (keep the size, slide to an edge) have no shortcut at first; give them one in Settings › Shortcuts or pick them from the menu.
+
 **Arrange all windows** places up to nine visible windows on the front window's display, most recently used first:
 
 | Windows | Layout |
@@ -99,7 +101,7 @@ open -g -a Split --args --menu                     # show the Split menu at the 
 open -g -a Split --args --guide                    # show the Accessibility guide again
 ```
 
-Action names for `--perform`: MoveToCenter, MoveToFullscreen, MoveToLeftHalf, MoveToRightHalf, MoveToTopHalf, MoveToBottomHalf, MoveToUpperLeft, MoveToUpperRight, MoveToLowerLeft, MoveToLowerRight, MoveToNextThird, MoveToPreviousThird, MoveToNextDisplay, MoveToPreviousDisplay, MakeLarger, MakeSmaller, UndoLastMove, RedoLastMove and ArrangeWindows. Opening Split again without options opens its settings.
+Action names for `--perform`: MoveToCenter, MoveToFullscreen, MoveToLeftHalf, MoveToRightHalf, MoveToTopHalf, MoveToBottomHalf, MoveToUpperLeft, MoveToUpperRight, MoveToLowerLeft, MoveToLowerRight, MoveToNextThird, MoveToPreviousThird, MoveToNextDisplay, MoveToPreviousDisplay, MakeLarger, MakeSmaller, UndoLastMove, RedoLastMove, ArrangeWindows, MaximizeHeight, MoveLeft, MoveRight, MoveUp, MoveDown, FirstTwoThirds and LastTwoThirds. Opening Split again without options opens its settings.
 
 </details>
 

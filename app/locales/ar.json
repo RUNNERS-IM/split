@@ -259,5 +259,14 @@
   "PhoneSignOutTitle": "تسجيل الخروج على هذا الكمبيوتر",
   "PhoneSignOut": "تسجيل الخروج",
   "ShortcutsOff": "الاختصارات متوقفة",
-  "MoreActions": "المزيد"
+  "MoreActions": "المزيد",
+  "MaximizeHeight": "ملء الارتفاع",
+  "MoveLeft": "نقل إلى اليسار",
+  "MoveRight": "نقل إلى اليمين",
+  "MoveUp": "نقل إلى الأعلى",
+  "MoveDown": "نقل إلى الأسفل",
+  "FirstTwoThirds": "الثلثان الأيسران",
+  "LastTwoThirds": "الثلثان الأيمنان",
+  "SectionEdges": "الحواف",
+  "SectionEdgesHint": "يبقي الحجم كما هو ويدفع النافذة إلى حافة الشاشة."
 }

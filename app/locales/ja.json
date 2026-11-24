@@ -246,5 +246,14 @@
   "PhoneSignOutTitle": "このコンピュータからサインアウト",
   "PhoneSignOut": "サインアウト",
   "ShortcutsOff": "ショートカット オフ",
-  "MoreActions": "その他"
+  "MoreActions": "その他",
+  "MaximizeHeight": "高さを最大化",
+  "MoveLeft": "左端へ移動",
+  "MoveRight": "右端へ移動",
+  "MoveUp": "上端へ移動",
+  "MoveDown": "下端へ移動",
+  "FirstTwoThirds": "左3分の2",
+  "LastTwoThirds": "右3分の2",
+  "SectionEdges": "端へ移動",
+  "SectionEdgesHint": "サイズはそのままでウインドウを画面の端に寄せます。"
 }

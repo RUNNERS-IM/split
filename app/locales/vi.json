@@ -246,5 +246,14 @@
   "PhoneSignOutTitle": "Đăng xuất khỏi máy tính này",
   "PhoneSignOut": "Đăng xuất",
   "ShortcutsOff": "Đã tắt phím tắt",
-  "MoreActions": "Thêm"
+  "MoreActions": "Thêm",
+  "MaximizeHeight": "Tối đa chiều cao",
+  "MoveLeft": "Đẩy sang trái",
+  "MoveRight": "Đẩy sang phải",
+  "MoveUp": "Đẩy lên trên",
+  "MoveDown": "Đẩy xuống dưới",
+  "FirstTwoThirds": "Hai phần ba bên trái",
+  "LastTwoThirds": "Hai phần ba bên phải",
+  "SectionEdges": "Cạnh",
+  "SectionEdgesHint": "Giữ nguyên kích thước và đẩy cửa sổ sát cạnh màn hình."
 }

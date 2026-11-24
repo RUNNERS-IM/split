@@ -254,5 +254,14 @@
   "PhoneSignOutTitle": "Wyloguj się na tym komputerze",
   "PhoneSignOut": "Wyloguj się",
   "ShortcutsOff": "Skróty wyłączone",
-  "MoreActions": "Więcej"
+  "MoreActions": "Więcej",
+  "MaximizeHeight": "Maksymalna wysokość",
+  "MoveLeft": "Przesuń w lewo",
+  "MoveRight": "Przesuń w prawo",
+  "MoveUp": "Przesuń w górę",
+  "MoveDown": "Przesuń w dół",
+  "FirstTwoThirds": "Lewe dwie trzecie",
+  "LastTwoThirds": "Prawe dwie trzecie",
+  "SectionEdges": "Krawędzie",
+  "SectionEdgesHint": "Zachowuje rozmiar i dosuwa okno do krawędzi ekranu."
 }

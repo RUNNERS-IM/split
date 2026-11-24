@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'vitest'
 
-import { ALL } from '../../src/core/actions.ts'
+import { ALL, Action } from '../../src/core/actions.ts'
 import {
   DEFAULT_SHORTCUTS,
   defaultShortcut,
@@ -15,13 +15,33 @@ test('every default parses and round trips', () => {
     assert.ok(combo !== null, action)
     assert.equal(combo.toText(), text)
   }
-  assert.equal(DEFAULT_SHORTCUTS.length, ALL.length)
+  assert.equal(new Set(DEFAULT_SHORTCUTS.map(([action]) => action)).size, DEFAULT_SHORTCUTS.length)
+})
+
+test('newer actions start without keys', () => {
+  // Why: the person picks keys for these in Settings or runs them from the menu, so a new version never takes keys someone already uses.
+  const unbound = [
+    Action.MaximizeHeight,
+    Action.MoveLeft,
+    Action.MoveRight,
+    Action.MoveUp,
+    Action.MoveDown,
+    Action.FirstTwoThirds,
+    Action.LastTwoThirds
+  ]
+  for (const platform of ['darwin', 'win32', 'linux']) {
+    for (const action of unbound) {
+      assert.equal(defaultShortcut(action, platform), null, `${platform} ${action}`)
+    }
+  }
 })
 
 test('no two actions share a default on any system', () => {
   for (const platform of ['darwin', 'win32', 'linux']) {
-    const texts = ALL.map((action) => defaultShortcut(action, platform))
-    assert.equal(new Set(texts).size, ALL.length, platform)
+    const texts = ALL.map((action) => defaultShortcut(action, platform)).filter(
+      (text) => text !== null
+    )
+    assert.equal(new Set(texts).size, texts.length, platform)
   }
 })
 

@@ -20,7 +20,14 @@ export const Action = {
   MakeSmaller: 'MakeSmaller',
   UndoLastMove: 'UndoLastMove',
   RedoLastMove: 'RedoLastMove',
-  ArrangeWindows: 'ArrangeWindows'
+  ArrangeWindows: 'ArrangeWindows',
+  MaximizeHeight: 'MaximizeHeight',
+  MoveLeft: 'MoveLeft',
+  MoveRight: 'MoveRight',
+  MoveUp: 'MoveUp',
+  MoveDown: 'MoveDown',
+  FirstTwoThirds: 'FirstTwoThirds',
+  LastTwoThirds: 'LastTwoThirds'
 } as const
 
 export type Action = (typeof Action)[keyof typeof Action]
@@ -67,7 +74,14 @@ export const ALL: readonly Action[] = [
   Action.MakeSmaller,
   Action.UndoLastMove,
   Action.RedoLastMove,
-  Action.ArrangeWindows
+  Action.ArrangeWindows,
+  Action.MaximizeHeight,
+  Action.MoveLeft,
+  Action.MoveRight,
+  Action.MoveUp,
+  Action.MoveDown,
+  Action.FirstTwoThirds,
+  Action.LastTwoThirds
 ]
 
 export function name(action: Action): string {
