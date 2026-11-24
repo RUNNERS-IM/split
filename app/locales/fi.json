@@ -250,5 +250,14 @@
   "PhoneSignOutTitle": "Kirjaudu ulos tältä tietokoneelta",
   "PhoneSignOut": "Kirjaudu ulos",
   "ShortcutsOff": "Pikanäppäimet pois",
-  "MoreActions": "Lisää"
+  "MoreActions": "Lisää",
+  "MaximizeHeight": "Täysi korkeus",
+  "MoveLeft": "Siirrä vasemmalle",
+  "MoveRight": "Siirrä oikealle",
+  "MoveUp": "Siirrä ylös",
+  "MoveDown": "Siirrä alas",
+  "FirstTwoThirds": "Vasemmat kaksi kolmannesta",
+  "LastTwoThirds": "Oikeat kaksi kolmannesta",
+  "SectionEdges": "Reunat",
+  "SectionEdgesHint": "Säilyttää koon ja siirtää ikkunan näytön reunaan."
 }

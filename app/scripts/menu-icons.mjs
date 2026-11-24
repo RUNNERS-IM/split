@@ -50,6 +50,13 @@ const regions = {
   MoveToLowerRight: [[0.5, 0.5, 0.5, 0.5]],
   MoveToNextThird: [[0.34, 0, 0.32, 1]],
   MoveToPreviousThird: [[0, 0, 0.32, 1]],
+  MaximizeHeight: [[0.3, 0, 0.4, 1]],
+  MoveLeft: [[0, 0.25, 0.45, 0.5]],
+  MoveRight: [[0.55, 0.25, 0.45, 0.5]],
+  MoveUp: [[0.27, 0, 0.46, 0.45]],
+  MoveDown: [[0.27, 0.55, 0.46, 0.45]],
+  FirstTwoThirds: [[0, 0, 0.66, 1]],
+  LastTwoThirds: [[0.34, 0, 0.66, 1]],
   ArrangeWindows: [
     [0, 0, 0.5, 1],
     [0.5, 0, 0.5, 0.5],

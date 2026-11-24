@@ -113,14 +113,15 @@ const BLOCKED_APPS = new Set([
 
 /** Settings sections in the order the macOS settings window and the shortcut list show them. */
 const SECTIONS: [string, Action[]][] = [
-  ['SectionBasic', ['MoveToCenter', 'MoveToFullscreen']],
+  ['SectionBasic', ['MoveToCenter', 'MoveToFullscreen', 'MaximizeHeight']],
   ['SectionArrange', ['ArrangeWindows']],
   ['SectionHalves', ['MoveToLeftHalf', 'MoveToRightHalf', 'MoveToTopHalf', 'MoveToBottomHalf']],
   [
     'SectionCorners',
     ['MoveToUpperLeft', 'MoveToUpperRight', 'MoveToLowerLeft', 'MoveToLowerRight']
   ],
-  ['SectionThirds', ['MoveToPreviousThird', 'MoveToNextThird']],
+  ['SectionThirds', ['MoveToPreviousThird', 'MoveToNextThird', 'FirstTwoThirds', 'LastTwoThirds']],
+  ['SectionEdges', ['MoveLeft', 'MoveRight', 'MoveUp', 'MoveDown']],
   ['SectionDisplays', ['MoveToPreviousDisplay', 'MoveToNextDisplay']],
   ['SectionSize', ['MakeLarger', 'MakeSmaller']],
   ['SectionHistory', ['UndoLastMove', 'RedoLastMove']]
@@ -128,10 +129,11 @@ const SECTIONS: [string, Action[]][] = [
 
 /** Tray menu groups, in the same order as the shortcut settings. */
 const MENU_GROUPS: Action[][] = [
-  ['MoveToCenter', 'MoveToFullscreen', 'ArrangeWindows'],
+  ['MoveToCenter', 'MoveToFullscreen', 'MaximizeHeight', 'ArrangeWindows'],
   ['MoveToLeftHalf', 'MoveToRightHalf', 'MoveToTopHalf', 'MoveToBottomHalf'],
   ['MoveToUpperLeft', 'MoveToUpperRight', 'MoveToLowerLeft', 'MoveToLowerRight'],
-  ['MoveToPreviousThird', 'MoveToNextThird'],
+  ['MoveToPreviousThird', 'MoveToNextThird', 'FirstTwoThirds', 'LastTwoThirds'],
+  ['MoveLeft', 'MoveRight', 'MoveUp', 'MoveDown'],
   ['MoveToPreviousDisplay', 'MoveToNextDisplay'],
   ['MakeLarger', 'MakeSmaller'],
   ['UndoLastMove', 'RedoLastMove']

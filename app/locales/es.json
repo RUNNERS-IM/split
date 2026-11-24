@@ -250,5 +250,14 @@
   "PhoneSignOutTitle": "Cerrar sesión en este ordenador",
   "PhoneSignOut": "Cerrar sesión",
   "ShortcutsOff": "Atajos desactivados",
-  "MoreActions": "Más"
+  "MoreActions": "Más",
+  "MaximizeHeight": "Maximizar altura",
+  "MoveLeft": "Mover a la izquierda",
+  "MoveRight": "Mover a la derecha",
+  "MoveUp": "Mover arriba",
+  "MoveDown": "Mover abajo",
+  "FirstTwoThirds": "Dos tercios izquierdos",
+  "LastTwoThirds": "Dos tercios derechos",
+  "SectionEdges": "Bordes",
+  "SectionEdgesHint": "Mantiene el tamaño y lleva la ventana al borde de la pantalla."
 }

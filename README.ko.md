@@ -72,6 +72,8 @@ brew install --cask split
 
 반 · 모서리 단축키를 다시 누르면 그 영역에서 1/2 → 2/3 → 1/3 로 번갈아 바뀝니다. 크기를 바꿀 때 창이 이미 닿아 있는 화면 가장자리는 계속 붙어 있습니다.
 
+높이만 꽉 채우기 · 왼쪽/오른쪽 2/3 · 가장자리로 밀기 4개(크기 그대로 화면 끝에 붙임)는 처음에 단축키가 비어 있습니다. 설정 › 단축키에서 키를 정하거나 메뉴에서 고르면 됩니다.
+
 **창 모두 자동 배치** 는 맨 앞 창이 있는 모니터에서 보이는 창을 최근에 쓴 순서로 9개까지 놓습니다.
 
 | 창 개수 | 배치 |
@@ -99,7 +101,7 @@ open -g -a Split --args --menu                     # 마우스 자리에 Split �
 open -g -a Split --args --guide                    # 손쉬운 사용 안내 다시 보기
 ```
 
-`--perform` 동작 이름: MoveToCenter, MoveToFullscreen, MoveToLeftHalf, MoveToRightHalf, MoveToTopHalf, MoveToBottomHalf, MoveToUpperLeft, MoveToUpperRight, MoveToLowerLeft, MoveToLowerRight, MoveToNextThird, MoveToPreviousThird, MoveToNextDisplay, MoveToPreviousDisplay, MakeLarger, MakeSmaller, UndoLastMove, RedoLastMove, ArrangeWindows. 인자 없이 Split 을 한 번 더 열면 설정 창이 뜹니다.
+`--perform` 동작 이름: MoveToCenter, MoveToFullscreen, MoveToLeftHalf, MoveToRightHalf, MoveToTopHalf, MoveToBottomHalf, MoveToUpperLeft, MoveToUpperRight, MoveToLowerLeft, MoveToLowerRight, MoveToNextThird, MoveToPreviousThird, MoveToNextDisplay, MoveToPreviousDisplay, MakeLarger, MakeSmaller, UndoLastMove, RedoLastMove, ArrangeWindows, MaximizeHeight, MoveLeft, MoveRight, MoveUp, MoveDown, FirstTwoThirds, LastTwoThirds. 인자 없이 Split 을 한 번 더 열면 설정 창이 뜹니다.
 
 </details>
 

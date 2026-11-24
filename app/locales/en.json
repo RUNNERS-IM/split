@@ -250,5 +250,14 @@
   "PhoneSignOutTitle": "Sign out of this computer",
   "PhoneSignOut": "Sign Out",
   "ShortcutsOff": "Shortcuts off",
-  "MoreActions": "More"
+  "MoreActions": "More",
+  "MaximizeHeight": "Maximize Height",
+  "MoveLeft": "Move Left",
+  "MoveRight": "Move Right",
+  "MoveUp": "Move Up",
+  "MoveDown": "Move Down",
+  "FirstTwoThirds": "First Two Thirds",
+  "LastTwoThirds": "Last Two Thirds",
+  "SectionEdges": "Edges",
+  "SectionEdgesHint": "Keeps the size and slides the window to the edge."
 }

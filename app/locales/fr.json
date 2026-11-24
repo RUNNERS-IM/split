@@ -250,5 +250,14 @@
   "PhoneSignOutTitle": "Se déconnecter sur cet ordinateur",
   "PhoneSignOut": "Se déconnecter",
   "ShortcutsOff": "Raccourcis désactivés",
-  "MoreActions": "Plus"
+  "MoreActions": "Plus",
+  "MaximizeHeight": "Maximiser la hauteur",
+  "MoveLeft": "Déplacer à gauche",
+  "MoveRight": "Déplacer à droite",
+  "MoveUp": "Déplacer en haut",
+  "MoveDown": "Déplacer en bas",
+  "FirstTwoThirds": "Deux tiers gauche",
+  "LastTwoThirds": "Deux tiers droite",
+  "SectionEdges": "Bords",
+  "SectionEdgesHint": "Garde la taille et pousse la fenêtre contre le bord de l’écran."
 }

@@ -247,5 +247,14 @@
   "PhoneSignOutTitle": "Auf diesem Computer abmelden",
   "PhoneSignOut": "Abmelden",
   "ShortcutsOff": "Kurzbefehle aus",
-  "MoreActions": "Mehr"
+  "MoreActions": "Mehr",
+  "MaximizeHeight": "Höhe maximieren",
+  "MoveLeft": "Nach links schieben",
+  "MoveRight": "Nach rechts schieben",
+  "MoveUp": "Nach oben schieben",
+  "MoveDown": "Nach unten schieben",
+  "FirstTwoThirds": "Linke zwei Drittel",
+  "LastTwoThirds": "Rechte zwei Drittel",
+  "SectionEdges": "Ränder",
+  "SectionEdgesHint": "Behält die Größe und schiebt das Fenster an den Bildschirmrand."
 }

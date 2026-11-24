@@ -71,3 +71,24 @@ test('larger grows by thirty points', () => {
 test('undo has no calculation', () => {
   assert.equal(calculate(Action.UndoLastMove, SCREEN, SCREEN, SCREEN), null)
 })
+
+test('maximize height keeps the column and fills top to bottom', () => {
+  assert.deepEqual(
+    calc(Action.MaximizeHeight, new Rect(300, 200, 800, 400)),
+    new Rect(300, 0, 800, 1040)
+  )
+})
+
+test('moving to an edge keeps the size', () => {
+  const window = new Rect(300, 200, 800, 400)
+  assert.deepEqual(calc(Action.MoveLeft, window), new Rect(0, 200, 800, 400))
+  assert.deepEqual(calc(Action.MoveRight, window), new Rect(1120, 200, 800, 400))
+  assert.deepEqual(calc(Action.MoveUp, window), new Rect(300, 0, 800, 400))
+  assert.deepEqual(calc(Action.MoveDown, window), new Rect(300, 640, 800, 400))
+})
+
+test('two thirds fill the left or right two thirds', () => {
+  const window = new Rect(100, 100, 800, 600)
+  assert.deepEqual(calc(Action.FirstTwoThirds, window), new Rect(0, 0, 1280, 1040))
+  assert.deepEqual(calc(Action.LastTwoThirds, window), new Rect(640, 0, 1280, 1040))
+})

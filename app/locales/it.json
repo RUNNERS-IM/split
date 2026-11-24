@@ -250,5 +250,14 @@
   "PhoneSignOutTitle": "Esci da questo computer",
   "PhoneSignOut": "Esci",
   "ShortcutsOff": "Scorciatoie disattivate",
-  "MoreActions": "Altro"
+  "MoreActions": "Altro",
+  "MaximizeHeight": "Massimizza altezza",
+  "MoveLeft": "Sposta a sinistra",
+  "MoveRight": "Sposta a destra",
+  "MoveUp": "Sposta in alto",
+  "MoveDown": "Sposta in basso",
+  "FirstTwoThirds": "Due terzi a sinistra",
+  "LastTwoThirds": "Due terzi a destra",
+  "SectionEdges": "Bordi",
+  "SectionEdgesHint": "Mantiene le dimensioni e porta la finestra al bordo dello schermo."
 }

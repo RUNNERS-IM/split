@@ -246,5 +246,14 @@
   "PhoneSignOutTitle": "Bu bilgisayarda oturumu kapat",
   "PhoneSignOut": "Oturumu Kapat",
   "ShortcutsOff": "Kısayollar kapalı",
-  "MoreActions": "Daha fazla"
+  "MoreActions": "Daha fazla",
+  "MaximizeHeight": "Yüksekliği Doldur",
+  "MoveLeft": "Sola Kaydır",
+  "MoveRight": "Sağa Kaydır",
+  "MoveUp": "Yukarı Kaydır",
+  "MoveDown": "Aşağı Kaydır",
+  "FirstTwoThirds": "Soldaki Üçte İki",
+  "LastTwoThirds": "Sağdaki Üçte İki",
+  "SectionEdges": "Kenarlar",
+  "SectionEdgesHint": "Boyutu korur ve pencereyi ekranın kenarına kaydırır."
 }

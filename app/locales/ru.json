@@ -254,5 +254,14 @@
   "PhoneSignOutTitle": "Выйти на этом компьютере",
   "PhoneSignOut": "Выйти",
   "ShortcutsOff": "Сочетания клавиш выключены",
-  "MoreActions": "Ещё"
+  "MoreActions": "Ещё",
+  "MaximizeHeight": "Во всю высоту",
+  "MoveLeft": "К левому краю",
+  "MoveRight": "К правому краю",
+  "MoveUp": "К верхнему краю",
+  "MoveDown": "К нижнему краю",
+  "FirstTwoThirds": "Левые две трети",
+  "LastTwoThirds": "Правые две трети",
+  "SectionEdges": "Края",
+  "SectionEdgesHint": "Сохраняет размер и прижимает окно к краю экрана."
 }

@@ -246,5 +246,14 @@
   "PhoneSignOutTitle": "在這台電腦上登出",
   "PhoneSignOut": "登出",
   "ShortcutsOff": "快速鍵已關閉",
-  "MoreActions": "更多"
+  "MoreActions": "更多",
+  "MaximizeHeight": "最大化高度",
+  "MoveLeft": "移到左邊",
+  "MoveRight": "移到右邊",
+  "MoveUp": "移到上邊",
+  "MoveDown": "移到下邊",
+  "FirstTwoThirds": "左側三分之二",
+  "LastTwoThirds": "右側三分之二",
+  "SectionEdges": "靠邊",
+  "SectionEdgesHint": "保持大小，把視窗推到螢幕邊緣。"
 }

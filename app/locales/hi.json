@@ -249,5 +249,14 @@
   "PhoneSignOutTitle": "इस कंप्यूटर से साइन आउट करें",
   "PhoneSignOut": "साइन आउट करें",
   "ShortcutsOff": "शॉर्टकट बंद",
-  "MoreActions": "और"
+  "MoreActions": "और",
+  "MaximizeHeight": "पूरी ऊँचाई",
+  "MoveLeft": "बाईं ओर ले जाएँ",
+  "MoveRight": "दाईं ओर ले जाएँ",
+  "MoveUp": "ऊपर ले जाएँ",
+  "MoveDown": "नीचे ले जाएँ",
+  "FirstTwoThirds": "बाएँ दो तिहाई",
+  "LastTwoThirds": "दाएँ दो तिहाई",
+  "SectionEdges": "किनारे",
+  "SectionEdgesHint": "आकार वही रखकर विंडो को स्क्रीन के किनारे तक ले जाता है।"
 }

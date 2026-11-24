@@ -250,5 +250,14 @@
   "PhoneSignOutTitle": "Sair neste computador",
   "PhoneSignOut": "Sair",
   "ShortcutsOff": "Atalhos desativados",
-  "MoreActions": "Mais"
+  "MoreActions": "Mais",
+  "MaximizeHeight": "Maximizar Altura",
+  "MoveLeft": "Mover para a Esquerda",
+  "MoveRight": "Mover para a Direita",
+  "MoveUp": "Mover para Cima",
+  "MoveDown": "Mover para Baixo",
+  "FirstTwoThirds": "Dois Terços Esquerdos",
+  "LastTwoThirds": "Dois Terços Direitos",
+  "SectionEdges": "Bordas",
+  "SectionEdgesHint": "Mantém o tamanho e leva a janela até a borda da tela."
 }
