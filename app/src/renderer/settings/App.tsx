@@ -95,14 +95,16 @@ export default function App() {
 
   const strings = useMemo(() => makeStrings(state?.strings ?? {}), [state?.strings])
 
+  const locale = state?.locale
+  const platform = state?.platform
   useEffect(() => {
-    if (!state) {
+    if (!locale || !platform) {
       return
     }
     document.title = strings.t('SettingsWindowTitle')
-    document.documentElement.lang = state.locale
-    document.documentElement.dataset.platform = state.platform
-  }, [state?.locale, state?.platform, strings])
+    document.documentElement.lang = locale
+    document.documentElement.dataset.platform = platform
+  }, [locale, platform, strings])
 
   const update = useCallback<Update>(
     async (change) => {
