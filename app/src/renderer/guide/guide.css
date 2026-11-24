@@ -179,8 +179,14 @@ h1 {
   -webkit-app-region: no-drag;
 }
 
+/* Why: "Open System Settings" runs to two lines in German, French, Russian and seven more languages;
+   a fixed height cut the second line off, so the button grows with its text instead. */
 .buttons .rw-button {
   flex: 1;
+  height: auto;
+  min-height: var(--rw-button-height);
+  padding-block: 5px;
+  line-height: 1.25;
 }
 
 .status {

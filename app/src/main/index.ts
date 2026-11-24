@@ -23,7 +23,8 @@ import {
   screen,
   shell,
   systemPreferences,
-  Tray
+  Tray,
+  webContents
 } from 'electron'
 import { ALL, type Action, cycleStep } from '../core/actions.ts'
 import {
@@ -1484,6 +1485,13 @@ function testScreens() {
     signInForTest: (password: string) => signIn('login', 'kim@example.com', password),
     signOutForTest: signOut,
     languageChanged() {
+      // Why: pages opened in Arabic keep dir="rtl" from dom-ready, so the next language's menu came out mirrored.
+      const dir = rightToLeft() ? 'rtl' : 'ltr'
+      for (const contents of webContents.getAllWebContents()) {
+        void contents
+          .executeJavaScript(`document.documentElement.dir = "${dir}"`)
+          .catch(() => undefined)
+      }
       updateTray()
       pushState()
     }
