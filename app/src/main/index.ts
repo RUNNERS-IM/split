@@ -1280,7 +1280,9 @@ async function offerToQuitSpectacle(pids: number[]): Promise<void> {
 // Why: Electron grants every web permission by default. Split's pages are its own and need none, so location, camera,
 // microphone, notifications and the rest are refused at once (user, 2026-11-27: "I don't know why location is needed").
 function refuseWebPermissions(): void {
-  session.defaultSession.setPermissionRequestHandler((_contents, _permission, callback) => callback(false))
+  session.defaultSession.setPermissionRequestHandler((_contents, _permission, callback) =>
+    callback(false)
+  )
   session.defaultSession.setPermissionCheckHandler(() => false)
 }
 
