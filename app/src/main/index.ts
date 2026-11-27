@@ -21,6 +21,7 @@ import {
   nativeImage,
   powerMonitor,
   screen,
+  session,
   shell,
   systemPreferences,
   Tray,
@@ -1276,7 +1277,15 @@ async function offerToQuitSpectacle(pids: number[]): Promise<void> {
   await removeLoginItem('Spectacle')
 }
 
+// Why: Electron grants every web permission by default. Split's pages are its own and need none, so location, camera,
+// microphone, notifications and the rest are refused at once (user, 2026-11-27: "I don't know why location is needed").
+function refuseWebPermissions(): void {
+  session.defaultSession.setPermissionRequestHandler((_contents, _permission, callback) => callback(false))
+  session.defaultSession.setPermissionCheckHandler(() => false)
+}
+
 function start(): void {
+  refuseWebPermissions()
   loadLanguage()
   // Why: Chromium writes AppleTextDirection = 1 to Split's defaults when it starts in Arabic and
   // never clears it, so after a switch to another language the menus stayed mirrored.

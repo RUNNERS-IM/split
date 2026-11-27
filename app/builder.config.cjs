@@ -15,6 +15,35 @@ const bundleVersion =
   process.env.SPLIT_BUILD_NUMBER ||
   require('node:child_process').execSync('git rev-list --count HEAD').toString().trim()
 
+// Why: Electron's own Info.plist asks for the camera, microphone, Bluetooth and audio capture, which Split never uses
+// (only Apple Events and Accessibility are needed); extendInfo can only add or change keys, so they are removed here
+// before signing (user, 2026-11-27: "remove permissions that are not needed").
+const UNUSED_USAGE_KEYS = [
+  'NSCameraUsageDescription',
+  'NSMicrophoneUsageDescription',
+  'NSAudioCaptureUsageDescription',
+  'NSBluetoothAlwaysUsageDescription',
+  'NSBluetoothPeripheralUsageDescription'
+]
+
+function removeUnusedUsageKeys(context) {
+  if (context.electronPlatformName !== 'darwin' && context.electronPlatformName !== 'mas') {
+    return
+  }
+  const { execFileSync } = require('node:child_process')
+  const { join } = require('node:path')
+  const productFile = `${context.packager.appInfo.productFilename}.app`
+  const plist = join(context.appOutDir, productFile, 'Contents', 'Info.plist')
+  for (const key of UNUSED_USAGE_KEYS) {
+    try {
+      execFileSync('plutil', ['-extract', key, 'raw', plist], { stdio: 'ignore' })
+    } catch {
+      continue
+    }
+    execFileSync('plutil', ['-remove', key, plist])
+  }
+}
+
 module.exports = {
   appId: 'im.runners.Split',
   productName: 'Split',
@@ -41,6 +70,7 @@ module.exports = {
   asar: true,
   // Why: no npm package with native code ships; the one native module is built by cargo (pnpm native).
   npmRebuild: false,
+  afterPack: removeUnusedUsageKeys,
   mac: {
     category: 'public.app-category.utilities',
     artifactName: `Split-${tag}-mac.\${ext}`,
